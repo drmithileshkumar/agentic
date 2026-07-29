@@ -1,10 +1,10 @@
 # Professor Feedback
 
-Written record of the annotations found in the professor's marked-up PDFs, so
-there is a tracked list before we act on any of it. Nothing here has been
-addressed yet — each item has a corresponding `% TODO: address prof feedback --
-see docs/prof-feedback.md` marker at the point in the blueprint where the fix
-belongs.
+Written record of the annotations found in the professor's marked-up PDFs, kept
+as a tracked list of what was raised and where it was addressed. All three items
+have now been written into the environment setup chapter; the `% TODO: address
+prof feedback` markers that previously stood in for them have been replaced by
+the actual content.
 
 ## 1. Environment setup doesn't cover already-cloned repos
 
@@ -40,6 +40,6 @@ needs its own walkthrough.
 
 | # | Item | Addressed? |
 | - | ---- | ---------- |
-| 1 | Already-cloned repo workflow (+ folder-name-vs-`math` gotcha) | [ ] |
-| 2 | Answer "what to refresh?" | [ ] |
-| 3 | Add "Leanblueprint set up" section | [ ] |
+| 1 | Already-cloned repo workflow (+ folder-name-vs-`math` gotcha) | [x] |
+| 2 | Answer "what to refresh?" | [x] |
+| 3 | Add "Leanblueprint set up" section | [x] |

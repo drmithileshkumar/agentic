@@ -100,7 +100,29 @@ lake build
 
 The \texttt{math} keyword adds Mathlib as a dependency so \texttt{import Mathlib} works. First build after this can take a while --- it's fetching Mathlib's dependency graph.
 
-% TODO: address prof feedback -- see docs/prof-feedback.md
+\subsection{Working in an already-cloned repository}
+
+Everything above (\texttt{lake new ... math}) is for starting a project from scratch. Joining a project that already exists --- this one, for instance --- is a different situation: the repository already carries its own \texttt{lakefile.toml} and \texttt{lean-toolchain}, so you skip \texttt{lake new}/\texttt{lake init} entirely and simply clone it.
+
+\begin{verbatim}
+git clone https://github.com/drmithileshkumar/agentic.git
+cd agentic
+\end{verbatim}
+
+\textbf{What to refresh.} A fresh clone has no \texttt{.lake/} directory --- it's gitignored, and entirely regenerable, so it is never part of what you clone. Refreshing it means fetching the prebuilt Mathlib cache and building:
+
+\begin{verbatim}
+lake exe cache get
+lake build
+\end{verbatim}
+
+Note that \texttt{lake update} is \textbf{not} needed here. That command resolves dependencies to newer versions --- a different operation, covered below in ``Keeping things updated.'' A first clone should build against exactly what \texttt{lake-manifest.json} already pins.
+
+\textbf{A lake gotcha worth knowing.} \texttt{lake init <package-name> <template>} takes the package name first and the template second (\texttt{std}/\texttt{exe}/\texttt{lib}/\texttt{math}). If the folder is literally named \texttt{math}, running \texttt{lake init} on its own parses \texttt{math} as the package \emph{name} with no template given --- and you silently get a plain \texttt{std} project rather than the Mathlib-enabled one you wanted. Keep the project folder's name distinct from \texttt{math}, and always pass the template explicitly:
+
+\begin{verbatim}
+lake init myproject math
+\end{verbatim}
 
 \textbf{Fetch the prebuilt Mathlib cache} (do this --- avoids compiling Mathlib from source, which takes hours):
 
@@ -128,7 +150,49 @@ TopologicalSpace.{u} (α : Type u) : Type u
 
 No errors $\rightarrow$ the environment is fully wired: elan $\rightarrow$ lake $\rightarrow$ Mathlib $\rightarrow$ VS Code language server $\rightarrow$ Infoview.
 
-% TODO: address prof feedback -- see docs/prof-feedback.md
+\section{Leanblueprint set up}
+
+\href{https://github.com/PatrickMassot/leanblueprint}{Leanblueprint} turns a LaTeX blueprint into a website with a dependency graph, plus a PDF.
+
+\subsection{Installing it}
+
+This repository already has this done --- the virtual environment and \texttt{leanblueprint} were added at commit \texttt{d2ed81a} --- so the instructions below are for reference, or for reproducing the setup elsewhere, rather than something you need to redo in this checkout.
+
+Install it into a project-local virtual environment rather than globally:
+
+\begin{verbatim}
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install leanblueprint
+\end{verbatim}
+
+Add \texttt{.venv/} to \texttt{.gitignore} --- it's a local environment, not project content.
+
+\subsection{Two dependencies for a full local build}
+
+Beyond the Python package, a \emph{full local} build needs two pieces of system software:
+
+\begin{itemize}
+  \item \textbf{Graphviz} --- renders the dependency graph, via the \texttt{dot} and \texttt{tred} binaries.
+  \item \textbf{A TeX distribution} (MiKTeX or TeX Live) --- needed for the PDF, and also for \texttt{kpsewhich}, which the HTML path uses to locate files. So this is required even if you only ever build the website.
+\end{itemize}
+
+Neither is installed by \texttt{pip}. CI already has both, so pushing and letting the workflow build is a reliable fallback if you'd rather not install them locally.
+
+\subsection{How blueprint/src is organized}
+
+\texttt{content.tex} assembles the blueprint by \texttt{\textbackslash{}input}-ing each chapter in order. \texttt{web.tex} and \texttt{print.tex} are the two entry points --- the website and the PDF respectively --- and both pull in the same \texttt{content.tex}. Individual chapters live in \texttt{blueprint/src/chapters/}.
+
+\subsection{Build commands}
+
+Run these from the \texttt{blueprint/} directory:
+
+\begin{verbatim}
+leanblueprint web          # build the website
+leanblueprint pdf          # build the PDF
+leanblueprint serve        # serve the website locally
+leanblueprint checkdecls   # check declarations named in the blueprint exist in Lean
+\end{verbatim}
 
 \section{Project anatomy (what's actually on disk)}
 
@@ -172,7 +236,7 @@ lake build
 
 Run this inside a project when Mathlib has moved on and you want the latest version.
 
-% TODO: address prof feedback -- see docs/prof-feedback.md
+\emph{Note: this section is for pulling a newer Mathlib version into a project you're already working in. If you've just cloned the repository for the first time, you don't need \texttt{lake update} --- see ``Working in an already-cloned repository'' above instead.}
 
 \section{Troubleshooting}
 
