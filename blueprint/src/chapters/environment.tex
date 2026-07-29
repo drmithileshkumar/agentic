@@ -1,18 +1,209 @@
 \chapter{Lean 4 Environment Setup}
 \label{ch:environment}
 
-This document walks through installing Lean 4, connecting it to Mathlib, and verifying a working end-to-end setup. It also explains the pieces (elan, lake, lean-toolchain) you'll be switching between constantly once the agent↔Lean harness is running.
+\emph{Agentic Hallucinations --- Independent Study.} Target OS: Windows.
 
+This document walks through installing Lean 4, connecting it to Mathlib, and verifying a working end-to-end setup. It also explains the pieces (\texttt{elan}, \texttt{lake}, \texttt{lean-toolchain}) you'll be switching between constantly once the agent\(\leftrightarrow\)Lean harness is running.
 
-% \begin{definition}[Group]
-% \lean{Mathlib.Group}
-% \label{def:group}
-% A group is a set $G$ equipped with a binary operation...
-% \end{definition}
+\section{What you're installing}
 
-% \begin{theorem}[Fundamental Theorem]
-% \lean{Mathlib.FundamentalGroup}
-% \label{thm:fundamental_thm}
-% \uses{def:group}
-% Every group has the following property:
-% \end{theorem}
+Three components, each with a distinct job:
+
+\begin{center}
+\begin{tabular}{@{}p{0.22\linewidth}p{0.72\linewidth}@{}}
+\hline
+\textbf{Component} & \textbf{Role} \\
+\hline
+\textbf{elan} & Version manager. Installs and switches Lean toolchain versions automatically per-project (reads \texttt{lean-toolchain}). Analogous to \texttt{nvm} for Node or \texttt{pyenv} for Python. \\
+\textbf{lake} & Lean's build tool and package manager (bundled with elan). Creates projects, resolves dependencies, builds, and runs executables. Analogous to \texttt{cargo} or \texttt{npm}. \\
+\textbf{Lean 4 VS Code extension} & Editor integration. Talks to the Lean language server, renders the goal state (Infoview), shows diagnostics inline. \\
+\hline
+\end{tabular}
+\end{center}
+
+You do \textbf{not} install ``Lean'' directly --- elan installs and manages the actual \texttt{lean} compiler versions on demand, per project.
+
+\section{Prerequisites}
+
+Open Command Prompt and confirm Git and curl are present:
+
+\begin{verbatim}
+git --version
+curl --version
+\end{verbatim}
+
+If either errors, install \href{https://git-scm.com/download/win}{Git for Windows} (accept defaults; choose VS Code as Git's default editor when prompted) and reopen the terminal.
+
+Install \href{https://code.visualstudio.com/Download}{VS Code} if you don't have it. In the installer, check \textbf{``Add to PATH''} and \textbf{``Register Code as an editor for supported file types.''}
+
+\section{Install elan}
+
+Open a new terminal (PowerShell or Command Prompt) and run:
+
+\begin{verbatim}
+curl -O --location https://elan.lean-lang.org/elan-init.ps1
+powershell -ExecutionPolicy Bypass -f elan-init.ps1
+\end{verbatim}
+
+When prompted, choose \textbf{\texttt{1}} for the default installation. Then clean up and restart your terminal:
+
+\begin{verbatim}
+del elan-init.ps1
+exit
+\end{verbatim}
+
+Open a fresh terminal and confirm:
+
+\begin{verbatim}
+elan --version
+lake --version
+\end{verbatim}
+
+Both should print version numbers. If \texttt{lake} is not recognized, close and reopen the terminal (elan modifies your \texttt{PATH}, which only takes effect in new shells) --- or restart your machine if that doesn't resolve it.
+
+\section{Install the Lean 4 VS Code extension}
+
+In VS Code: \texttt{Ctrl+Shift+X} $\rightarrow$ search \texttt{lean4} $\rightarrow$ install the official extension published by \textbf{leanprover}. Choose ``Trust Publisher \& Install'' if prompted. This opens the \textbf{Lean 4 Setup Guide}, which double-checks the above steps automatically --- worth glancing at, but everything in it is covered here.
+
+\textbf{Sanity check:}
+
+\begin{enumerate}
+  \item \texttt{Ctrl+N} $\rightarrow$ new file $\rightarrow$ \texttt{Ctrl+S} $\rightarrow$ save as \texttt{Test.lean} anywhere.
+  \item VS Code will silently download a full Lean toolchain in the background (a progress popup appears bottom-right; the Infoview is unavailable until this finishes --- can take several minutes the first time).
+  \item Type \texttt{\#eval 1 + 1} into the file.
+  \item Hover over \texttt{eval} --- you should see a tooltip showing \texttt{2}, with no red squiggles.
+\end{enumerate}
+
+If that works, Lean itself is installed correctly.
+
+\section{Create a project}
+
+\textbf{Everything in Lean lives inside a project} --- a folder with a \texttt{lakefile.toml}/\texttt{lakefile.lean} (dependency + build config) and a \texttt{lean-toolchain} file (pins the Lean version). A loose \texttt{.lean} file outside a project will throw confusing errors, especially once you \texttt{import} anything.
+
+Two project types you'll use:
+
+\textbf{A. Plain project (no Mathlib)} --- for isolated tactic experiments:
+
+\begin{verbatim}
+lake new MyLeanProject
+cd MyLeanProject
+lake build
+\end{verbatim}
+
+\textbf{B. Mathlib-dependent project} --- for anything touching real math (topology, algebra, set theory --- i.e.\ your actual problem set):
+
+\begin{verbatim}
+lake +leanprover-community/mathlib4:lean-toolchain new MyMathlibProject math
+cd MyMathlibProject
+lake build
+\end{verbatim}
+
+The \texttt{math} keyword adds Mathlib as a dependency so \texttt{import Mathlib} works. First build after this can take a while --- it's fetching Mathlib's dependency graph.
+
+% TODO: address prof feedback -- see docs/prof-feedback.md
+
+\textbf{Fetch the prebuilt Mathlib cache} (do this --- avoids compiling Mathlib from source, which takes hours):
+
+\begin{verbatim}
+lake exe cache get
+\end{verbatim}
+
+Open the project in VS Code: \texttt{code .} from inside the folder, or \texttt{File > Open Folder}. Click \textbf{``Trust authors''} when prompted.
+
+\section{Verify Mathlib is wired up}
+
+Create \texttt{MyMathlibProject/MyMathlibProject/Test.lean}:
+
+\begin{verbatim}
+import Mathlib.Topology.Basic
+
+#check TopologicalSpace
+\end{verbatim}
+
+With the cursor on the last line, the Infoview (right-hand panel; restore with \texttt{Ctrl+Shift+Enter} if it's hidden) should show:
+
+\begin{verbatim}
+TopologicalSpace.{u} (α : Type u) : Type u
+\end{verbatim}
+
+No errors $\rightarrow$ the environment is fully wired: elan $\rightarrow$ lake $\rightarrow$ Mathlib $\rightarrow$ VS Code language server $\rightarrow$ Infoview.
+
+% TODO: address prof feedback -- see docs/prof-feedback.md
+
+\section{Project anatomy (what's actually on disk)}
+
+\begin{verbatim}
+MyMathlibProject/
+├── lakefile.toml          # dependencies, build targets
+├── lean-toolchain         # pins exact Lean version (elan reads this)
+├── lake-manifest.json      # resolved dependency versions (like a lockfile)
+├── .lake/                  # build artifacts, downloaded deps — safe to delete/regenerate
+└── MyMathlibProject/
+    └── Test.lean           # your actual Lean source
+\end{verbatim}
+
+\texttt{lean-toolchain} is the important one for environment switching: elan silently swaps the active Lean version based on whatever this file says, per-project, with no manual intervention. If two projects pin different Lean versions, moving between their folders in a terminal changes which \texttt{lean}/\texttt{lake} binary actually runs --- this matters once the agent harness is juggling multiple project directories.
+
+\section{Command line vs.\ VS Code --- two ways to talk to Lean}
+
+You'll use both, for different purposes:
+
+\begin{itemize}
+  \item \textbf{VS Code (interactive)}: editing proofs by hand, reading goal states, learning tactics. This is where \emph{you} work.
+  \item \textbf{Terminal / \texttt{lake env lean} / \texttt{lake build}}: batch-checking a file, scripting, and --- critically --- how the \textbf{agent harness} will talk to Lean. The agent won't have an Infoview; it will invoke Lean non-interactively (or via the Lean REPL / language server protocol) and parse structured output. Understanding what VS Code is doing under the hood \emph{is} understanding the harness.
+\end{itemize}
+
+Run a single file from the command line to see raw output (no pretty Infoview):
+
+\begin{verbatim}
+lake env lean MyMathlibProject/Test.lean
+\end{verbatim}
+
+No output = success. Errors print as plain text --- this is closer to what the agent will actually receive.
+
+\section{Keeping things updated}
+
+\begin{verbatim}
+curl -L https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain -o lean-toolchain
+lake update
+lake exe cache get
+lake build
+\end{verbatim}
+
+Run this inside a project when Mathlib has moved on and you want the latest version.
+
+% TODO: address prof feedback -- see docs/prof-feedback.md
+
+\section{Troubleshooting}
+
+\textbf{\texttt{curl: (35) schannel: next InitializeSecurityContext failed}} during \texttt{lake exe cache get} --- usually antivirus intercepting downloads. Disable it temporarily and re-run with the force flag:
+
+\begin{verbatim}
+lake exe cache get!
+\end{verbatim}
+
+\textbf{\texttt{uncaught exception: no such file or directory (error code: 2)}} --- a corrupted toolchain download. Fix:
+
+\begin{enumerate}
+  \item Delete the offending folder under \texttt{C:\textbackslash{}Users\textbackslash{}<you>\textbackslash{}.elan\textbackslash{}toolchains}
+  \item Delete the matching file under \texttt{C:\textbackslash{}Users\textbackslash{}<you>\textbackslash{}.elan\textbackslash{}update-hashes}
+  \item Re-run \texttt{lake build} --- it re-downloads automatically.
+\end{enumerate}
+
+\textbf{Disk cleanup} --- safe to delete: \texttt{.lake/} inside any project (regenerates on build), old entries in \texttt{\textasciitilde{}/.elan/toolchains}, and \texttt{\textasciitilde{}/.cache/mathlib}.
+
+\section{Next up}
+
+With this environment working, the next docs cover: core tactics (interactive), a tactic cheat sheet, a full tutorial, and the agent\(\leftrightarrow\)Lean pipeline design that reuses the command-line invocation pattern from the command-line section above.
+
+\section{References}
+
+\begin{itemize}
+  \item \href{https://lean-lang.org/install/}{Install --- Lean Lang (recommended VS Code path)}
+  \item \href{https://lean-lang.org/install/manual/}{Manual Installation --- Lean Lang (Windows/macOS/Linux CLI steps)}
+  \item \href{https://leanprover-community.github.io/install/project.html}{Lean projects --- Lean Community (project creation, Mathlib cache, troubleshooting)}
+  \item \href{https://github.com/leanprover/elan}{elan (Lean version manager) --- GitHub}
+  \item \href{https://github.com/leanprover/vscode-lean4/blob/master/vscode-lean4/manual/manual.md}{Lean 4 VS Code extension manual}
+\end{itemize}
+
+See \texttt{docs/resources.md} (the project bibliography, formerly \texttt{00\_resources.md}) for the full project bibliography.

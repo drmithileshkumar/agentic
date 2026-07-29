@@ -1,0 +1,200 @@
+\chapter{Agent \(\leftrightarrow\) Lean 4 Pipeline}
+\label{ch:pipeline}
+
+\emph{Agentic Hallucinations --- Independent Study.} Design spec for how the agent and Lean 4 actually communicate, and what ``environment switching'' means across this project's full stack. Written to be concrete enough to hand to an implementer (human or Claude Code) as a blueprint --- not just a description.
+
+Sources: \href{https://github.com/leanprover-community/repl}{leanprover-community/repl} (protocol fetched and quoted directly below), \href{https://arxiv.org/abs/2410.16429}{Pantograph (arXiv:2410.16429)}, \href{https://github.com/oOo0oOo/lean-lsp-mcp}{lean-lsp-mcp}, \href{https://github.com/augustepoiroux/leaninteract}{LeanInteract}. Full bibliography: \texttt{docs/resources.md}.
+
+\section{The loop, restated precisely}
+
+From the original project brief: the agent is given a theorem, proposes one tactic, Lean verifies it, and either returns a new goal state or an error --- repeat until the goal list is empty (proved) or some stopping condition is hit (budget exhausted, agent gives up, non-termination).
+
+Stated as a state machine:
+
+\begin{verbatim}
+state = (theorem, goal_stack, history)
+loop:
+  agent.observe(goal_stack, history) → tactic_string
+  result = lean.apply(tactic_string, goal_stack)
+  if result.ok and result.goals == []:
+      state = PROVED; stop
+  elif result.ok:
+      goal_stack = result.goals
+      history.append((tactic_string, "success", result.goals))
+  else:
+      history.append((tactic_string, "error", result.error_message))
+      # goal_stack unchanged — agent tries again from the same state,
+      # now with the error message added to what it can see
+  if budget_exhausted or agent_signals_stop:
+      state = FAILED; stop
+\end{verbatim}
+
+Everything in this document is about making \texttt{lean.apply(...)} a real, callable thing, and about what \texttt{goal\_stack} and \texttt{result} actually look like on the wire --- because \emph{that} representation is what determines what the agent can see, and therefore what ``hallucination'' even means operationally (proposing a tactic that's invalid given what it could see, vs.\ one that's invalid period).
+
+\section{Candidate interfaces, surveyed}
+
+There is no single official ``Lean API for agents'' --- four real options exist, each with different tradeoffs:
+
+\begin{center}
+\begin{tabular}{@{}p{0.17\linewidth}p{0.24\linewidth}p{0.26\linewidth}p{0.27\linewidth}@{}}
+\hline
+\textbf{Interface} & \textbf{How it works} & \textbf{Strengths} & \textbf{Weaknesses} \\
+\hline
+\textbf{File + \texttt{lake env lean}} (from the Environment Setup chapter, \S8) & Write a whole \texttt{.lean} file, run \texttt{lake env lean file.lean}, parse stdout/stderr & Zero extra dependencies; exactly what CI and the setup doc already verify & No incremental state --- every attempt re-elaborates the whole file from scratch; painfully slow for a multi-step tactic loop; output is meant for humans, not machines \\
+\textbf{leanprover-community/repl} & Persistent process, JSON in/out over stdin/stdout, \texttt{proofState} integers track state incrementally & Purpose-built for exactly this; incremental (no re-elaboration per tactic); structured JSON; supports backtracking via reusing an earlier \texttt{proofState}/\texttt{env} id & ``Experimental'' tactic mode per its own README; one Lean process = one project's environment, so multi-project setups need multiple processes (see \S5) \\
+\textbf{Lean language server (LSP)}, via \texttt{lake serve} or wrapped as \texttt{lean-lsp-mcp} & The same server VS Code talks to; JSON-RPC 2.0; query goal state at a file position & Reuses infrastructure that's already battle-tested by every human Lean user; also exposes hover/definition/diagnostics beyond just tactic state & Designed around a \emph{live-edited file}, not a clean append-only tactic stream --- mapping ``propose one tactic'' onto ``edit this file at this position'' is more indirect than the REPL's native \texttt{\{"tactic": ..., "proofState": ...\}} shape \\
+\textbf{Pantograph} & Purpose-built ML-facing API/REPL, supports tree search (MCTS) natively & Most feature-rich for search-heavy agent designs; used in published LLM+Lean pipelines (Draft-Sketch-Prove) & Heavier dependency, smaller community than the REPL above; overkill if the agent is doing simple sequential tactic proposal rather than tree search \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Recommendation for this project: the \texttt{leanprover-community/repl}, wrapped in Python (directly, or via \texttt{LeanInteract}).} It matches the project's stated loop shape almost exactly (see the tactic-mode example below), is incremental (fast --- no re-elaborating the whole file per tactic), and is simple enough to reason about and log precisely, which matters more here than raw proof-search power. Revisit Pantograph if/when the harness grows a tree-search or backtracking-heavy agent design rather than the linear one-tactic-at-a-time loop described in the project brief.
+
+\section{The REPL protocol, concretely}
+
+Run via \texttt{lake exe repl} (or, pointed at a specific project's dependencies: \texttt{lake env /path/to/repl/.lake/build/bin/repl}). Communicates via \textbf{one JSON object per command, blank-line separated}, on stdin, with one JSON object back on stdout.
+
+\subsection{Starting a theorem (command mode to tactic mode)}
+
+You open tactic mode by sending a command containing a \texttt{sorry}; the response gives you a \texttt{proofState} id to start from:
+
+\begin{verbatim}
+// → stdin
+{"cmd": "theorem my_thm (x : Unit) : Nat := by sorry"}
+
+// ← stdout
+{"sorries":
+ [{"proofState": 0,
+   "pos": {"line": 1, "column": 29},
+   "goal": "x : Unit\n⊢ Nat",
+   "endPos": {"line": 1, "column": 34}}],
+ "messages":
+ [{"severity": "warning", "pos": {...}, "endPos": {...},
+   "data": "declaration uses 'sorry'"}],
+ "env": 0}
+\end{verbatim}
+
+\texttt{goal} here --- \texttt{"x : Unit\textbackslash{}n⊢ Nat"} --- is exactly the goal-state text this project's tutorial (the Lean 4 Tutorial chapter, \S1) teaches how to read. This is the string (or a structured equivalent) the agent should be shown at each step.
+
+\subsection{One tactic step}
+
+\begin{verbatim}
+// → stdin
+{"tactic": "apply Int.natAbs", "proofState": 0}
+
+// ← stdout
+{"proofState": 1, "goals": ["x : Unit\n⊢ Int"]}
+\end{verbatim}
+
+\begin{verbatim}
+// → stdin
+{"tactic": "exact -37", "proofState": 1}
+
+// ← stdout
+{"proofState": 2, "goals": []}
+\end{verbatim}
+
+\texttt{"goals": []} is the terminal success state --- the theorem is proved. This is the exact shape of \texttt{lean.apply()} from \S1: input is \texttt{\{tactic, proofState\}}, output is a new \texttt{proofState} plus the resulting \texttt{goals} list (empty on success).
+
+\subsection{The error case}
+
+An invalid tactic doesn't crash the process --- it returns a \texttt{messages} array with \texttt{"severity": "error"} and the proof state does \textbf{not} advance (you're still at the same \texttt{proofState}, free to try again):
+
+\begin{verbatim}
+// → stdin
+{"tactic": "exact 37", "proofState": 1}   // wrong: goal wants Int, not the literal misapplied here
+
+// ← stdout (schematic — exact message text depends on the specific mismatch)
+{"proofState": 1,
+ "messages": [{"severity": "error", "data": "type mismatch ..."}]}
+\end{verbatim}
+
+This is the critical mechanic for the hallucination analysis: \textbf{a rejected tactic does not lose progress} --- the agent is still at \texttt{proofState 1} and can retry. So ``how many iterations to converge'' (from the project's core question) is naturally just \emph{the count of tactic-submission round-trips}, separable into accepted-and-advanced vs.\ rejected-and-retried, per \texttt{proofState}.
+
+\subsection{Backtracking and persistence}
+
+Any earlier \texttt{env} or \texttt{proofState} integer can be reused as the starting point for a new command --- this \emph{is} backtracking, for free, without re-running anything. States can also be pickled to \texttt{.olean} files and restored later (\texttt{\{"pickleTo": "path", "proofState": n\}} / \texttt{\{"unpickleProofStateFrom": "path"\}}), which matters for \S6 (long-running logging) and for resuming an interrupted batch run.
+
+\section{Data model: what gets exchanged per step}
+
+Distilling the above into the fields the harness needs to track per iteration:
+
+\begin{center}
+\begin{tabular}{@{}p{0.24\linewidth}p{0.20\linewidth}p{0.50\linewidth}@{}}
+\hline
+\textbf{Field} & \textbf{Source} & \textbf{Notes} \\
+\hline
+\texttt{theorem\_id} & problem set (\texttt{docs/resources.md} topic/difficulty split, Goal 9) & which problem this attempt belongs to \\
+\texttt{attempt\_id} & harness & one per full proof attempt (a theorem may be attempted multiple times) \\
+\texttt{step\_index} & harness & position in this attempt's tactic sequence \\
+\texttt{proofState\_before} & REPL & the \texttt{proofState} id the tactic was proposed against \\
+\texttt{tactic\_string} & agent output & exactly what the agent proposed, verbatim --- no normalization before logging \\
+\texttt{proofState\_after} & REPL & new id if accepted; unchanged if rejected \\
+\texttt{goals\_before} / \texttt{goals\_after} & REPL \texttt{goal}/\texttt{goals} field & the actual text shown to / returned to the agent \\
+\texttt{outcome} & derived & \texttt{advanced} / \texttt{rejected} / \texttt{proved} (\texttt{goals == []}) / \texttt{no\_progress} (accepted syntactically but \texttt{goals\_after == goals\_before}) \\
+\texttt{error\_message} & REPL \texttt{messages} & full text, only present on \texttt{outcome == rejected} \\
+\texttt{wall\_time\_ms} & harness & time for this one REPL round-trip --- needed to separate ``slow tactic'' (e.g.\ a heavy \texttt{simp}/\texttt{aesop} call) from a hung process (\S7) \\
+\hline
+\end{tabular}
+\end{center}
+
+This table is the seed of the logging schema for Goal 8 (agent-thinking logging system) --- that doc should extend this with \emph{why} the agent chose the tactic (its reasoning/prompt context), not just what Lean did with it.
+
+\section{Environment switching --- three distinct senses}
+
+``Environment switching'' turns out to mean three different things at three different layers. Conflating them is an easy source of bugs once the harness is running many theorems across topics.
+
+\subsection{Toolchain/project switching}
+
+Each Lean \textbf{project} pins a \texttt{lean-toolchain} (exact compiler version) and a \texttt{lakefile} dependency set (which Mathlib commit, which other libraries). A single REPL process is started via \texttt{lake env <repl-binary>} \textbf{inside a specific project directory} and inherits \emph{that} project's toolchain and imports for its whole lifetime.
+
+For this project's problem set (set theory / topology / algebra, all drawn from Mathlib per the Lean 4 Tutorial chapter, \S10--12), \textbf{one Mathlib-linked project should suffice for all three topics} --- Mathlib is a single library spanning all of them, so topic segmentation is a \emph{content/selection} concern, not an environment concern. Toolchain switching only becomes real if the problem set later pulls in an external benchmark repo with its own pinned toolchain (e.g.\ cloning \texttt{miniF2F} or \texttt{PutnamBench} directly rather than re-stating their theorems inside our own project --- see \texttt{docs/resources.md} \S3). In that case, the harness needs one REPL process (and one working directory) per distinct toolchain, and a router that dispatches each theorem attempt to the correct process based on which benchmark it came from.
+
+\subsection{Session/state switching}
+
+Within a single REPL process, each theorem attempt starts from a fresh \texttt{env}/\texttt{proofState} (\S3). Retrying a theorem, or exploring two different tactic choices from the same point, is just reusing an earlier \texttt{proofState} id rather than starting over --- cheap, and exactly what makes backtracking-capable agent designs (or simply ``let me log both the accepted path and the road not taken'') tractable. The harness needs a clear policy here: does a new \emph{attempt} at the same theorem get a fresh \texttt{proofState 0}, or does it resume from wherever the last attempt got stuck? (Recommendation: fresh state per attempt, logged as a new \texttt{attempt\_id} --- resuming from a stuck point conflates ``the agent tried again'' with ``the agent kept going,'' which are different statistical events.)
+
+\subsection{Interface switching (human vs.\ machine)}
+
+This is the sense closest to the original phrasing of Goal 7 (the not-yet-written fluency guide) and to the Environment Setup chapter, \S8: VS Code + the Lean 4 extension is how \emph{you} build, debug, and sanity-check problems interactively (Infoview, hover, \texttt{exact?} suggestions rendered inline); the REPL (or LSP-via-MCP) is how the \emph{harness} talks to Lean headlessly, with no human in the loop. A theorem should generally be authored and manually verified once in VS Code (confirm it's actually provable, get a feel for its difficulty) before it's added to the problem set the harness runs against --- the REPL is not a good place to \emph{discover} whether a theorem statement itself is even correct, only to run an already-trusted theorem through repeated automated attempts.
+
+\section{Failure modes at the plumbing level}
+
+Distinct from the mathematical error taxonomy in the Lean 4 Tutorial chapter, \S13 (wrong term, wrong lemma name, missing instance, incomplete, no-progress, silent \texttt{sorry}), the harness also needs to handle failures in the \emph{plumbing itself} --- these are infrastructure bugs, not agent hallucinations, and conflating the two categories would corrupt the statistical analysis:
+
+\begin{itemize}
+  \item \textbf{Malformed JSON / protocol violation} --- the agent (or a bug in the harness) sends something the REPL can't parse. Should be caught and logged as a harness error, never attributed to the agent's mathematical reasoning.
+  \item \textbf{Process crash} --- the REPL process dies mid-session (e.g.\ Mathlib bug, memory exhaustion). Needs a restart-and-resume policy; whatever attempt was in flight should be marked \texttt{incomplete\_infra\_failure}, not \texttt{failed}.
+  \item \textbf{Non-terminating tactic} --- some tactics (\texttt{simp} with a bad lemma set, certain \texttt{aesop} configurations) can hang rather than error. The harness needs a \textbf{per-tactic timeout} with a hard kill, and that timeout event is itself a data point worth logging (which tactics the agent proposes that are prone to hanging is exactly the kind of pattern the hallucination analysis wants to catch).
+  \item \textbf{Resource exhaustion across a long run} --- REPL processes accumulate \texttt{Environment}/\texttt{proofState} objects in memory; a long batch run needs periodic process restarts (using the pickling mechanism from \S3 to preserve any state worth keeping) rather than one REPL process for the entire experiment.
+\end{itemize}
+
+\section{Open design decisions}
+
+Flagging these explicitly rather than silently deciding them --- they affect the statistics, so they're worth deciding deliberately once the logging doc (Goal 8) and problem set (Goal 9) exist alongside this one:
+
+\begin{enumerate}
+  \item \textbf{What counts as ``one iteration''?} A single \texttt{\{"tactic": ...\}} call, or a semicolon/\texttt{<;>}-chained combinator treated as one agent turn (per the Lean 4 Tutorial chapter, \S9's note on this same ambiguity)? Affects every downstream ``iterations to converge'' statistic.
+  \item \textbf{Retry budget policy.} Fixed max tactics per theorem? Max wall-clock time? Does the agent get to see the full history of its own rejected attempts, or only the current goal state?
+  \item \textbf{What exactly gets shown to the agent on error} --- the raw Lean error string (verbose, sometimes includes internal term representations) or a cleaned/truncated version? This is a real methodological choice: a cleaner error message could materially change the agent's hallucination rate, which means it needs to be fixed and reported, not tuned ad hoc per run.
+  \item \textbf{Attempt independence.} Are repeated attempts at the same theorem statistically independent draws (fresh \texttt{proofState 0}, no memory of prior attempts) or is the agent allowed to see its own history across attempts? Both are defensible, but they answer different questions, and the analysis needs to know which one was run.
+\end{enumerate}
+
+\section{What this doc feeds}
+
+\begin{itemize}
+  \item \textbf{Goal 8 (agent-thinking logging system)} extends \S4's per-step schema with the agent's actual reasoning trace (prompt, chain-of-thought if any, model/temperature metadata) --- this doc defines the \emph{Lean-side} half of each logged record; Goal 8 defines the \emph{agent-side} half.
+  \item \textbf{Goal 9 (problem set)} should be authored and hand-verified via the VS Code path (\S5c) before being fed to the harness described here.
+  \item \textbf{Goal 7 (environment-switching fluency guide)} is the practitioner-facing companion to \S5 --- this doc explains the \emph{architecture} of the three switching senses; Goal 7 should be the concrete day-to-day checklist (``here's how you personally move between VS Code, a terminal REPL session, and reading harness logs without losing track of which project/state you're in'').
+\end{itemize}
+
+\section{References}
+
+\begin{itemize}
+  \item \href{https://github.com/leanprover-community/repl}{leanprover-community/repl} --- protocol and JSON examples in \S3 quoted directly from this README
+  \item \href{https://arxiv.org/abs/2410.16429}{Pantograph: A Machine-to-Machine Interaction Interface for Advanced Theorem Proving, High Level Reasoning, and Data Extraction in Lean 4} --- Aniva, Sun, Miranda, Barrett, Koyejo (arXiv:2410.16429)
+  \item \href{https://github.com/oOo0oOo/lean-lsp-mcp}{lean-lsp-mcp}
+  \item \href{https://github.com/augustepoiroux/leaninteract}{LeanInteract} --- Python wrapper, likely implementation choice once past design stage
+  \item The Lean 4 Tutorial chapter, \S13 (mathematical error taxonomy, distinct from \S6's infrastructure failures here)
+  \item Full annotated bibliography, including the agent-Lean systems this design was compared against (LeanDojo/ReProver, LeanAgent, Prover Agent, APOLLO): \texttt{docs/resources.md}
+\end{itemize}
