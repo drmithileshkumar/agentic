@@ -1,0 +1,34 @@
+\chapter{Mobile-Capable LLMs for Mathematical Reasoning}
+\label{ch:mobile_llms}
+
+This chapter surveys which language models are actually practical to run on a phone for mathematical reasoning tasks, then argues for a specific model to use in our hallucination study.
+
+\section{The landscape (2026)}
+
+Two families of models are viable on-device today, and they trade off differently.
+
+\textbf{General-purpose edge models.} Phi-4-mini (3.8B) and Gemma~3~4B are the two most-cited on-device options. Phi-4-mini leads on reasoning quality --- 88.6\% on GSM8K --- and runs at roughly 13--18 tokens/sec on an iPhone~17~Pro, 10--15 tok/s on an iPhone~16~Pro, once quantized.\footnote{\url{https://www.promptquorum.com/power-local-llm/mobile-llm-models-phi4-gemma-smollm}} Gemma~3~4B is the faster of the two (around 27 tok/s on iPhone~16~Pro via Google's AI Edge SDK) and is generally rated the best all-around edge model, though its math-specific numbers are less standout than Phi-4-mini's.\footnote{\url{https://awesomeagents.ai/leaderboards/edge-mobile-llm-leaderboard/}} Both are general chat/instruction models that happen to be good at math, not models built for math.
+
+\textbf{Math-specialized small models.} The Qwen2.5-Math family (0.5B/1.5B/7B/72B) is trained specifically for mathematical reasoning via a self-improvement pipeline, and is released with official GGUF quantizations for llama.cpp-style local inference.\footnote{\url{https://github.com/QwenLM/Qwen2.5-Math}} GLM-Z1-9B is another math-strong small model, but at 9B it sits at the edge of what's comfortable on a phone rather than squarely inside it.\footnote{\url{https://www.siliconflow.com/articles/en/best-open-source-LLM-for-math}}
+
+\textbf{Quantization.} Q4\_K\_M (4 bits/weight) is the practical standard for mobile deployment in 2026, keeping roughly 95\% of full-precision quality at a quarter of the file size.\footnote{\url{https://www.siliconflow.com/articles/en/best-lightweight-LLMs-for-mobile-devices}} Across the board, 1--3B parameters is the comfortable range for typical phones; 7--9B only works on current flagship hardware.
+
+\section{Model choice: Qwen2.5-Math-1.5B-Instruct}
+
+We pick \textbf{Qwen2.5-Math-1.5B-Instruct} for this project.
+
+\textbf{What it is.} A 1.5B-parameter member of the Qwen2.5-Math series, instruction-tuned and trained via an iterative self-improvement process described in the Qwen2.5-Math technical report.\footnote{\url{https://arxiv.org/pdf/2409.12122}} It ships with official GGUF weights, so it runs directly under llama.cpp / MLC-LLM without any conversion step.
+
+\textbf{Why.}
+\begin{itemize}
+  \item \emph{It punches far above its parameter count on math specifically.} With tool-integrated reasoning it scores 79.7 on the MATH benchmark\footnote{\url{https://www.emergentmind.com/topics/qwen2-5-math-1-5b}} --- competitive with, or ahead of, general models 2--3$\times$ its size on math tasks. That's a stronger reasoning-per-parameter trade than either Phi-4-mini or Gemma~3~4B offers.
+  \item \emph{It is genuinely small.} At 1.5B and Q4 quantization, the memory footprint is roughly 1\,GB, which runs on mid-range Android hardware, not just this year's flagship iPhone. That matters if we want results that generalize past top-tier devices.
+  \item \emph{It's a math specialist, not a generalist doing math.} Since this project studies hallucinations \emph{in mathematical tasks}, a model trained specifically on math gives a cleaner read on math-specific failure modes, rather than mixing in general-instruction-following weaknesses.
+  \item \emph{Fully open and offline.} Open weights plus official GGUF builds mean we can run everything locally with no API dependency --- important for reproducibility, since we're not at the mercy of an upstream model being silently updated mid-study.
+  \item \emph{The self-improvement training story is itself interesting.} The model was partly trained on math data it generated and filtered itself. That's a plausible source of distinctive hallucination signatures worth comparing against a purely human-data-trained baseline.
+\end{itemize}
+
+\textbf{Caveat.} The 79.7 MATH score relies on tool-integrated reasoning (code execution), not pure chain-of-thought; the CoT-only score is lower. Since our study cares about the model's own reasoning failures, we should benchmark both modes ourselves rather than citing the TIR number as if it reflects unaided reasoning.
+
+% TODO: once we've actually run this on-device, replace the caveat above with
+% our own measured numbers instead of the published ones.
