@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['$','$'], ['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lean 4 Tutorial</title>
+<link rel="next" href="ch-tactic_cheat_sheet.html" title="Lean 4 Tactic Cheat Sheet" />
+<link rel="prev" href="ch-environment.html" title="Lean 4 Environment Setup" />
+<link rel="up" href="index.html" title="Agentic Hallucination in logical context" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/showmore.css" />
+<link rel="stylesheet" href="styles/blueprint.css" />
+<link rel="stylesheet" href="styles/extra_styles.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Agentic Hallucination in logical context</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-environment.html#a0000000002"><span class="toc_ref">1</span> <span class="toc_entry">What you’re installing</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000003"><span class="toc_ref">2</span> <span class="toc_entry">Prerequisites</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000004"><span class="toc_ref">3</span> <span class="toc_entry">Install elan</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000005"><span class="toc_ref">4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000006"><span class="toc_ref">5</span> <span class="toc_entry">Create a project</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-environment.html#a0000000007"><span class="toc_ref">5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000008"><span class="toc_ref">6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000009"><span class="toc_ref">7</span> <span class="toc_entry">Leanblueprint set up</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-environment.html#a0000000010"><span class="toc_ref">7.1</span> <span class="toc_entry">Installing it</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000011"><span class="toc_ref">7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000012"><span class="toc_ref">7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000013"><span class="toc_ref">7.4</span> <span class="toc_entry">Build commands</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000014"><span class="toc_ref">8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000015"><span class="toc_ref">9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000016"><span class="toc_ref">10</span> <span class="toc_entry">Keeping things updated</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000017"><span class="toc_ref">11</span> <span class="toc_entry">Troubleshooting</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000018"><span class="toc_ref">12</span> <span class="toc_entry">Next up</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000019"><span class="toc_ref">13</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active current">
+  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000020"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000021"><span class="toc_ref">1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000022"><span class="toc_ref">2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000023"><span class="toc_ref">2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000024"><span class="toc_ref">2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000025"><span class="toc_ref">2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000026"><span class="toc_ref">2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000027"><span class="toc_ref">2.5</span> <span class="toc_entry">Quick reference</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000028"><span class="toc_ref">3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000029"><span class="toc_ref">3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000030"><span class="toc_ref">3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000031"><span class="toc_ref">3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000032"><span class="toc_ref">4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000033"><span class="toc_ref">4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000034"><span class="toc_ref">4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000035"><span class="toc_ref">4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000036"><span class="toc_ref">4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000037"><span class="toc_ref">5</span> <span class="toc_entry">Case analysis and induction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000038"><span class="toc_ref">5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000039"><span class="toc_ref">5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000040"><span class="toc_ref">5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000041"><span class="toc_ref">6</span> <span class="toc_entry">Automation and decision procedures</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000042"><span class="toc_ref">6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000043"><span class="toc_ref">6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000044"><span class="toc_ref">6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000045"><span class="toc_ref">6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000046"><span class="toc_ref">6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000047"><span class="toc_ref">6.6</span> <span class="toc_entry">Choosing among them</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000048"><span class="toc_ref">7</span> <span class="toc_entry">Structuring proofs</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000049"><span class="toc_ref">7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000050"><span class="toc_ref">7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000051"><span class="toc_ref">7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000052"><span class="toc_ref">7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000053"><span class="toc_ref">8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000054"><span class="toc_ref">8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000055"><span class="toc_ref">8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000056"><span class="toc_ref">8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000057"><span class="toc_ref">9</span> <span class="toc_entry">Tactic combinators</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000058"><span class="toc_ref">10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000059"><span class="toc_ref">11</span> <span class="toc_entry">Worked examples — Topology</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000060"><span class="toc_ref">12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000061"><span class="toc_ref">13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000062"><span class="toc_ref">14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000063"><span class="toc_ref">15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000064"><span class="toc_ref">15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000065"><span class="toc_ref">15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000066"><span class="toc_ref">15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000067"><span class="toc_ref">15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000068"><span class="toc_ref">15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000069"><span class="toc_ref">15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000070"><span class="toc_ref">16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000071"><span class="toc_ref">17</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000072"><span class="toc_ref">1</span> <span class="toc_entry">Reading a goal state</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000073"><span class="toc_ref">2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000074"><span class="toc_ref">3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000075"><span class="toc_ref">4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000076"><span class="toc_ref">5</span> <span class="toc_entry">Automation / decision procedures</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000077"><span class="toc_ref">6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000078"><span class="toc_ref">7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000079"><span class="toc_ref">8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000080"><span class="toc_ref">9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000081"><span class="toc_ref">10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000082"><span class="toc_ref">11</span> <span class="toc_entry">Common gotchas</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000083"><span class="toc_ref">1</span> <span class="toc_entry">Why a restricted set at all</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000084"><span class="toc_ref">2</span> <span class="toc_entry">The floor set</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000085"><span class="toc_ref">3</span> <span class="toc_entry">Explicitly excluded</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000086"><span class="toc_ref">4</span> <span class="toc_entry">Undecided</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000087"><span class="toc_ref">5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000088"><span class="toc_ref">6</span> <span class="toc_entry">Empirical tracking</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent and Lean 4 Pipeline</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-pipeline.html#a0000000089"><span class="toc_ref">1</span> <span class="toc_entry">The loop, restated precisely</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000090"><span class="toc_ref">2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000091"><span class="toc_ref">3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-pipeline.html#a0000000092"><span class="toc_ref">3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000093"><span class="toc_ref">3.2</span> <span class="toc_entry">One tactic step</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000094"><span class="toc_ref">3.3</span> <span class="toc_entry">The error case</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000095"><span class="toc_ref">3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000096"><span class="toc_ref">4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000097"><span class="toc_ref">5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-pipeline.html#a0000000098"><span class="toc_ref">5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000099"><span class="toc_ref">5.2</span> <span class="toc_entry">Session/state switching</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000100"><span class="toc_ref">5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000101"><span class="toc_ref">6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000102"><span class="toc_ref">7</span> <span class="toc_entry">Open design decisions</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000103"><span class="toc_ref">8</span> <span class="toc_entry">What this doc feeds</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000104"><span class="toc_ref">9</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-mobile_llms.html#a0000000105"><span class="toc_ref">1</span> <span class="toc_entry">The landscape (2026)</span></a>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html#a0000000106"><span class="toc_ref">2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-llm_in_use.html#a0000000107"><span class="toc_ref">1</span> <span class="toc_entry">What the harness calls</span></a>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html#a0000000108"><span class="toc_ref">2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html#a0000000109"><span class="toc_ref">3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li ><a href="dep_graph_document.html">Dependency graph</a></li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="ch:tutorial">2 Lean 4 Tutorial</h1>
+
+<p><em>Agentic Hallucinations — Independent Study.</em> A from-scratch tutorial in tactic-mode proof writing, building toward the topic-segmented problem set (set theory, topology, algebra) this project will run the agent against. </p>
+<p>Primary sources: <a href ="https://lean4.dev/tactics">lean4.dev/tactics</a> (course + per-tactic pages), <a href ="https://leanprover.github.io/theorem_proving_in_lean4/">Theorem Proving in Lean 4</a>, <a href ="https://leanprover-community.github.io/mathematics_in_lean/">Mathematics in Lean</a> (Avigad &amp; Massot), <a href ="https://leanprover-community.github.io/mathlib4_docs/tactics.html">Mathlib4 tactic docs</a>. Full annotated bibliography: <span class="ttfamily">docs/resources.md</span>. Environment setup assumed complete — see the Lean 4 Environment Setup chapter. </p>
+<h1 id="a0000000020">Table of contents</h1>
+<ol class="enumerate">
+  <li><p>How Lean thinks: goals, context, term vs. tactic mode </p>
+</li>
+  <li><p>Core tactics I — closing goals (<span class="ttfamily">exact</span>, <span class="ttfamily">apply</span>, <span class="ttfamily">assumption</span>, <span class="ttfamily">rfl</span>) </p>
+</li>
+  <li><p>Core tactics II — rewriting (<span class="ttfamily">rw</span>, <span class="ttfamily">simp</span> and its variants) </p>
+</li>
+  <li><p>Core tactics III — introducing and structuring (<span class="ttfamily">intro</span>, <span class="ttfamily">have</span>, <span class="ttfamily">let</span>, <span class="ttfamily">suffices</span>) </p>
+</li>
+  <li><p>Case analysis and induction (<span class="ttfamily">cases</span>, <span class="ttfamily">induction</span>, <span class="ttfamily">rcases</span>, <span class="ttfamily">obtain</span>) </p>
+</li>
+  <li><p>Automation and decision procedures (<span class="ttfamily">omega</span>, <span class="ttfamily">ring</span>, <span class="ttfamily">linarith</span>, <span class="ttfamily">nlinarith</span>, <span class="ttfamily">decide</span>, <span class="ttfamily">aesop</span>) </p>
+</li>
+  <li><p>Structuring proofs (<span class="ttfamily">calc</span>, <span class="ttfamily">by_contra</span>, <span class="ttfamily">by_cases</span>, <span class="ttfamily">contrapose</span>, <span class="ttfamily">push_neg</span>) </p>
+</li>
+  <li><p>Equality machinery (<span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span>) </p>
+</li>
+  <li><p>Tactic combinators (<span class="ttfamily">&lt;;&gt;</span>, <span class="ttfamily">·</span>, <span class="ttfamily">first</span>, <span class="ttfamily">repeat</span>, <span class="ttfamily">all_goals</span>) </p>
+</li>
+  <li><p>Worked examples — Set theory </p>
+</li>
+  <li><p>Worked examples — Topology </p>
+</li>
+  <li><p>Worked examples — Algebra </p>
+</li>
+  <li><p>Reading errors and diagnosing failed proofs </p>
+</li>
+  <li><p>From tactics to the agent pipeline </p>
+</li>
+  <li><p>Mathlib conventions: naming, dot notation, anonymous constructors </p>
+</li>
+  <li><p>Exercises (with worked solutions) </p>
+</li>
+</ol>
+<h1 id="a0000000021">1 How Lean thinks: goals, context, term vs. tactic mode</h1>
+<p>Every Lean proof is, underneath, a <b class="bfseries">term</b> — a value whose type is the proposition being proved. <span class="ttfamily">theorem add_comm’ (a b : Nat) : a + b = b + a := Nat.add_comm a b</span> is a complete proof written directly as a term: <span class="ttfamily">Nat.add_comm a b</span> is a value, and its type happens to be <span class="ttfamily">a + b = b + a</span>. </p>
+<p>Writing proof terms directly gets unwieldy fast, so almost all real proofs use <b class="bfseries">tactic mode</b>, entered with <span class="ttfamily">by</span>: </p>
+<pre class="verbatim">
+theorem add_comm' (a b : Nat) : a + b = b + a := by
+  exact Nat.add_comm a b
+</pre>
+<p>Inside <span class="ttfamily">by</span>, you’re not writing a term — you’re issuing <em>tactics</em>, each of which transforms a <b class="bfseries">goal state</b> into a new (possibly empty) goal state. A goal state looks like: </p>
+<pre class="verbatim">
+a b : Nat
+⊢ a + b = b + a
+</pre>
+<p>Above <span class="ttfamily">⊢</span> is the <b class="bfseries">local context</b>: every variable and hypothesis currently in scope. After <span class="ttfamily">⊢</span> is the <b class="bfseries">goal</b>: the proposition still to be proved. A tactic either closes the goal (context becomes empty — done), transforms it into a different goal, or splits it into multiple goals (e.g. one per case of an <span class="ttfamily">induction</span>). </p>
+<p>This is exactly the loop this project automates: an LLM agent looks at a goal state, proposes one tactic, and Lean reports back either a new goal state or an error. <b class="bfseries">Everything in this tutorial is really a catalog of the “moves” the agent has available at each step</b>, which is why the taxonomy of <em>which</em> move it picks — and how often it picks a wrong one — is the statistical object of interest for the hallucination analysis (see <span class="ttfamily">docs/resources.md</span> §5). </p>
+<p><b class="bfseries">A style note before we start:</b> Lean tactic mode is whitespace-sensitive in a specific way — tactics separated by newlines run in sequence on the current (first) goal; <span class="ttfamily">·</span> (a centered dot, typed <span class="ttfamily">\.</span>) explicitly focuses a single goal so that indented tactics under it apply only there. You’ll see this constantly once goals start splitting (§5 onward). </p>
+<h1 id="a0000000022">2 Core tactics I — closing goals</h1>
+<h2 id="a0000000023">2.1 <span class="ttfamily">rfl</span> — reflexivity</h2>
+<p>Closes a goal <span class="ttfamily">a = a</span> up to Lean’s notion of <em>definitional</em> equality — not just syntactic identity, but anything that reduces to the same normal form by unfolding definitions and computing. </p>
+<pre class="verbatim">
+example : 2 + 2 = 4 := by rfl
+example (n : Nat) : n = n := by rfl
+</pre>
+<p><span class="ttfamily">rfl</span> fails as soon as the two sides aren’t definitionally equal, even if they’re <em>provably</em> equal by some other route — that’s when you need <span class="ttfamily">rw</span>, <span class="ttfamily">simp</span>, <span class="ttfamily">ring</span>, or <span class="ttfamily">omega</span> instead. </p>
+<h2 id="a0000000024">2.2 <span class="ttfamily">exact</span> — direct proof</h2>
+<p><span class="ttfamily">exact e</span> closes the goal by supplying a term <span class="ttfamily">e</span> whose type matches exactly. </p>
+<pre class="verbatim">
+example (h : 2 + 2 = 4) : 2 + 2 = 4 := by exact h
+example (n : Nat) : n + 0 = n := by exact Nat.add_zero n
+</pre>
+<p>If you don’t know the exact lemma name, <span class="ttfamily">exact?</span> searches the library and suggests one: </p>
+<pre class="verbatim">
+example (n : Nat) : n + 0 = n := by exact?
+-- Suggests: exact Nat.add_zero n
+</pre>
+<h2 id="a0000000025">2.3 <span class="ttfamily">apply</span> — working backwards</h2>
+<p><span class="ttfamily">apply e</span> unifies the <em>conclusion</em> of <span class="ttfamily">e</span>’s type with the goal, and turns any remaining <em>premises</em> of <span class="ttfamily">e</span> into new goals. Where <span class="ttfamily">exact</span> needs everything handed to it, <span class="ttfamily">apply</span> lets Lean fill in what it can infer and leaves the rest for you. </p>
+<pre class="verbatim">
+example (a b c : Nat) (hab : a = b) (hbc : b = c) : a = c := by
+  apply Eq.trans
+  · exact hab
+  · exact hbc
+</pre>
+<p><span class="ttfamily">Eq.trans : a = b → b = c → a = c</span> doesn’t fully match the goal <span class="ttfamily">a = c</span> on its own — <span class="ttfamily">apply</span> inserts a metavariable for the missing middle term and creates two new goals for the two premises. This is exactly why <span class="ttfamily">apply</span> sometimes produces goals that look stranger than the original: it’s exposing structure the lemma needed that wasn’t visible in your one-line goal. </p>
+<p><span class="ttfamily">apply?</span> is the library-search analog for <span class="ttfamily">apply</span>. </p>
+<h2 id="a0000000026">2.4 <span class="ttfamily">assumption</span></h2>
+<p>Scans the local context for a hypothesis whose type matches the goal exactly, closing it if found. </p>
+<pre class="verbatim">
+example (P Q : Prop) (hp : P) (hq : Q) : P := by assumption  -- finds hp
+</pre>
+<h2 id="a0000000027">2.5 Quick reference</h2>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Tactic</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Use when</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">exact e</span> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> You have exactly what’s needed </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">apply lemma</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Lemma’s <em>conclusion</em> matches; premises become new goals </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">assumption</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Goal matches a hypothesis, don’t want to name it </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">rfl</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Both sides compute to the same value </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">exact?</span> / <span class="ttfamily">apply?</span> </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> You don’t know the lemma name </p>
+
+    </td>
+  </tr>
+</table> </div>
+<h1 id="a0000000028">3 Core tactics II — rewriting</h1>
+<h2 id="a0000000029">3.1 <span class="ttfamily">rw</span> — precise, one substitution at a time</h2>
+<p>Given <span class="ttfamily">h : a = b</span>, <span class="ttfamily">rw [h]</span> finds <span class="ttfamily">a</span> in the goal and replaces every occurrence with <span class="ttfamily">b</span>. </p>
+<pre class="verbatim">
+example (a b : Nat) (h : a = b) : a + 1 = b + 1 := by
+  rw [h]   -- goal becomes b + 1 = b + 1
+</pre>
+<p>Note this closes automatically — <span class="ttfamily">rw</span> calls <span class="ttfamily">rfl</span> after rewriting if that finishes the goal. Direction matters: <span class="ttfamily">rw [h]</span> goes left-to-right (per <span class="ttfamily">h</span>’s statement); <span class="ttfamily">rw [← h]</span> (type <span class="ttfamily">\l</span> or <span class="ttfamily">\leftarrow</span> for <span class="ttfamily">←</span>) goes right-to-left. </p>
+<pre class="verbatim">
+example (a b : Nat) (h : a + 1 = b) : b = a + 1 := by
+  rw [← h]   -- replaces b with (a + 1); goal becomes a + 1 = a + 1
+</pre>
+<p>Chain multiple rewrites in one call — they apply left to right in sequence: </p>
+<pre class="verbatim">
+example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
+  rw [h1, h2]
+</pre>
+<p>Rewrite inside a hypothesis instead of the goal with <span class="ttfamily">at</span>: </p>
+<pre class="verbatim">
+example (a b : Nat) (h1 : a = b) (h2 : a + 1 = 5) : b + 1 = 5 := by
+  rw [h1] at h2
+  exact h2
+</pre>
+<p><b class="bfseries">Common trap:</b> <span class="ttfamily">rw</span> replaces <em>all</em> syntactic occurrences of the LHS pattern, which is occasionally more than you want (<span class="ttfamily">rw [h]</span> on <span class="ttfamily">a + a = 10</span> with <span class="ttfamily">h : a = b</span> gives <span class="ttfamily">b + b = 10</span>, not just one side). Use <span class="ttfamily">nth_rewrite n [h]</span> to target a specific occurrence. </p>
+<h2 id="a0000000030">3.2 <span class="ttfamily">simp</span> — automated simplification</h2>
+<p>Where <span class="ttfamily">rw</span> applies rules you name, <span class="ttfamily">simp</span> repeatedly applies a large database of lemmas tagged <span class="ttfamily">@[simp]</span> until nothing more simplifies, and frequently closes the goal outright. </p>
+<pre class="verbatim">
+example (n : Nat) : n + 0 + 0 + 0 = n := by simp
+example (xs : List Nat) : xs ++ [] = xs := by simp
+</pre>
+<p>Feed it extra lemmas or local hypotheses in brackets: </p>
+<pre class="verbatim">
+example (a b : Nat) (h : a = 5) : a + b = 5 + b := by simp [h]
+</pre>
+<p><b class="bfseries"><span class="ttfamily">simp</span> is not omniscient.</b> It’s a simplifier, not a general prover — it won’t discover a proof strategy, only apply known-good rewrite rules to a fixed point. <span class="ttfamily">a * (b + c) = a*b + a*c</span> is <em>not</em> closed by bare <span class="ttfamily">simp</span> (distributivity isn’t tagged <span class="ttfamily">@[simp]</span>); that’s a job for <span class="ttfamily">ring</span>. </p>
+<p>Four variants worth knowing cold: </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Variant</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Behavior</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">simp only [l1, l2, ...]</span> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Uses <b class="bfseries">only</b> the listed lemmas — reproducible, doesn’t silently change behavior if the global simp set grows. Preferred in anything meant to be stable. </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">simp_all</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Simplifies the goal <b class="bfseries">and every hypothesis</b>, using each hypothesis as an extra rewrite rule. Powerful for messy contexts, but harder to predict. </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">simp?</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Runs <span class="ttfamily">simp</span>, then prints the minimal <span class="ttfamily">simp only [...]</span> that achieves the same result — the standard way to convert an exploratory <span class="ttfamily">simp</span> into a reproducible one. </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">dsimp</span> </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <em>Definitional</em> simplification only — unfolds/computes, never applies a proved rewrite lemma. Never fails unexpectedly, but also never does as much. </p>
+
+    </td>
+  </tr>
+</table> </div>
+<pre class="verbatim">
+example (n : Nat) : n + 0 = n := by
+  simp?
+  -- Try this: simp only [Nat.add_zero]
+</pre>
+<p><span class="ttfamily">simp at h</span> / <span class="ttfamily">simp at *</span> target hypotheses or everything at once, exactly like <span class="ttfamily">rw</span>’s <span class="ttfamily">at</span>. </p>
+<h2 id="a0000000031">3.3 <span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></h2>
+<p><span class="ttfamily">norm_num</span> proves/simplifies goals about concrete numerals (<span class="ttfamily">21 - 6 = 15</span>). <span class="ttfamily">norm_cast</span>/<span class="ttfamily">push_cast</span> normalize numeric-type coercions (moving between ℕ, ℤ, ℚ, ℝ) — essential once problems mix integer and real arithmetic, common in the topology/analysis parts of the problem set. </p>
+<h1 id="a0000000032">4 Core tactics III — introducing and structuring</h1>
+<h2 id="a0000000033">4.1 <span class="ttfamily">intro</span> — assuming hypotheses</h2>
+<p>When the goal is an implication <span class="ttfamily">P → Q</span> or a universal <span class="ttfamily">∀ x, P x</span>, <span class="ttfamily">intro</span> moves the antecedent/quantified variable into the context. </p>
+<pre class="verbatim">
+example (P Q : Prop) : P → Q → P := by
+  intro hp hq
+  exact hp
+
+example : ∀ n : Nat, n = n := by
+  intro n
+  rfl
+</pre>
+<p><span class="ttfamily">intro</span> can destructure as it introduces: </p>
+<pre class="verbatim">
+example (P Q : Prop) : P ∧ Q → Q ∧ P := by
+  intro ⟨hp, hq⟩
+  exact ⟨hq, hp⟩
+</pre>
+<p>Prefer explicit names (<span class="ttfamily">intro n hn</span>) over the bare <span class="ttfamily">intros</span>, which auto-generates opaque names like <span class="ttfamily">a✝</span> — fine for quick exploration, bad for anything you or an agent needs to refer back to later in the proof. </p>
+<h2 id="a0000000034">4.2 <span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</h2>
+<p><span class="ttfamily">have h : T := proof</span> states and proves an intermediate fact, adding <span class="ttfamily">h : T</span> to the context. The <em>value</em> is opaque afterward — only its type matters to the rest of the proof. </p>
+<pre class="verbatim">
+example (a b : Nat) (ha : a &gt; 5) (hb : b &gt; 3) : a + b &gt; 8 := by
+  have hab : a + b &gt; 5 + 3 := by omega
+  omega
+</pre>
+<p><span class="ttfamily">let x := val</span> introduces a <b class="bfseries">transparent</b> local definition — its value, not just its type, is visible to later tactics like <span class="ttfamily">rfl</span>. </p>
+<pre class="verbatim">
+example : 10 = 5 + 5 := by
+  let x := 5
+  rfl   -- works because x unfolds to 5
+</pre>
+<p>Use <span class="ttfamily">have</span> for propositions/proofs you’ll reference by type; use <span class="ttfamily">let</span> for computed values you want to reuse and potentially unfold later. </p>
+<h2 id="a0000000035">4.3 <span class="ttfamily">suffices</span> — working backwards from a stronger claim</h2>
+<p><span class="ttfamily">suffices h : T by tac</span> replaces the goal with <span class="ttfamily">T</span>, where <span class="ttfamily">tac</span> discharges the <em>original</em> goal assuming <span class="ttfamily">h : T</span>. </p>
+<pre class="verbatim">
+example (n : Nat) : n + n ≥ n := by
+  suffices h : n ≤ n + n by omega
+  omega
+</pre>
+<p>Read it as: “it suffices to show <span class="ttfamily">T</span>; here’s how <span class="ttfamily">T</span> implies what I actually wanted (<span class="ttfamily">by tac</span>); now let me prove <span class="ttfamily">T</span>.” </p>
+<h2 id="a0000000036">4.4 <span class="ttfamily">show</span> — restating the goal</h2>
+<p><span class="ttfamily">show T</span> changes the displayed goal to a definitionally-equal <span class="ttfamily">T</span> — purely for clarity/debugging, doesn’t change what’s actually being proved. </p>
+<h1 id="a0000000037">5 Case analysis and induction</h1>
+<h2 id="a0000000038">5.1 <span class="ttfamily">cases</span> — splitting on constructors</h2>
+<p><span class="ttfamily">cases x</span> produces one goal per constructor of <span class="ttfamily">x</span>’s type, replacing <span class="ttfamily">x</span> with that constructor’s shape in each branch. </p>
+<pre class="verbatim">
+example (b : Bool) : b = true ∨ b = false := by
+  cases b with
+  | true =&gt; left; rfl
+  | false =&gt; right; rfl
+
+example (n : Nat) : n = 0 ∨ n &gt; 0 := by
+  cases n with
+  | zero =&gt; left; rfl
+  | succ m =&gt; right; omega
+</pre>
+<p><span class="ttfamily">cases</span> also works on propositions built from inductive types — <span class="ttfamily">Or</span> has two constructors (<span class="ttfamily">inl</span>/<span class="ttfamily">inr</span>), <span class="ttfamily">And</span> has one with two fields: </p>
+<pre class="verbatim">
+example (P Q R : Prop) (h : P ∨ Q) (hpr : P → R) (hqr : Q → R) : R := by
+  cases h with
+  | inl hp =&gt; exact hpr hp
+  | inr hq =&gt; exact hqr hq
+</pre>
+<h2 id="a0000000039">5.2 <span class="ttfamily">induction</span> — proof by mathematical induction</h2>
+<p><span class="ttfamily">induction x with</span> produces a base case and, for each recursive constructor, a step case that includes an <b class="bfseries">induction hypothesis</b> <span class="ttfamily">ih</span>. </p>
+<pre class="verbatim">
+theorem add_zero' (n : Nat) : n + 0 = n := by
+  induction n with
+  | zero =&gt; rfl
+  | succ m ih =&gt;
+    -- ih : m + 0 = m
+    -- goal : (m + 1) + 0 = m + 1
+    simp [ih]
+</pre>
+<p>The induction hypothesis is the entire point — it’s the license to <em>assume</em> the property holds for the smaller case while proving it for the larger one. Forgetting to use <span class="ttfamily">ih</span> (proving the step case “from scratch”) is a common failure mode both for beginners and, notably, for agents that don’t track what’s actually available in context. </p>
+<h2 id="a0000000040">5.3 <span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</h2>
+<p><span class="ttfamily">cases</span> gets unwieldy once structures nest (an ∃ inside an ∧ inside an ∃…). <span class="ttfamily">rcases</span>/<span class="ttfamily">obtain</span> (both require <span class="ttfamily">import Mathlib.Tactic.Cases</span> / are available under <span class="ttfamily">import Mathlib.Tactic</span>) destructure all of that in one pattern. </p>
+<pre class="verbatim">
+example (h : ∃ n m : Nat, n &lt; m ∧ m &lt; 10) : True := by
+  rcases h with ⟨n, m, hnm, hm10⟩
+  trivial
+
+example (h : ∃ n : Nat, n &gt; 0 ∧ n &lt; 10) : True := by
+  obtain ⟨n, hn_pos, hn_lt⟩ := h
+  trivial
+</pre>
+<p>Pattern language: <span class="ttfamily">⟨p1, p2⟩</span> destructs pairs/∃/∧; <span class="ttfamily">p1 | p2</span> splits ∨; <span class="ttfamily">rfl</span> substitutes an equality the instant it’s introduced (extremely handy — see below); <span class="ttfamily">_</span> discards a part you don’t need. </p>
+<pre class="verbatim">
+example (h : ∃ n : Nat, n = 5) : 5 = 5 := by
+  rcases h with ⟨_, rfl⟩   -- n is substituted by 5 everywhere
+  rfl
+</pre>
+<p><span class="ttfamily">rintro</span> fuses <span class="ttfamily">intro</span> with an <span class="ttfamily">rcases</span> pattern: <span class="ttfamily">rintro ⟨a, b⟩ ⟨c, d⟩</span> introduces and destructures two arguments in one line. </p>
+<p><b class="bfseries"><span class="ttfamily">cases</span>/<span class="ttfamily">induction</span> vs. <span class="ttfamily">rcases</span>/<span class="ttfamily">obtain</span>:</b> the former are core-Lean and exhaustive (they force you to name every constructor case); the latter are Mathlib conveniences layered on top, better for existentials and nested nonsense, worse for anything where you actually need the inductive structure (like a genuine induction). </p>
+<h1 id="a0000000041">6 Automation and decision procedures</h1>
+<p>These tactics are <em>decision procedures</em> or <em>heuristic search</em> over specific fragments of mathematics — when your goal falls in their fragment, they either succeed or definitively fail (no partial credit, no “almost”). </p>
+<h2 id="a0000000042">6.1 <span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</h2>
+<p>Handles <span class="ttfamily">+</span>, <span class="ttfamily">-</span>, comparisons, and multiplication/division/modulo <b class="bfseries">by constants</b> (not variable × variable). </p>
+<pre class="verbatim">
+example (n : Nat) : n ≤ n + 1 := by omega
+example (a b c : Nat) (h1 : a ≤ b) (h2 : b &lt; c) : a &lt; c := by omega
+example (n : Nat) : n / 2 ≤ n := by omega
+example (n : Nat) (h : n % 2 = 0) : 2 * (n / 2) = n := by omega
+</pre>
+<p><span class="ttfamily">omega</span> automatically pulls in every relevant hypothesis in context — you never tell it which ones to use. It correctly understands <span class="ttfamily">Nat</span>’s truncated subtraction (<span class="ttfamily">a - b = 0</span> when <span class="ttfamily">a &lt; b</span>) and <span class="ttfamily">Int</span>’s standard subtraction, which is a frequent source of confusion when porting a proof between the two. </p>
+<p>It fails immediately on anything nonlinear: </p>
+<pre class="verbatim">
+-- example (x y : Nat) : x * y = y * x := by omega   -- fails: nonlinear
+example (x y : Nat) : x * y = y * x := by ring         -- use ring instead
+</pre>
+<h2 id="a0000000043">6.2 <span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</h2>
+<p>Proves equalities that follow purely from ring axioms (associativity, commutativity, distributivity) — no need to spell out the expansion by hand. </p>
+<pre class="verbatim">
+example (x y : Int) : (x + y)^2 = x^2 + 2*x*y + y^2 := by ring
+example (a b c : Int) : (a + b + c)^2 = a^2+b^2+c^2 + 2*a*b + 2*b*c + 2*a*c := by ring
+</pre>
+<p><span class="ttfamily">ring</span> cannot handle division (use <span class="ttfamily">field_simp</span> first) or inequalities (use <span class="ttfamily">nlinarith</span>) or anything involving an opaque function. <span class="ttfamily">ring_nf</span> normalizes an expression to canonical form <em>without</em> requiring it close the goal — useful mid-proof. </p>
+<h2 id="a0000000044">6.3 <span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</h2>
+<p><span class="ttfamily">linarith</span> proves linear (in)equalities from hypotheses over ordered fields, by finding a linear combination that derives a contradiction from the negated goal. <span class="ttfamily">nlinarith</span> extends it with limited nonlinear preprocessing (it can use provided facts like squares being nonnegative): </p>
+<pre class="verbatim">
+example (x : Int) : x * x ≥ 0 := by nlinarith [sq_nonneg x]
+</pre>
+<h2 id="a0000000045">6.4 <span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></h2>
+<p>Evaluate a <span class="ttfamily">Decidable</span> proposition directly to <span class="ttfamily">true</span>/<span class="ttfamily">false</span>. <span class="ttfamily">decide</span> runs inside the kernel (slow, fully trusted); <span class="ttfamily">native_decide</span> compiles to native code first (fast, relies on trusting the compiler — appropriate for larger finite checks, not for anything safety-critical in the proof). </p>
+<h2 id="a0000000046">6.5 <span class="ttfamily">aesop</span> — general automated search</h2>
+<p><span class="ttfamily">aesop</span> searches over a registered rule set (<span class="ttfamily">@[aesop]</span>-tagged lemmas plus built-ins) trying to close the goal by whatever combination works. <span class="ttfamily">aesop?</span> prints the proof it found, which is the standard way to turn an <span class="ttfamily">aesop</span> call into a reproducible, auditable tactic sequence. </p>
+<h2 id="a0000000047">6.6 Choosing among them</h2>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Goal shape</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Tactic</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p>Concrete numeral computation </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">norm_num</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Linear arithmetic, ℕ/ℤ </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">omega</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Polynomial equality </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">ring</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Equality with division </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">field_simp</span> then <span class="ttfamily">ring</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Linear inequalities </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">linarith</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Nonlinear inequalities </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">nlinarith</span> (feed it hints) </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Decidable finite check </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p>“Try everything reasonable” </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">aesop</span> </p>
+
+    </td>
+  </tr>
+</table> </div>
+<h1 id="a0000000048">7 Structuring proofs</h1>
+<h2 id="a0000000049">7.1 <span class="ttfamily">by_contra</span> — proof by contradiction</h2>
+<p><span class="ttfamily">by_contra h</span> turns a goal <span class="ttfamily">P</span> into a goal <span class="ttfamily">False</span>, adding <span class="ttfamily">h : ¬P</span> to the context. </p>
+<pre class="verbatim">
+example (P : Prop) (h : ¬P → False) : P := by
+  by_contra hP
+  exact h hP
+</pre>
+<h2 id="a0000000050">7.2 <span class="ttfamily">by_cases</span> — splitting on a proposition</h2>
+<p><span class="ttfamily">by_cases h : P</span> produces two goals: one with <span class="ttfamily">h : P</span>, one with <span class="ttfamily">h : ¬P</span>. </p>
+<pre class="verbatim">
+example (n : Nat) : n = 0 ∨ n ≠ 0 := by
+  by_cases h : n = 0
+  · exact Or.inl h
+  · exact Or.inr h
+</pre>
+<p>Both tactics rely on classical reasoning (excluded middle) — standard throughout Mathlib, but worth knowing if a proof needs to stay constructive. </p>
+<h2 id="a0000000051">7.3 <span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></h2>
+<p><span class="ttfamily">contrapose</span> turns a goal <span class="ttfamily">P → Q</span> into <span class="ttfamily">¬Q → ¬P</span>; <span class="ttfamily">contrapose!</span> additionally runs <span class="ttfamily">push_neg</span> on the result. <span class="ttfamily">push_neg</span> on its own pushes a ¬ inward through quantifiers and connectives via De Morgan’s laws — e.g. turning <span class="ttfamily">¬∀ x, P x</span> into <span class="ttfamily">∃ x, ¬P x</span>, or <span class="ttfamily">¬(a &lt; b)</span> into <span class="ttfamily">b ≤ a</span>. Both are usually paired with <span class="ttfamily">by_contra</span> or <span class="ttfamily">by_cases</span> to get a negated hypothesis into a <em>usable</em> shape rather than a raw <span class="ttfamily">¬(...)</span> blob. </p>
+<h2 id="a0000000052">7.4 <span class="ttfamily">calc</span> — calculational proofs</h2>
+<p>Chains a sequence of relational steps, each independently justified, reading like a proof on paper. </p>
+<pre class="verbatim">
+example (a b c d : Nat) (h1 : a = b) (h2 : b &lt; c) (h3 : c ≤ d) : a &lt; d := calc
+  a = b := h1
+  _ &lt; c := h2
+  _ ≤ d := h3
+</pre>
+<p>Each <span class="ttfamily">_</span> refers to the previous line’s right-hand side. <span class="ttfamily">calc</span> can mix relations (<span class="ttfamily">=</span>, <span class="ttfamily">&lt;</span>, <span class="ttfamily">≤</span>, <span class="ttfamily">≠</span>) as long as they compose transitively, and any tactic can justify a step: </p>
+<pre class="verbatim">
+example (x y : Int) : (x + y)^2 = x^2 + 2*x*y + y^2 := calc
+  (x + y)^2 = (x + y) * (x + y) := by ring
+  _ = x*x + x*y + y*x + y*y       := by ring
+  _ = x^2 + 2*x*y + y^2           := by ring
+</pre>
+<p><span class="ttfamily">calc</span> is worth reaching for whenever a proof’s <em>legibility</em> matters as much as its correctness — which, notably, includes anywhere you’d want a human (or a later analysis pass) to audit <em>why</em> the agent believed a step, not just <em>that</em> Lean accepted it. </p>
+<h1 id="a0000000053">8 Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></h1>
+<h2 id="a0000000054">8.1 <span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</h2>
+<p>Two functions are equal exactly when they agree everywhere; two sets are equal exactly when they have the same elements. <span class="ttfamily">funext x</span> reduces <span class="ttfamily">f = g</span> to <span class="ttfamily">f x = g x</span>; <span class="ttfamily">ext</span> (Mathlib, more general) applies whatever extensionality lemma fits the goal’s type — functions, sets, structures, products. </p>
+<pre class="verbatim">
+example : (fun x : Nat =&gt; x + 0) = (fun x =&gt; x) := by
+  funext x
+  simp
+
+example (A B : Set Nat) (h : ∀ x, x ∈ A ↔ x ∈ B) : A = B := by
+  ext x
+  exact h x
+
+example (A B : Set α) : A ∩ B = B ∩ A := by
+  ext x
+  constructor
+  · intro ⟨ha, hb⟩; exact ⟨hb, ha⟩
+  · intro ⟨hb, ha⟩; exact ⟨ha, hb⟩
+</pre>
+<p>Marking a custom structure <span class="ttfamily">@[ext]</span> auto-generates an extensionality lemma the <span class="ttfamily">ext</span> tactic can then use. </p>
+<h2 id="a0000000055">8.2 <span class="ttfamily">congr</span> — from function equality to argument equality</h2>
+<p><span class="ttfamily">congr</span> reduces a goal <span class="ttfamily">f a = f b</span> to <span class="ttfamily">a = b</span> (and, for multi-argument functions, one subgoal per argument). </p>
+<h2 id="a0000000056">8.3 <span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></h2>
+<p><span class="ttfamily">symm</span> flips <span class="ttfamily">a = b</span> to <span class="ttfamily">b = a</span> in the goal; <span class="ttfamily">trans y</span> splits <span class="ttfamily">a = c</span> into <span class="ttfamily">a = y</span> and <span class="ttfamily">y = c</span> — the tactic-mode analog of a manual <span class="ttfamily">Eq.trans</span>/one <span class="ttfamily">calc</span> step. </p>
+<h1 id="a0000000057">9 Tactic combinators</h1>
+<p>Combinators glue tactics together without you manually tracking every resulting goal: </p>
+<pre class="verbatim">
+-- Runs `simp` on every goal produced by `cases`
+example (b : Bool) : b || true = true := by cases b &lt;;&gt; simp
+
+-- Focuses exactly the first goal
+example (P Q : Prop) (hp : P) (hq : Q) : P ∧ Q := by
+  constructor
+  · exact hp
+  · exact hq
+</pre>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Combinator</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Behavior</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">t1 &lt;;&gt; t2</span> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Run <span class="ttfamily">t2</span> on every goal <span class="ttfamily">t1</span> produces </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">· tac</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Focus the first goal; <span class="ttfamily">tac</span> must close it </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">first | t1 | t2</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Try <span class="ttfamily">t1</span>; on failure try <span class="ttfamily">t2</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">repeat tac</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Repeat until <span class="ttfamily">tac</span> fails </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">all_goals tac</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Run on every goal; fails if any fails </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">any_goals tac</span> </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Run on every goal; fails only if none succeed </p>
+
+    </td>
+  </tr>
+</table> </div>
+<p>These matter for the agent harness specifically: a single agent-proposed “tactic” is often, in practice, a short combinator expression (<span class="ttfamily">intro n; cases n &lt;;&gt; simp</span>) rather than one atomic step — which affects how we define “one iteration” in the statistical analysis (see <span class="ttfamily">docs/resources.md</span> §5 and the Agent\(\leftrightarrow \)Lean 4 Pipeline chapter). </p>
+<h1 id="a0000000058">10 Worked examples — Set theory</h1>
+<p>Sets in Mathlib are <span class="ttfamily">Set α</span> for some ambient type <span class="ttfamily">α</span>; membership is <span class="ttfamily">x ∈ s</span>. The single most useful tactic here is <span class="ttfamily">ext</span> — almost every “these two sets are equal” goal reduces to “these two sets have the same members,” which reduces to an iff you prove pointwise. </p>
+<pre class="verbatim">
+-- Intersection is commutative
+example (A B : Set α) : A ∩ B = B ∩ A := by
+  ext x
+  simp only [Set.mem_inter_iff]
+  tauto
+
+-- Distributivity of ∩ over ∪
+example (A B C : Set α) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  simp only [Set.mem_inter_iff, Set.mem_union]
+  tauto
+
+-- Subset proofs: intro the element, chase membership
+example (A B C : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) : A ⊆ C := by
+  intro x hx
+  exact h2 (h1 hx)
+
+-- Existentials over sets
+example (A : Set Nat) (h : ∃ n ∈ A, n &gt; 5) : ∃ n, n ∈ A := by
+  obtain ⟨n, hn, _⟩ := h
+  exact ⟨n, hn⟩
+</pre>
+<p>Note the pattern: <span class="ttfamily">ext x</span> to get down to elements, <span class="ttfamily">simp only [Set.mem_...]</span> (or plain <span class="ttfamily">simp</span>) to unfold membership into a propositional statement, then propositional tactics (<span class="ttfamily">tauto</span>, <span class="ttfamily">constructor</span>, <span class="ttfamily">intro</span>/<span class="ttfamily">exact</span>) to close it. <span class="ttfamily">⊆</span> unfolds definitionally to <span class="ttfamily">∀ x, x ∈ A → x ∈ B</span>, so subset proofs are almost always <span class="ttfamily">intro x hx; ...</span>. </p>
+<h1 id="a0000000059">11 Worked examples — Topology</h1>
+<p>Mathlib’s <span class="ttfamily">TopologicalSpace α</span> typeclass carries an <span class="ttfamily">IsOpen : Set α → Prop</span> predicate plus the usual axioms (arbitrary unions of opens are open, finite intersections of opens are open, the whole space and empty set are open). A function <span class="ttfamily">f : α → β</span> between topological spaces is <span class="ttfamily">Continuous f</span> exactly when the preimage of every open set is open — this is <em>the</em> recurring proof shape for continuity goals. </p>
+<pre class="verbatim">
+-- Continuity as preimage-of-open-is-open (schematic — exact lemma names
+-- depend on the specific Mathlib continuity API in scope; verify with #check
+-- or `exact?` before relying on this in a real proof)
+example {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (f : α → β) (h : ∀ U, IsOpen U → IsOpen (f ⁻¹' U)) : Continuous f := by
+  exact continuous_def.mpr h
+</pre>
+<p>Limits are expressed via <span class="ttfamily">Tendsto</span> and neighborhood filters <span class="ttfamily">𝓝</span>: “the limit of <span class="ttfamily">2*x</span> as <span class="ttfamily">x → 3</span> is <span class="ttfamily">6</span>” is <span class="ttfamily">Tendsto (fun x : ℝ =&gt; 2 * x) (𝓝 3) (𝓝 6)</span>. Continuity-at-a-point is definitionally <span class="ttfamily">ContinuousAt f x ↔ Tendsto f (𝓝 x) (𝓝 (f x))</span>. </p>
+<pre class="verbatim">
+-- A continuous function composed with a continuous function is continuous
+example {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+    (f : α → β) (g : β → γ) (hf : Continuous f) (hg : Continuous g) :
+    Continuous (g ∘ f) := by
+  exact hg.comp hf
+</pre>
+<p><b class="bfseries">Honest caveat for this section:</b> topology proofs lean heavily on knowing the <em>right</em> Mathlib lemma name (<span class="ttfamily">Continuous.comp</span>, <span class="ttfamily">continuous_def</span>, <span class="ttfamily">IsOpen.inter</span>, etc.) rather than on generic tactics — this is precisely the regime where <span class="ttfamily">exact?</span>/<span class="ttfamily">apply?</span>/<span class="ttfamily">#loogle</span> stop being optional conveniences and become load-bearing. Expect this to be a rich source of “wrong lemma name” hallucinations once the agent starts working topology problems — worth flagging explicitly in the error taxonomy (<span class="ttfamily">docs/resources.md</span> §5, and the future logging-system doc). </p>
+<h1 id="a0000000060">12 Worked examples — Algebra</h1>
+<p>Mathlib’s algebraic hierarchy (<span class="ttfamily">Monoid</span>, <span class="ttfamily">Group</span>, <span class="ttfamily">Ring</span>, <span class="ttfamily">Field</span>, …) is built from typeclasses; a <span class="ttfamily">Subgroup G</span> is a bundled structure (carrier set + closure proofs), and a group homomorphism <span class="ttfamily">f : G →* H</span> is a bundled function plus a proof it respects multiplication (<span class="ttfamily">map_mul</span>). </p>
+<pre class="verbatim">
+-- Basic group identities, provable purely from the group axioms
+example {G : Type*} [Group G] (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
+  exact mul_inv_rev a b
+
+example {G : Type*} [Group G] (a : G) : a * a⁻¹ = 1 := by
+  exact mul_inv_cancel a
+
+-- Homomorphisms preserve the identity and inverses
+example {G H : Type*} [Group G] [Group H] (f : G →* H) (a : G) :
+    f (a⁻¹) = (f a)⁻¹ := by
+  exact map_inv f a
+
+-- Subgroup membership is closed under the group operation
+example {G : Type*} [Group G] (H : Subgroup G) (a b : G) (ha : a ∈ H) (hb : b ∈ H) :
+    a * b ∈ H := by
+  exact H.mul_mem ha hb
+</pre>
+<p>For concrete numeric rings (ℤ, ℚ, ℝ, polynomial rings), reach for <span class="ttfamily">ring</span>/<span class="ttfamily">ring_nf</span> first — it closes anything that follows from ring axioms alone without needing a single named lemma: </p>
+<pre class="verbatim">
+example (a b : Int) : (a + b) * (a - b) = a^2 - b^2 := by ring
+</pre>
+<p><b class="bfseries">Recurring pattern across all three topic areas:</b> generic tactics (<span class="ttfamily">ring</span>, <span class="ttfamily">omega</span>, <span class="ttfamily">simp</span>, <span class="ttfamily">tauto</span>, <span class="ttfamily">ext</span>) get you very far in set theory and basic algebra, where the underlying structure is “compute and compare.” Topology (and deeper algebra — quotients, isomorphism theorems) leans much more on <em>finding the specific lemma that encodes the mathematical fact you need</em>, which is a fundamentally different skill — and, again, plausibly a different hallucination profile for the agent to exhibit. This distinction should directly inform how the problem set (<span class="ttfamily">docs/resources.md</span>, Goal 9) is difficulty-tiered. </p>
+<h1 id="a0000000061">13 Reading errors and diagnosing failed proofs</h1>
+<p>Lean’s error messages are the raw signal the agent harness will parse programmatically (see the pipeline chapter), so it’s worth learning to read them precisely rather than pattern-matching on vibes. </p>
+<p><b class="bfseries">“type mismatch”</b> — the term you supplied has a different type than the goal expects. Almost always from <span class="ttfamily">exact</span>, or an <span class="ttfamily">apply</span> where unification failed silently upstream. Read the <em>expected</em> vs. <em>got</em> types Lean prints; the mismatch is usually one argument, one implicit, or a coercion away. </p>
+<p><b class="bfseries">“unknown identifier / unknown constant”</b> — you referenced a lemma name that doesn’t exist (wrong name, wrong namespace, or it’s simply not the name Mathlib uses). This is the single most common <em>hallucination</em> failure mode for an LLM proposing tactics: confidently citing a plausible-sounding lemma (<span class="ttfamily">Nat.mul_comm_left</span> when the real name is <span class="ttfamily">Nat.mul_left_comm</span>, say) that was never in the library. <span class="ttfamily">exact?</span>/<span class="ttfamily">apply?</span>/<span class="ttfamily">#loogle</span> exist specifically to route around needing to <em>remember</em> exact names. </p>
+<p><b class="bfseries">“failed to synthesize instance”</b> — a typeclass Lean needs (e.g. <span class="ttfamily">TopologicalSpace α</span>, <span class="ttfamily">DecidableEq α</span>) isn’t available in context. Usually means a hypothesis or <span class="ttfamily">variable</span> declaration is missing, not that the proof strategy is wrong. </p>
+<p><b class="bfseries">“unsolved goals”</b> at the end of a <span class="ttfamily">by</span> block — the tactic sequence ran out without closing everything. Check the last-printed goal state; it tells you exactly what’s left. </p>
+<p><b class="bfseries">A goal that doesn’t shrink</b> after a tactic that “succeeded” (no error, but the goal looks identical) — almost always <span class="ttfamily">rw</span>/<span class="ttfamily">simp</span> finding nothing to rewrite, silently doing nothing rather than erroring. Worth explicitly distinguishing from a genuine error in the agent’s logs: <em>tactic accepted but made no progress</em> is a distinct category from <em>tactic rejected</em>, and both are distinct again from <em>tactic accepted, goal changed, but agent is now further from a proof than before</em>. </p>
+<p><b class="bfseries"><span class="ttfamily">sorry</span> compiles.</b> A file with <span class="ttfamily">sorry</span> anywhere in a proof still type-checks and reports no errors — Lean treats <span class="ttfamily">sorry</span> as “trust me.” This is the sharpest trap for automated pipelines: a proof search that terminates because the agent inserted <span class="ttfamily">sorry</span> looks, from the outside, identical to success unless you explicitly grep for it. Any harness built on top of this tutorial’s material <b class="bfseries">must</b> treat <span class="ttfamily">sorry</span>/<span class="ttfamily">admit</span> as a distinct terminal state, not a success. </p>
+<p>This taxonomy — wrong-term, wrong-name, missing-instance, incomplete, no-progress, silently-admitted — is a first pass at exactly the category system the project’s core statistical question depends on (<span class="ttfamily">docs/resources.md</span> §5–6). It should be revisited and refined once real agent transcripts exist to check it against. </p>
+<h1 id="a0000000062">14 From tactics to the agent pipeline</h1>
+<p>Everything above described tactics as something <em>you</em> type in VS Code, watching the Infoview update live. The agent harness replaces that human loop with a programmatic one: the agent receives a serialized goal state (context + goal, roughly what’s printed above the <span class="ttfamily">⊢</span> in every example in this document), proposes one tactic string, and receives back either the next goal state or one of the error categories from §13 — with no Infoview, no hover tooltips, no <span class="ttfamily">exact?</span> search run interactively (though the agent can still <em>issue</em> <span class="ttfamily">exact?</span> as a tactic and read its output). </p>
+<p>Concretely, this means the command-line invocation from the Lean 4 Environment Setup chapter, §8 (<span class="ttfamily">lake env lean file.lean</span>, or the Lean REPL / language server protocol) is the actual interface the agent talks to — not VS Code. Every tactic in this tutorial is a string the agent must produce <em>syntactically correctly</em> before Lean even attempts to check whether it’s <em>semantically</em> valid, which means malformed syntax (missing <span class="ttfamily">import</span>, wrong bracket type, a <span class="ttfamily">Mathlib</span>-only tactic invoked without the import) is itself a distinct failure mode, prior to and separate from a mathematically wrong tactic. </p>
+<p>The next documents in this project build directly on this: </p>
+<ul class="itemize">
+  <li><p>The Agent\(\leftrightarrow \)Lean 4 Pipeline chapter (Goal 6) — the exact protocol between agent and Lean, and how goal states get serialized/parsed. </p>
+</li>
+  <li><p>The agent-thinking logging design (Goal 8) — what gets recorded at each of these steps, building on the error taxonomy in §13. </p>
+</li>
+  <li><p>The problem set (Goal 9) — segmented using exactly the topic split in §10–12 (set theory / topology / algebra), difficulty-tiered partly along the “generic tactics suffice” vs. “requires exact lemma recall” axis observed in §12. </p>
+</li>
+</ul>
+<h1 id="a0000000063">15 Mathlib conventions: naming, dot notation, anonymous constructors</h1>
+<p>Section 13 flagged “wrong lemma name” as a major hallucination category once problems require real Mathlib recall (topology and deeper algebra especially). It’s worth knowing that Mathlib names are <b class="bfseries">not arbitrary</b> — they follow a documented, learnable scheme. Internalizing it (for you and, eventually, as prior knowledge encoded into the agent’s prompting) turns “guess the name” into “derive the name.” </p>
+<h2 id="a0000000064">15.1 Capitalization signals the kind of thing</h2>
+<ol class="enumerate">
+  <li><p><b class="bfseries">Proofs and theorem names</b> (terms of a <span class="ttfamily">Prop</span>) use <span class="ttfamily">snake_case</span>: <span class="ttfamily">add_comm</span>, <span class="ttfamily">mul_zero</span>, <span class="ttfamily">lt_of_le_of_ne</span>. </p>
+</li>
+  <li><p><b class="bfseries">Types, structures, classes</b> use <span class="ttfamily">UpperCamelCase</span>: <span class="ttfamily">Group</span>, <span class="ttfamily">TopologicalSpace</span>, <span class="ttfamily">Subgroup</span>. </p>
+</li>
+  <li><p><b class="bfseries">Everything else</b> (functions, other data) uses <span class="ttfamily">lowerCamelCase</span>. </p>
+</li>
+</ol>
+<p>So seeing <span class="ttfamily">Nat.add_comm</span> (snake_case after the dot) tells you it’s a proof; seeing <span class="ttfamily">TopologicalSpace</span> (UpperCamelCase) tells you it’s a class before you’ve read anything else about it. </p>
+<h2 id="a0000000065">15.2 The symbol to word dictionary</h2>
+<p>Names are built by spelling out the symbols in the statement. The core dictionary (abbreviated from the official guide): </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Symbol</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Word</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Symbol</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Word</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Symbol</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Word</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p>∨ </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">or</span> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ∧ </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">and</span> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ¬ </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">not</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>→ </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">of</span> / (often omitted) </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ↔ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">iff</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ∃ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">exists</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>= </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">eq</span> (often omitted) </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ≠ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">ne</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ∘ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">comp</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>∈ </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">mem</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ∪ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">union</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ∩ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">inter</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>⊆ </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> (usually spelled <span class="ttfamily">subset</span>) </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ∖ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">sdiff</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ᶜ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">compl</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>+ </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">add</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> - (binary) </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">sub</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> - (unary) </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">neg</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">&nbsp;</td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">mul</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ^ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">pow</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> ⁻¹ </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">inv</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p>≤ / &lt; </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">le</span>/<span class="ttfamily">lt</span> (or <span class="ttfamily">ge</span>/<span class="ttfamily">gt</span>) </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> ∣ </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">dvd</span> </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> ∑ / ∏ </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">sum</span>/<span class="ttfamily">prod</span> </p>
+
+    </td>
+  </tr>
+</table> </div>
+<p>Knowing this, a name like <span class="ttfamily">mul_left_cancel</span> is readable on sight: “multiplication, left [argument], cancel[lation].” <span class="ttfamily">not_le_of_gt</span> reads as “not (≤), given (&gt;)” — matching its actual statement <span class="ttfamily">a &lt; b → ¬ b ≤ a</span>. This is exactly the skill that turns <span class="ttfamily">exact?</span>/<span class="ttfamily">#loogle</span> from a crutch into a check. </p>
+<h2 id="a0000000066">15.3 Hypothesis ordering: “of”</h2>
+<p>When a name encodes hypotheses, they’re listed via <span class="ttfamily">_of_</span> <b class="bfseries">in the order they appear in the statement</b>, not reversed: a theorem <span class="ttfamily">A → B → C</span> is named <span class="ttfamily">C_of_A_of_B</span>. <span class="ttfamily">lt_of_le_of_ne</span> therefore states something like <span class="ttfamily">a ≤ b → a ≠ b → a &lt; b</span> — conclusion first, then each hypothesis in argument order. </p>
+<h2 id="a0000000067">15.4 ≤ / &lt; vs ≥ / &gt;</h2>
+<p>Mathlib almost always states things with ≤ / &lt;, never ≥ / &gt;, but still uses <span class="ttfamily">ge</span>/<span class="ttfamily">gt</span> in <em>names</em> in a few specific situations: when two occurrences of the same relation in one name need to be told apart (<span class="ttfamily">le</span>/<span class="ttfamily">lt</span> for the first, <span class="ttfamily">ge</span>/<span class="ttfamily">gt</span> for a swapped second), when matching another relation’s argument order, or when describing an argument-swapped version. If you’re hunting for a lemma and <span class="ttfamily">_le_</span> isn’t found, try <span class="ttfamily">_ge_</span> before giving up. </p>
+<h2 id="a0000000068">15.5 Dot notation and the anonymous constructor</h2>
+<p><span class="ttfamily">h.left</span>, <span class="ttfamily">h.mp</span>, <span class="ttfamily">f.comp g</span> — a leading dot after a term calls a function in that term’s namespace with the term as first explicit argument of matching type. <span class="ttfamily">And.left : P ∧ Q → P</span> becomes <span class="ttfamily">h.left</span> when <span class="ttfamily">h : P ∧ Q</span>. This is why <span class="ttfamily">Continuous.comp</span>, seen in §11, can be written <span class="ttfamily">hg.comp hf</span>. </p>
+<p>The anonymous constructor <span class="ttfamily">⟨...⟩</span> builds a term of a structure/inductive type by position, letting Lean infer <em>which</em> constructor from the expected type — this is what’s happening every time you write <span class="ttfamily">⟨n, hn⟩</span> to prove an ∃, or <span class="ttfamily">⟨hp, hq⟩</span> to prove a ∧. </p>
+<h2 id="a0000000069">15.6 Structural suffixes worth recognizing</h2>
+<ul class="itemize">
+  <li><p><b class="bfseries"><span class="ttfamily">.ext</span></b> — a lemma of shape <span class="ttfamily">(∀ x, f x = g x) → f = g</span>; the thing <span class="ttfamily">ext</span> (§8) invokes. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">.ext_iff</span></b> — the bidirectional version, <span class="ttfamily">f = g ↔ ∀ x, f x = g x</span>. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">.inj</span> / <span class="ttfamily">_injective</span> / <span class="ttfamily">_inj</span></b> — injectivity; <span class="ttfamily">.inj</span> is usually a unidirectional, auto-generated constructor fact, <span class="ttfamily">_inj</span> a bidirectional iff, <span class="ttfamily">_injective</span> a full <span class="ttfamily">Function.Injective f</span> statement. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">Is</span>-prefixed classes</b> (<span class="ttfamily">IsOpen</span>, <span class="ttfamily">IsClosed</span>, <span class="ttfamily">IsTopologicalRing</span>) — a <span class="ttfamily">Prop</span>-valued class describing an extra property of data you already have, as opposed to extra data itself. </p>
+</li>
+</ul>
+<p>Full reference (symbol dictionary, capitalization rules, structural-lemma conventions, more examples): <a href ="https://leanprover-community.github.io/contribute/naming.html">Mathlib naming conventions</a>, cataloged in <span class="ttfamily">docs/resources.md</span>. </p>
+<h1 id="a0000000070">16 Exercises (with worked solutions)</h1>
+<p>Work these before moving to the pipeline docs — they exercise every tactic family from §2–9 and preview the topic split from §10–12. Solutions follow each prompt; cover them and attempt the proof first. </p>
+<p><b class="bfseries">1. Core tactics.</b> Prove <span class="ttfamily">(P Q : Prop) (hpq : P → Q) (hp : P) : Q</span>. </p>
+<pre class="verbatim">
+example (P Q : Prop) (hpq : P → Q) (hp : P) : Q := by
+  exact hpq hp
+</pre>
+<p><b class="bfseries">2. Rewriting.</b> Prove <span class="ttfamily">(a b c : Nat) (h1 : a = b) (h2 : b = c) : a + 1 = c + 1</span>. </p>
+<pre class="verbatim">
+example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a + 1 = c + 1 := by
+  rw [h1, h2]
+</pre>
+<p><b class="bfseries">3. <span class="ttfamily">have</span>/<span class="ttfamily">suffices</span>.</b> Prove <span class="ttfamily">(n : Nat) (h : n &gt; 10) : n &gt; 0</span> two ways: with <span class="ttfamily">have</span>, then with <span class="ttfamily">suffices</span>. </p>
+<pre class="verbatim">
+example (n : Nat) (h : n &gt; 10) : n &gt; 0 := by
+  have h' : n &gt; 10 := h
+  omega
+
+example (n : Nat) (h : n &gt; 10) : n &gt; 0 := by
+  suffices h' : n &gt; 10 by omega
+  exact h
+</pre>
+<p><b class="bfseries">4. Induction.</b> Prove <span class="ttfamily">(n : Nat) : n &lt; n + 1</span> by induction (don’t just reach for <span class="ttfamily">omega</span> — practice using <span class="ttfamily">ih</span>). </p>
+<pre class="verbatim">
+example (n : Nat) : n &lt; n + 1 := by
+  induction n with
+  | zero =&gt; omega
+  | succ m ih =&gt; omega   -- ih available but omega doesn't need it here;
+                          -- compare with a genuinely inductive fact like §5's add_zero'
+</pre>
+<p><em>(Note: this particular fact is linear and <span class="ttfamily">omega</span> alone would close the top-level goal without induction — the exercise is in the induction mechanics: naming <span class="ttfamily">ih</span>, understanding it’s unused here because the fact doesn’t recurse on <span class="ttfamily">n</span>’s structure. Try <span class="ttfamily">theorem double_ge (n : Nat) : n ≤ 2 * n</span> by induction for a case where <span class="ttfamily">ih</span> is genuinely load-bearing.)</em> </p>
+<p><b class="bfseries">5. Case split + automation.</b> Prove <span class="ttfamily">(n : Nat) : n % 2 = 0 ∨ n % 2 = 1</span>. </p>
+<pre class="verbatim">
+example (n : Nat) : n % 2 = 0 ∨ n % 2 = 1 := by omega
+</pre>
+<p><b class="bfseries">6. <span class="ttfamily">ring</span> vs <span class="ttfamily">omega</span>.</b> Prove <span class="ttfamily">(x y : Int) : (x + y) * (x + y) = x*x + 2*x*y + y*y</span>, and separately <span class="ttfamily">(a b : Nat) (h : a ≤ b) : a + 3 ≤ b + 3</span>. Identify which tactic fits which. </p>
+<pre class="verbatim">
+example (x y : Int) : (x + y) * (x + y) = x*x + 2*x*y + y*y := by ring
+example (a b : Nat) (h : a ≤ b) : a + 3 ≤ b + 3 := by omega
+</pre>
+<p><b class="bfseries">7. <span class="ttfamily">by_contra</span>.</b> Prove <span class="ttfamily">(n : Nat) (h : ¬ n = 0) : n &gt; 0</span>. </p>
+<pre class="verbatim">
+example (n : Nat) (h : ¬ n = 0) : n &gt; 0 := by
+  by_contra hc
+  push_neg at hc
+  omega
+</pre>
+<p><b class="bfseries">8. <span class="ttfamily">calc</span>.</b> Prove <span class="ttfamily">(a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c</span> with an explicit <span class="ttfamily">calc</span> chain (not just <span class="ttfamily">exact le_trans h1 h2</span>). </p>
+<pre class="verbatim">
+example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := calc
+  a ≤ b := h1
+  _ ≤ c := h2
+</pre>
+<p><b class="bfseries">9. <span class="ttfamily">rcases</span>/<span class="ttfamily">obtain</span>.</b> Prove <span class="ttfamily">(h : ∃ n : Nat, n &gt; 3 ∧ n &lt; 6) : ∃ n : Nat, n &gt; 0</span>. </p>
+<pre class="verbatim">
+example (h : ∃ n : Nat, n &gt; 3 ∧ n &lt; 6) : ∃ n : Nat, n &gt; 0 := by
+  obtain ⟨n, hn1, hn2⟩ := h
+  exact ⟨n, by omega⟩
+</pre>
+<p><b class="bfseries">10. Set theory.</b> Prove <span class="ttfamily">(A B C : Set α) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)</span> — you saw this in §10; write it here from a blank slate. </p>
+<pre class="verbatim">
+example (A B C : Set α) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  simp only [Set.mem_inter_iff, Set.mem_union]
+  tauto
+</pre>
+<p><b class="bfseries">11. Set theory, subset chain.</b> Prove <span class="ttfamily">(A B C D : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) (h3 : C ⊆ D) : A ⊆ D</span>. </p>
+<pre class="verbatim">
+example (A B C D : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) (h3 : C ⊆ D) : A ⊆ D := by
+  intro x hx
+  exact h3 (h2 (h1 hx))
+</pre>
+<p><b class="bfseries">12. Algebra.</b> Prove <span class="ttfamily">{G : Type*} [Group G] (a b c : G) (h : a * b = a * c) : b = c</span> (left cancellation) using <span class="ttfamily">mul_left_cancel</span> or by hand via <span class="ttfamily">mul_left_cancel₀</span>-style reasoning — try <span class="ttfamily">exact?</span> first if the exact name isn’t obvious. </p>
+<pre class="verbatim">
+example {G : Type*} [Group G] (a b c : G) (h : a * b = a * c) : b = c := by
+  exact mul_left_cancel h
+</pre>
+<p><b class="bfseries">13. Combinators.</b> Prove <span class="ttfamily">(b1 b2 : Bool) : (b1 &amp;&amp; b2) = (b2 &amp;&amp; b1)</span> by casing on both booleans and closing every resulting goal with one combinator call. </p>
+<pre class="verbatim">
+example (b1 b2 : Bool) : (b1 &amp;&amp; b2) = (b2 &amp;&amp; b1) := by
+  cases b1 &lt;;&gt; cases b2 &lt;;&gt; rfl
+</pre>
+<p><b class="bfseries">14. Diagnose the error.</b> The following proof fails. Without running it, predict which error category from §13 it hits, then fix it. </p>
+<pre class="verbatim">
+example (n : Nat) : n + 0 = n := by
+  exact Nat.add_zer n   -- typo: should be Nat.add_zero
+</pre>
+<p><em>Diagnosis:</em> <span class="ttfamily">unknown identifier</span> — <span class="ttfamily">Nat.add_zer</span> doesn’t exist (missing final <span class="ttfamily">o</span>). This is exactly the “plausible-sounding but nonexistent name” hallucination flagged in §13; the fix is either correcting the typo or reaching for <span class="ttfamily">exact?</span>. </p>
+<p><b class="bfseries">15. Cross-topic capstone.</b> Prove that for a continuous function <span class="ttfamily">f : ℝ → ℝ</span> and a set <span class="ttfamily">S</span> that’s the preimage of an open set under <span class="ttfamily">f</span>, <span class="ttfamily">S</span> is open — i.e., restate and prove <span class="ttfamily">Continuous f → IsOpen U → IsOpen (f ⁻¹’ U)</span> using the definitional unfolding from §11. </p>
+<pre class="verbatim">
+example (f : ℝ → ℝ) (hf : Continuous f) (U : Set ℝ) (hU : IsOpen U) :
+    IsOpen (f ⁻¹' U) := by
+  exact hf.isOpen_preimage U hU
+</pre>
+<p><em>(If the exact lemma name here doesn’t resolve in your environment, this is a live example of the topology-specific “lemma recall” difficulty flagged in §12 — use <span class="ttfamily">exact?</span> and cross-check against <span class="ttfamily">Mathlib.Topology.Continuous</span> in <span class="ttfamily">docs/resources.md</span>.)</em> </p>
+<h1 id="a0000000071">17 References</h1>
+<ul class="itemize">
+  <li><p><a href ="https://leanprover.github.io/theorem_proving_in_lean4/">Theorem Proving in Lean 4</a> — Lean FRO / Lean community </p>
+</li>
+  <li><p><a href ="https://lean4.dev/tactics">Lean 4 Dev — Tactics course</a> — primary source for syntax and examples throughout this document </p>
+</li>
+  <li><p><a href ="https://leanprover-community.github.io/mathematics_in_lean/">Mathematics in Lean</a> — Jeremy Avigad, Patrick Massot </p>
+</li>
+  <li><p><a href ="https://leanprover-community.github.io/mathlib4_docs/tactics.html">Mathlib4 tactic documentation</a> </p>
+</li>
+  <li><p><a href ="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Continuous.html">Mathlib.Topology.Continuous</a>, <a href ="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html">Mathlib.Topology.Defs.Basic</a> </p>
+</li>
+</ul>
+<p>Full annotated bibliography, including the LLM/hallucination and agent-Lean literature that motivates this project: <span class="ttfamily">docs/resources.md</span>.  </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <svg  id="showmore-minus" class="icon icon-eye-minus showmore"><use xlink:href="symbol-defs.svg#icon-eye-minus"></use></svg>
+
+  <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
+
+  <a href="ch-environment.html" title="Lean 4 Environment Setup"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="index.html" title="Agentic Hallucination in logical context"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="ch-tactic_cheat_sheet.html" title="Lean 4 Tactic Cheat Sheet"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+<script type="text/javascript" src="js/js.cookie.min.js"></script>
+<script type="text/javascript" src="js/showmore.js"></script>
+</body>
+</html>

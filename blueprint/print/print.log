@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.5.20)  22 JUL 2026 15:11
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.5.20)  5 AUG 2026 12:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -918,35 +918,1054 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (./chapters/environment.tex
 Chapter 1.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00107pt on input line 7.
+(Font)              scaled to size 10.00107pt on input line 6.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00075pt on input line 7.
+(Font)              scaled to size 7.00075pt on input line 6.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.00053pt on input line 7.
+(Font)              scaled to size 5.00053pt on input line 6.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 7.
+(Font)              scaled to size 9.99893pt on input line 6.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 7.
+(Font)              scaled to size 6.99925pt on input line 6.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 4.99947pt on input line 7.
-)) [1
+(Font)              scaled to size 4.99947pt on input line 6.
+[1
 
-] (/home/quantum/Documents/GitHub/agentic/blueprint/print/print.aux)
+]
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 48.
+ [2] [3]
+Overfull \hbox (7.22833pt too wide) in paragraph at lines 145--146
+[]\TU/lmr/m/n/10 With the cursor on the last line, the Infoview (right-hand pan
+el; restore with \TU/lmtt/m/n/10 Ctrl+Shift+Enter
+ []
+
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+
+Overfull \hbox (5.53828pt too wide) in paragraph at lines 177--178
+[]\TU/lmr/bx/n/10 A TeX distribution \TU/lmr/m/n/10 (MiKTeX or TeX Live) — need
+ed for the PDF, and also for \TU/lmtt/m/n/10 kpsewhich\TU/lmr/m/n/10 ,
+ []
+
+
+Overfull \hbox (8.23633pt too wide) in paragraph at lines 184--185
+\TU/lmtt/m/n/10 content.tex \TU/lmr/m/n/10 assembles the blueprint by \TU/lmtt/
+m/n/10 \input\TU/lmr/m/n/10 -ing each chapter in order. \TU/lmtt/m/n/10 web.tex
+ \TU/lmr/m/n/10 and \TU/lmtt/m/n/10 print.tex
+ []
+
+[4]
+Overfull \hbox (22.74632pt too wide) in paragraph at lines 195--195
+[]\TU/lmtt/m/n/10 leanblueprint checkdecls   # check declarations named in the 
+blueprint exist in Lean[] 
+ []
+
+Missing character: There is no ├ (U+251C) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ├ (U+251C) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ├ (U+251C) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ├ (U+251C) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+
+Overfull \hbox (46.89632pt too wide) in paragraph at lines 207--207
+[]\TU/lmtt/m/n/10 ├── .lake/                  # build artifacts, downloaded dep
+s — safe to delete/regenerate[] 
+ []
+
+Missing character: There is no └ (U+2514) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no └ (U+2514) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+Missing character: There is no ─ (U+2500) in font [lmmono10-regular]:!
+
+Overfull \hbox (164.49632pt too wide) in paragraph at lines 235--235
+[]\TU/lmtt/m/n/10 curl -L https://raw.githubusercontent.com/leanprover-communit
+y/mathlib4/master/lean-toolchain -o lean-toolchain[] 
+ []
+
+[5]
+Overfull \hbox (26.67633pt too wide) in paragraph at lines 249--250
+[]\TU/lmtt/b/n/10 uncaught exception: no such file or directory (error code: 2)
+ \TU/lmr/m/n/10 — a corrupted toolchain
+ []
+
+) (./chapters/tutorial.tex [6]
+Chapter 2.
+
+Overfull \hbox (8.79634pt too wide) in paragraph at lines 31--32
+\TU/lmtt/m/n/10 theorem add_comm' (a b : Nat) : a + b = b + a := Nat.add_comm a
+ b \TU/lmr/m/n/10 is a complete proof
+ []
+
+[7
+
+]
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 55.
+[8] [9]
+Underfull \hbox (badness 10000) in paragraph at lines 180--180
+[]\TU/lmtt/m/n/10 simp only [l1, l2,
+ []
+
+Missing character: There is no ℕ (U+2115) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℤ (U+2124) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℚ (U+211A) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℝ (U+211D) in font [lmroman10-regular]:mapping=t
+ex-text;!
+
+Overfull \hbox (4.02635pt too wide) in paragraph at lines 198--199
+\TU/lmtt/m/n/10 norm_num \TU/lmr/m/n/10 proves/simplifies goals about concrete 
+numerals (\TU/lmtt/m/n/10 21 - 6 = 15\TU/lmr/m/n/10 ). \TU/lmtt/m/n/10 norm_cas
+t\TU/lmr/m/n/10 /\TU/lmtt/m/n/10 push_cast
+ []
+
+[10]
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+
+Overfull \hbox (19.79726pt too wide) in paragraph at lines 204--205
+\TU/lmr/m/n/10 When the goal is an implication \TU/lmtt/m/n/10 P → Q \TU/lmr/m/
+n/10 or a universal \TU/lmtt/m/n/10 ∀ x, P x\TU/lmr/m/n/10 , \TU/lmtt/m/n/10 in
+tro \TU/lmr/m/n/10 moves the antecedent/quantified
+ []
+
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ✝ (U+271D) in font [lmmono10-regular]:!
+Missing character: There is no ≥ (U+2265) in font [lmmono10-regular]:!
+[11]
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ∨ (U+2228) in font [lmmono10-regular]:!
+Missing character: There is no ∨ (U+2228) in font [lmmono10-regular]:!
+Missing character: There is no ∨ (U+2228) in font [lmmono10-regular]:!
+[12]
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∨ (U+2228) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ℕ (U+2115) in font [lmroman12-bold]:mapping=tex-
+text;!
+Missing character: There is no ℤ (U+2124) in font [lmroman12-bold]:mapping=tex-
+text;!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+[13]
+Overfull \hbox (33.24632pt too wide) in paragraph at lines 362--362
+[]\TU/lmtt/m/n/10 example (a b c : Int) : (a + b + c)^2 = a^2+b^2+c^2 + 2*a*b +
+ 2*b*c + 2*a*c := by ring[] 
+ []
+
+Missing character: There is no ≥ (U+2265) in font [lmmono10-regular]:!
+Missing character: There is no ℕ (U+2115) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℤ (U+2124) in font [lmroman10-regular]:mapping=t
+ex-text;!
+[14]
+Missing character: There is no ∨ (U+2228) in font [lmmono10-regular]:!
+Missing character: There is no ≠ (U+2260) in font [lmmono10-regular]:!
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≠ (U+2260) in font [lmmono10-regular]:!
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <14.4> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 452.
+[15]
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no ↔ (U+2194) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+[16]
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+[17]
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no 𝓝 (U+1D4DD) in font [lmmono10-regular]:!
+Missing character: There is no ℝ (U+211D) in font [lmmono10-regular]:!
+Missing character: There is no 𝓝 (U+1D4DD) in font [lmmono10-regular]:!
+Missing character: There is no 𝓝 (U+1D4DD) in font [lmmono10-regular]:!
+Missing character: There is no ↔ (U+2194) in font [lmmono10-regular]:!
+Missing character: There is no 𝓝 (U+1D4DD) in font [lmmono10-regular]:!
+Missing character: There is no 𝓝 (U+1D4DD) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no γ (U+03B3) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no γ (U+03B3) in font [lmmono10-regular]:!
+
+Overfull \hbox (18.54634pt too wide) in paragraph at lines 567--567
+[]\TU/lmtt/m/n/10 example {α β γ : Type*} [TopologicalSpace α] [TopologicalSpac
+e β] [TopologicalSpace γ][] 
+ []
+
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no β (U+03B2) in font [lmmono10-regular]:!
+Missing character: There is no γ (U+03B3) in font [lmmono10-regular]:!
+Missing character: There is no ∘ (U+2218) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+
+Overfull \hbox (17.84633pt too wide) in paragraph at lines 592--592
+[]\TU/lmtt/m/n/10 example {G : Type*} [Group G] (H : Subgroup G) (a b : G) (ha 
+: a ∈ H) (hb : b ∈ H) :[] 
+ []
+
+Missing character: There is no ∈ (U+2208) in font [lmmono10-regular]:!
+Missing character: There is no ℤ (U+2124) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℚ (U+211A) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℝ (U+211D) in font [lmroman10-regular]:mapping=t
+ex-text;!
+[18]
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+
+Overfull \hbox (8.64633pt too wide) in paragraph at lines 618--619
+[]\TU/lmr/m/n/10 This taxonomy — wrong-term, wrong-name, missing-instance, inco
+mplete, no-progress, silently-
+ []
+
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+[19]
+Overfull \hbox (18.92636pt too wide) in paragraph at lines 646--647
+[]\TU/lmr/m/n/10 So seeing \TU/lmtt/m/n/10 Nat.add_comm \TU/lmr/m/n/10 (snake_c
+ase after the dot) tells you it’s a proof; seeing \TU/lmtt/m/n/10 TopologicalSp
+ace
+ []
+
+Missing character: There is no ∨ (U+2228) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ↔ (U+2194) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≠ (U+2260) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∘ (U+2218) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∈ (U+2208) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∪ (U+222A) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∩ (U+2229) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⊆ (U+2286) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∖ (U+2216) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ᶜ (U+1D9C) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⁻ (U+207B) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≤ (U+2264) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∣ (U+2223) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∑ (U+2211) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∏ (U+220F) in font [lmroman10-regular]:mapping=t
+ex-text;!
+[20]
+Missing character: There is no ≤ (U+2264) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≠ (U+2260) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmroman12-bold]:mapping=tex-
+text;!
+Missing character: There is no ≥ (U+2265) in font [lmroman12-bold]:mapping=tex-
+text;!
+Missing character: There is no ≤ (U+2264) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≥ (U+2265) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ↔ (U+2194) in font [lmmono10-regular]:!
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+[21]
+Overfull \hbox (43.74632pt too wide) in paragraph at lines 734--734
+[]                          \TU/lmtt/m/n/10 -- compare with a genuinely inducti
+ve fact like §5's add_zero'[] 
+ []
+
+Missing character: There is no ≤ (U+2264) in font [lmmono10-italic]:!
+Missing character: There is no ∨ (U+2228) in font [lmmono10-regular]:!
+Missing character: There is no ∨ (U+2228) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+[22]
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no ∪ (U+222A) in font [lmmono10-regular]:!
+Missing character: There is no ∩ (U+2229) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no α (U+03B1) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ⊆ (U+2286) in font [lmmono10-regular]:!
+Missing character: There is no ₀ (U+2080) in font [lmmono10-regular]:!
+[23]
+Missing character: There is no ℝ (U+211D) in font [lmmono10-regular]:!
+Missing character: There is no ℝ (U+211D) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+Missing character: There is no ℝ (U+211D) in font [lmmono10-regular]:!
+Missing character: There is no ℝ (U+211D) in font [lmmono10-regular]:!
+Missing character: There is no ℝ (U+211D) in font [lmmono10-regular]:!
+Missing character: There is no ⁻ (U+207B) in font [lmmono10-regular]:!
+) (./chapters/tactic_cheat_sheet.tex [24]
+Chapter 3.
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ∀ (U+2200) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+
+Underfull \hbox (badness 1033) in paragraph at lines 35--35
+[]\TU/lmr/m/n/10 Closes the goal if some hypothesis
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--36
+[]\TU/lmr/m/n/10 Closes goals true by computa-
+ []
+
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+
+Underfull \hbox (badness 10000) in paragraph at lines 38--39
+[]\TU/lmtt/m/n/10 have : a ≤ a + b := by
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 40--40
+[]\TU/lmtt/m/n/10 suffices h : T by
+ []
+
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+
+Underfull \hbox (badness 10000) in paragraph at lines 40--41
+[]\TU/lmtt/m/n/10 suffices h : n ≤ n+n
+ []
+
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+[25
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
+[]\TU/lmtt/m/n/10 nth_rewrite 1
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 64--65
+[]\TU/lmtt/m/n/10 simp only
+ []
+
+Missing character: There is no ℕ (U+2115) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℤ (U+2124) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℚ (U+211A) in font [lmroman10-regular]:mapping=t
+ex-text;!
+[26]
+Underfull \hbox (badness 10000) in paragraph at lines 85--85
+[]\TU/lmtt/m/n/10 cases x with | c1 =>
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 85--86
+[]\TU/lmtt/m/n/10 cases n with | zero =>
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 86--86
+[]\TU/lmtt/m/n/10 induction x with | c1
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 86--87
+[]\TU/lmtt/m/n/10 induction n with |
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 86--87
+\TU/lmtt/m/n/10 zero => rfl | succ m
+ []
+
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+
+Underfull \hbox (badness 1558) in paragraph at lines 87--87
+[]\TU/lmr/m/n/10 Recursive destructuring of ∧, ∃,
+ []
+
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+
+Underfull \hbox (badness 10000) in paragraph at lines 88--88
+[]\TU/lmr/m/n/10 Same as \TU/lmtt/m/n/10 rcases\TU/lmr/m/n/10 , “goal-first”
+ []
+
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∨ (U+2228) in font [lmroman10-regular]:mapping=t
+ex-text;!
+
+Underfull \hbox (badness 10000) in paragraph at lines 91--91
+[]\TU/lmtt/m/n/10 match x with | pat =>
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 91--92
+[]\TU/lmtt/m/n/10 match n with | 0 =>
+ []
+
+[27]
+Missing character: There is no ⟨ (U+27E8) in font [lmmono10-regular]:!
+Missing character: There is no ⟩ (U+27E9) in font [lmmono10-regular]:!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∨ (U+2228) in font [lmroman10-regular]:mapping=t
+ex-text;!
+
+Underfull \hbox (badness 5217) in paragraph at lines 105--105
+[]\TU/lmr/m/n/10 Polynomial identities over (semi)rings
+ []
+
+
+Underfull \hbox (badness 7012) in paragraph at lines 105--105
+\TU/lmr/m/n/10 — \TU/lmtt/m/n/10 + - * ^ \TU/lmr/m/n/10 by constants, no divi-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
+[]\TU/lmr/m/n/10 requires \TU/lmtt/m/n/10 import
+ []
+
+
+Underfull \hbox (badness 3019) in paragraph at lines 106--107
+[]\TU/lmr/m/n/10 good mid-proof simplifica-
+ []
+
+Missing character: There is no ℕ (U+2115) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℤ (U+2124) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≠ (U+2260) in font [lmmono10-regular]:!
+
+Underfull \hbox (badness 10000) in paragraph at lines 108--109
+[]\TU/lmr/m/n/10 fails on variable×variable
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 111--112
+[]\TU/lmr/m/n/10 slower; last resort over
+ []
+
+
+Underfull \hbox (badness 2020) in paragraph at lines 112--112
+[]\TU/lmr/m/n/10 Evaluates a \TU/lmtt/m/n/10 Decidable \TU/lmr/m/n/10 propositi
+on to
+ []
+
+
+Underfull \hbox (badness 1082) in paragraph at lines 113--113
+[]\TU/lmr/m/n/10 Like \TU/lmtt/m/n/10 decide\TU/lmr/m/n/10 , compiled native co
+de —
+ []
+
+[28]
+Underfull \hbox (badness 10000) in paragraph at lines 131--131
+[]\TU/lmtt/m/n/10 contrapose \TU/lmr/m/n/10 /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 132--132
+[]\TU/lmr/m/n/10 Pushes ¬ inward through quanti-
+ []
+
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+Missing character: There is no ≤ (U+2264) in font [lmmono10-regular]:!
+
+Underfull \hbox (badness 10000) in paragraph at lines 196--196
+[]\TU/lmtt/m/n/10 #loogle\TU/lmr/m/n/10 , \TU/lmtt/m/n/10 #leansearch\TU/lmr/m/
+n/10 ,
+ []
+
+[29]
+Missing character: There is no ∀ (U+2200) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∃ (U+2203) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∧ (U+2227) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∨ (U+2228) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ↔ (U+2194) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∈ (U+2208) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∉ (U+2209) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⊆ (U+2286) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∩ (U+2229) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∪ (U+222A) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℕ (U+2115) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℤ (U+2124) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℚ (U+211A) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℝ (U+211D) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ℂ (U+2102) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∅ (U+2205) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⟨ (U+27E8) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⟩ (U+27E9) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≤ (U+2264) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≥ (U+2265) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ≠ (U+2260) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ∘ (U+2218) in font [lmroman10-regular]:mapping=t
+ex-text;!
+Missing character: There is no ⊢ (U+22A2) in font [lmroman10-regular]:mapping=t
+ex-text;!
+) (./chapters/minimum_viable_tactics.tex [30]
+Chapter 4.
+
+Underfull \hbox (badness 1412) in paragraph at lines 19--20
+[]\TU/lmr/m/n/10 Open and close goals directly; no
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--20
+[]\TU/lmtt/m/n/10 rw [h]\TU/lmr/m/n/10 , \TU/lmtt/m/n/10 rw [← h]\TU/lmr/m/n/10
+ ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 23--23
+[]\TU/lmtt/m/n/10 by_contra\TU/lmr/m/n/10 , \TU/lmtt/m/n/10 by_cases\TU/lmr/m/n
+/10 ,
+ []
+
+
+Underfull \hbox (badness 1708) in paragraph at lines 23--23
+\TU/lmtt/m/n/10 exfalso\TU/lmr/m/n/10 , \TU/lmtt/m/n/10 push_neg\TU/lmr/m/n/10 
+, \TU/lmtt/m/n/10 left\TU/lmr/m/n/10 ,
+ []
+
+[31
+
+]) (./chapters/pipeline.tex [32]
+Chapter 5.
+[33
+
+]
+Underfull \hbox (badness 5548) in paragraph at lines 42--42
+[]\TU/lmr/bx/n/10 File + \TU/lmtt/b/n/10 lake
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/lmr/m/n/10 the Environ-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/lmr/m/n/10 ment Setup
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/lmr/m/n/10 file, run \TU/lmtt/m/n/10 lake env
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/lmtt/m/n/10 lean file.lean\TU/lmr/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+[]\TU/lmr/m/n/10 No incremental state
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\TU/lmr/m/n/10 — every attempt re-
+ []
+
+
+Underfull \hbox (badness 3724) in paragraph at lines 42--43
+\TU/lmr/m/n/10 from scratch; painfully
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\TU/lmr/m/n/10 slow for a multi-step
+ []
+
+
+Underfull \hbox (badness 4621) in paragraph at lines 42--43
+\TU/lmr/m/n/10 tactic loop; output is
+ []
+
+
+Underfull \hbox (badness 1424) in paragraph at lines 42--43
+\TU/lmr/m/n/10 meant for humans, not
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+[]\TU/lmr/bx/n/10 leanprover-
+ []
+
+
+Overfull \hbox (10.12766pt too wide) in paragraph at lines 43--43
+\TU/lmr/bx/n/10 community/repl| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+[]\TU/lmr/m/n/10 Persistent pro-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+\TU/lmr/m/n/10 cess, JSON in/out
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+\TU/lmr/m/n/10 over stdin/stdout,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+\TU/lmtt/m/n/10 proofState \TU/lmr/m/n/10 integers
+ []
+
+
+Underfull \hbox (badness 1147) in paragraph at lines 43--43
+\TU/lmr/m/n/10 track state incremen-
+ []
+
+
+Underfull \hbox (badness 7832) in paragraph at lines 43--43
+\TU/lmr/m/n/10 this; incremental (no
+ []
+
+
+Underfull \hbox (badness 2970) in paragraph at lines 43--43
+\TU/lmr/m/n/10 re-elaboration per tac-
+ []
+
+
+Underfull \hbox (badness 1565) in paragraph at lines 43--43
+\TU/lmr/m/n/10 tic); structured JSON;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+\TU/lmr/m/n/10 supports backtracking
+ []
+
+
+Underfull \hbox (badness 3701) in paragraph at lines 43--43
+\TU/lmr/m/n/10 via reusing an earlier
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+[]\TU/lmr/m/n/10 “Experimental” tac-
+ []
+
+
+Underfull \hbox (badness 3884) in paragraph at lines 43--44
+\TU/lmr/m/n/10 tic mode per its own
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+\TU/lmr/m/n/10 README; one Lean
+ []
+
+
+Underfull \hbox (badness 1163) in paragraph at lines 43--44
+\TU/lmr/m/n/10 process = one project’s
+ []
+
+
+Underfull \hbox (badness 5161) in paragraph at lines 43--44
+\TU/lmr/m/n/10 environment, so multi-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+\TU/lmr/m/n/10 project setups need
+ []
+
+
+Underfull \hbox (badness 7133) in paragraph at lines 43--44
+\TU/lmr/m/n/10 multiple processes (see
+ []
+
+
+Underfull \hbox (badness 1997) in paragraph at lines 44--44
+\TU/lmr/m/n/10 or wrapped as
+ []
+
+
+Underfull \hbox (badness 1655) in paragraph at lines 44--44
+[]\TU/lmr/m/n/10 The same server VS
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+[]\TU/lmr/m/n/10 Reuses infrastructure
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/lmr/m/n/10 that’s already battle-
+ []
+
+
+Overfull \hbox (13.91635pt too wide) in paragraph at lines 44--44
+\TU/lmr/m/n/10 hover/definition/diagnostics
+ []
+
+
+Underfull \hbox (badness 1394) in paragraph at lines 44--45
+\TU/lmr/m/it/10 edited file\TU/lmr/m/n/10 , not a clean
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+\TU/lmtt/m/n/10 "proofState": ...}
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+[]\TU/lmr/m/n/10 Purpose-built ML-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/lmr/m/n/10 facing API/REPL,
+ []
+
+
+Underfull \hbox (badness 5105) in paragraph at lines 45--45
+\TU/lmr/m/n/10 supports tree search
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+[]\TU/lmr/m/n/10 Most feature-rich for
+ []
+
+
+Underfull \hbox (badness 2326) in paragraph at lines 45--45
+\TU/lmr/m/n/10 search-heavy agent de-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/lmr/m/n/10 LLM+Lean pipelines
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+[]\TU/lmr/m/n/10 Heavier dependency,
+ []
+
+
+Underfull \hbox (badness 5696) in paragraph at lines 45--46
+\TU/lmr/m/n/10 if the agent is doing
+ []
+
+
+Underfull \hbox (badness 3229) in paragraph at lines 45--46
+\TU/lmr/m/n/10 simple sequential tactic
+ []
+
+
+Overfull \hbox (10.90578pt too wide) in paragraph at lines 38--48
+ [] 
+ []
+
+
+Overfull \hbox (128.56334pt too wide) in paragraph at lines 54--55
+\TU/lmr/m/n/10 Run via \TU/lmtt/m/n/10 lake exe repl \TU/lmr/m/n/10 (or, pointe
+d at a specific project’s dependencies: \TU/lmtt/m/n/10 lake env /path/to/repl/
+.lake/build/bin/repl\TU/lmr/m/n/10 ).
+ []
+
+[34]
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+Missing character: There is no ⊢ (U+22A2) in font [lmmono10-regular]:!
+[35]
+Overfull \hbox (101.49632pt too wide) in paragraph at lines 109--109
+[]\TU/lmtt/m/n/10 {"tactic": "exact 37", "proofState": 1}   // wrong: goal want
+s Int, not the literal misapplied here[] 
+ []
+
+
+Overfull \hbox (26.18633pt too wide) in paragraph at lines 115--116
+\TU/lmr/m/n/10 files and restored later (\TU/lmtt/m/n/10 {"pickleTo": "path", "
+proofState": n} \TU/lmr/m/n/10 / \TU/lmtt/m/n/10 {"unpickleProofStateFrom":
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 126--126
+[]\TU/lmr/m/n/10 problem set
+ []
+
+
+Overfull \hbox (9.49055pt too wide) in paragraph at lines 126--126
+\TU/lmr/m/n/10 (\TU/lmtt/m/n/10 docs/resources.md
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 126--126
+\TU/lmr/m/n/10 topic/difficulty
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 132--132
+[]\TU/lmtt/m/n/10 goals_before \TU/lmr/m/n/10 /
+ []
+
+
+Underfull \hbox (badness 1622) in paragraph at lines 133--134
+[]\TU/lmtt/m/n/10 advanced \TU/lmr/m/n/10 / \TU/lmtt/m/n/10 rejected \TU/lmr/m/
+n/10 / \TU/lmtt/m/n/10 proved \TU/lmr/m/n/10 (\TU/lmtt/m/n/10 goals ==
+ []
+
+[36] [37]
+Overfull \hbox (46.36197pt too wide) in paragraph at lines 168--169
+[]\TU/lmr/bx/n/10 Resource exhaustion across a long run \TU/lmr/m/n/10 — REPL p
+rocesses accumulate \TU/lmtt/m/n/10 Environment\TU/lmr/m/n/10 /\TU/lmtt/m/n/10 
+proofState
+ []
+
+[38]) (./chapters/mobile_llms.tex [39]
+Chapter 6.
+
+Overfull \hbox (4.53192pt too wide) in paragraph at lines 12--13
+[]\TU/lmr/bx/n/10 Math-specialized small models. \TU/lmr/m/n/10 The Qwen2.5-Mat
+h family (0.5B/1.5B/7B/72B) is trained
+ []
+
+[40
+
+]) (./chapters/llm_in_use.tex [41]
+Chapter 7.
+) [42
+
+]) [43] (/home/quantum/Documents/GitHub/agentic/blueprint/print/print.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `print.out' has not changed.
-(rerunfilecheck)             Checksum: D66B34B6B8BA40839098AF4FF2E849F8;159.
+(rerunfilecheck)             Checksum: 92D319C70E53C1B87D9F30A25AD05E06;24592.
  ) 
 Here is how much of TeX's memory you used:
- 16674 strings out of 468173
- 305928 string characters out of 5435520
- 903656 words of memory out of 5000000
- 45203 multiletter control sequences out of 15000+600000
- 633060 words of font info for 85 fonts, out of 8000000 for 9000
+ 16765 strings out of 468173
+ 307796 string characters out of 5435520
+ 925656 words of memory out of 5000000
+ 45255 multiletter control sequences out of 15000+600000
+ 633164 words of font info for 98 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 90i,6n,107p,542b,362s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,9n,107p,941b,606s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on /home/quantum/Documents/GitHub/agentic/blueprint/print/print.
-pdf (2 pages).
+pdf (44 pages).

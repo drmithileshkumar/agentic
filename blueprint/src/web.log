@@ -1,0 +1,1999 @@
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Debian) (preloaded format=xelatex 2026.5.20)  5 AUG 2026 14:16
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**/home/quantum/Documents/GitHub/agentic/blueprint/src/web.tex
+(/home/quantum/Documents/GitHub/agentic/blueprint/src/web.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count271
+\c@section=\count272
+\c@subsection=\count273
+\c@subsubsection=\count274
+\c@paragraph=\count275
+\c@subparagraph=\count276
+\c@figure=\count277
+\c@table=\count278
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+) (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks17
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)) (/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks18
+\thm@bodyfont=\toks19
+\thm@headfont=\toks20
+\thm@notefont=\toks21
+\thm@headpunct=\toks22
+\thm@preskip=\skip51
+\thm@postskip=\skip52
+\thm@headsep=\skip53
+\dth@everypar=\toks23
+) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip54
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+ (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks24
+\ex@=\dimen149
+)) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen150
+) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count279
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count280
+\leftroot@=\count281
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count282
+\DOTSCASE@=\count283
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box53
+\strutbox@=\box54
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen151
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count284
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count285
+\dotsspace@=\muskip17
+\c@parentequation=\count286
+\dspbrk@lvl=\count287
+\tag@help=\toks25
+\row@=\count288
+\column@=\count289
+\maxfields@=\count290
+\andhelp@=\toks26
+\eqnshift@=\dimen152
+\alignsep@=\dimen153
+\tagshift@=\dimen154
+\tagwidth@=\dimen155
+\totwidth@=\dimen156
+\lineht@=\dimen157
+\@envbody=\toks27
+\multlinegap=\skip55
+\multlinetaggap=\skip56
+\mathdisplay@stack=\toks28
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
+ (/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+) (/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks29
+) (/usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+ (/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
+ (/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode not found.
+)) (/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2025-06-21 v2.57 Cross-referencing by name of section
+ (/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+ (/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count291
+) (/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count292
+) (/usr/share/texlive/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
+)
+\@linkdim=\dimen158
+\Hy@linkcounter=\count293
+\Hy@pagecounter=\count294
+ (/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count295
+ (/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2025-07-12 v7.01o Hyperref: PDF Unicode definition (HO)
+)
+Package hyperref Info: Hyper figures OFF on input line 4195.
+Package hyperref Info: Link nesting OFF on input line 4200.
+Package hyperref Info: Hyper index ON on input line 4203.
+Package hyperref Info: Plain pages OFF on input line 4210.
+Package hyperref Info: Backreferencing OFF on input line 4215.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4462.
+\c@Hy@tempcnt=\count296
+ (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip18
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4801.
+\XeTeXLinkMargin=\dimen159
+ (/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+ (/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
+))
+\Fld@menulength=\count297
+\Field@Width=\dimen160
+\Fld@charsize=\dimen161
+Package hyperref Info: Hyper figures OFF on input line 6078.
+Package hyperref Info: Link nesting OFF on input line 6083.
+Package hyperref Info: Hyper index ON on input line 6086.
+Package hyperref Info: backreferencing OFF on input line 6093.
+Package hyperref Info: Link coloring OFF on input line 6098.
+Package hyperref Info: Link coloring with OCG OFF on input line 6103.
+Package hyperref Info: PDF/A mode OFF on input line 6108.
+\Hy@abspage=\count298
+\c@Item=\count299
+\c@Hfootnote=\count300
+)
+Package hyperref Info: Driver (autodetected): hxetex.
+ (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2025-07-12 v7.01o Hyperref driver for XeTeX
+\pdfm@box=\box55
+\c@Hy@AnnotLevel=\count301
+\HyField@AnnotCount=\count302
+\Fld@listcount=\count303
+\c@bookmark@seq@number=\count304
+ (/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+ (/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
+)
+\Hy@SectionHShift=\skip57
+) (./blueprint.sty) (./macros/common.tex (/usr/share/texlive/texmf-dist/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2024/10/04 v1.31 mathematical typesetting tools
+ (/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2025/03/01 v4.3b Infix arithmetic (KKT,FJ)
+\calc@Acount=\count305
+\calc@Bcount=\count306
+\calc@Adimen=\dimen162
+\calc@Bdimen=\dimen163
+\calc@Askip=\skip58
+\calc@Bskip=\skip59
+LaTeX Info: Redefining \setlength on input line 86.
+LaTeX Info: Redefining \addtolength on input line 87.
+\calc@Ccount=\count307
+\calc@Cskip=\skip60
+) (/usr/share/texlive/texmf-dist/tex/latex/mathtools/mhsetup.sty
+Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
+)
+\g_MT_multlinerow_int=\count308
+\l_MT_multwidth_dim=\dimen164
+\origjot=\skip61
+\l_MT_shortvdotswithinadjustabove_dim=\dimen165
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen166
+\l_MT_above_intertext_sep=\dimen167
+\l_MT_below_intertext_sep=\dimen168
+\l_MT_above_shortintertext_sep=\dimen169
+\l_MT_below_shortintertext_sep=\dimen170
+\xmathstrut@box=\box56
+\xmathstrut@dim=\dimen171
+) (/usr/share/texlive/texmf-dist/tex/latex/unicode-math/unicode-math.sty (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2026-01-19 L3 programming layer (loader) 
+ (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+File: l3backend-xetex.def 2025-10-09 L3 backend support: XeTeX
+\g__graphics_track_int=\count309
+\g__pdfannot_backend_int=\count310
+\g__pdfannot_backend_link_int=\count311
+))
+Package: unicode-math 2023/08/13 v0.8r Unicode maths in XeLaTeX and LuaLaTeX
+ (/usr/share/texlive/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.sty
+Package: unicode-math-xetex 2023/08/13 v0.8r Unicode maths in XeLaTeX and LuaLaTeX
+ (/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2025-10-09 L3 Experimental document command parser
+) (/usr/share/texlive/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+Package: l3keys2e 2025-10-09 LaTeX2e option processing using LaTeX3 keys
+) (/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.sty
+Package: fontspec 2025/09/29 v2.9g Font selection for XeLaTeX and LuaLaTeX
+ (/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2025/09/29 v2.9g Font selection for XeLaTeX and LuaLaTeX
+\l__fontspec_script_int=\count312
+\l__fontspec_language_int=\count313
+\l__fontspec_strnum_int=\count314
+\l__fontspec_tmp_int=\count315
+\l__fontspec_tmpa_int=\count316
+\l__fontspec_tmpb_int=\count317
+\l__fontspec_tmpc_int=\count318
+\l__fontspec_em_int=\count319
+\l__fontspec_emdef_int=\count320
+\l__fontspec_strong_int=\count321
+\l__fontspec_strongdef_int=\count322
+\l__fontspec_tmpa_dim=\dimen172
+\l__fontspec_tmpb_dim=\dimen173
+\l__fontspec_tmpc_dim=\dimen174
+ (/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+) (/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.cfg))) (/usr/share/texlive/texmf-dist/tex/latex/base/fix-cm.sty
+Package: fix-cm 2020/11/24 v1.1t fixes to LaTeX
+ (/usr/share/texlive/texmf-dist/tex/latex/base/ts1enc.def
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
+LaTeX Encoding Info:    Redeclaring text command \capitalcedilla (encoding TS1) on input line 49.
+LaTeX Encoding Info:    Redeclaring text command \capitalogonek (encoding TS1) on input line 52.
+LaTeX Encoding Info:    Redeclaring text command \capitalgrave (encoding TS1) on input line 55.
+LaTeX Encoding Info:    Redeclaring text command \capitalacute (encoding TS1) on input line 56.
+LaTeX Encoding Info:    Redeclaring text command \capitalcircumflex (encoding TS1) on input line 57.
+LaTeX Encoding Info:    Redeclaring text command \capitaltilde (encoding TS1) on input line 58.
+LaTeX Encoding Info:    Redeclaring text command \capitaldieresis (encoding TS1) on input line 59.
+LaTeX Encoding Info:    Redeclaring text command \capitalhungarumlaut (encoding TS1) on input line 60.
+LaTeX Encoding Info:    Redeclaring text command \capitalring (encoding TS1) on input line 61.
+LaTeX Encoding Info:    Redeclaring text command \capitalcaron (encoding TS1) on input line 62.
+LaTeX Encoding Info:    Redeclaring text command \capitalbreve (encoding TS1) on input line 63.
+LaTeX Encoding Info:    Redeclaring text command \capitalmacron (encoding TS1) on input line 64.
+LaTeX Encoding Info:    Redeclaring text command \capitaldotaccent (encoding TS1) on input line 65.
+LaTeX Encoding Info:    Redeclaring text command \t (encoding TS1) on input line 66.
+LaTeX Encoding Info:    Redeclaring text command \capitaltie (encoding TS1) on input line 67.
+LaTeX Encoding Info:    Redeclaring text command \newtie (encoding TS1) on input line 68.
+LaTeX Encoding Info:    Redeclaring text command \capitalnewtie (encoding TS1) on input line 69.
+LaTeX Encoding Info:    Redeclaring text symbol \textcapitalcompwordmark (encoding TS1) on input line 70.
+LaTeX Encoding Info:    Redeclaring text symbol \textascendercompwordmark (encoding TS1) on input line 71.
+LaTeX Encoding Info:    Redeclaring text symbol \textquotestraightbase (encoding TS1) on input line 72.
+LaTeX Encoding Info:    Redeclaring text symbol \textquotestraightdblbase (encoding TS1) on input line 73.
+LaTeX Encoding Info:    Redeclaring text symbol \texttwelveudash (encoding TS1) on input line 74.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreequartersemdash (encoding TS1) on input line 75.
+LaTeX Encoding Info:    Redeclaring text symbol \textleftarrow (encoding TS1) on input line 76.
+LaTeX Encoding Info:    Redeclaring text symbol \textrightarrow (encoding TS1) on input line 77.
+LaTeX Encoding Info:    Redeclaring text symbol \textblank (encoding TS1) on input line 78.
+LaTeX Encoding Info:    Redeclaring text symbol \textdollar (encoding TS1) on input line 79.
+LaTeX Encoding Info:    Redeclaring text symbol \textquotesingle (encoding TS1) on input line 80.
+LaTeX Encoding Info:    Redeclaring text command \textasteriskcentered (encoding TS1) on input line 81.
+LaTeX Encoding Info:    Redeclaring text symbol \textdblhyphen (encoding TS1) on input line 92.
+LaTeX Encoding Info:    Redeclaring text symbol \textfractionsolidus (encoding TS1) on input line 93.
+LaTeX Encoding Info:    Redeclaring text symbol \textzerooldstyle (encoding TS1) on input line 94.
+LaTeX Encoding Info:    Redeclaring text symbol \textoneoldstyle (encoding TS1) on input line 95.
+LaTeX Encoding Info:    Redeclaring text symbol \texttwooldstyle (encoding TS1) on input line 96.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreeoldstyle (encoding TS1) on input line 97.
+LaTeX Encoding Info:    Redeclaring text symbol \textfouroldstyle (encoding TS1) on input line 98.
+LaTeX Encoding Info:    Redeclaring text symbol \textfiveoldstyle (encoding TS1) on input line 99.
+LaTeX Encoding Info:    Redeclaring text symbol \textsixoldstyle (encoding TS1) on input line 100.
+LaTeX Encoding Info:    Redeclaring text symbol \textsevenoldstyle (encoding TS1) on input line 101.
+LaTeX Encoding Info:    Redeclaring text symbol \texteightoldstyle (encoding TS1) on input line 102.
+LaTeX Encoding Info:    Redeclaring text symbol \textnineoldstyle (encoding TS1) on input line 103.
+LaTeX Encoding Info:    Redeclaring text symbol \textlangle (encoding TS1) on input line 104.
+LaTeX Encoding Info:    Redeclaring text symbol \textminus (encoding TS1) on input line 105.
+LaTeX Encoding Info:    Redeclaring text symbol \textrangle (encoding TS1) on input line 106.
+LaTeX Encoding Info:    Redeclaring text symbol \textmho (encoding TS1) on input line 107.
+LaTeX Encoding Info:    Redeclaring text symbol \textbigcircle (encoding TS1) on input line 108.
+LaTeX Encoding Info:    Redeclaring text command \textcircled (encoding TS1) on input line 109.
+LaTeX Encoding Info:    Redeclaring text symbol \textohm (encoding TS1) on input line 115.
+LaTeX Encoding Info:    Redeclaring text symbol \textlbrackdbl (encoding TS1) on input line 116.
+LaTeX Encoding Info:    Redeclaring text symbol \textrbrackdbl (encoding TS1) on input line 117.
+LaTeX Encoding Info:    Redeclaring text symbol \textuparrow (encoding TS1) on input line 118.
+LaTeX Encoding Info:    Redeclaring text symbol \textdownarrow (encoding TS1) on input line 119.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciigrave (encoding TS1) on input line 120.
+LaTeX Encoding Info:    Redeclaring text symbol \textborn (encoding TS1) on input line 121.
+LaTeX Encoding Info:    Redeclaring text symbol \textdivorced (encoding TS1) on input line 122.
+LaTeX Encoding Info:    Redeclaring text symbol \textdied (encoding TS1) on input line 123.
+LaTeX Encoding Info:    Redeclaring text symbol \textleaf (encoding TS1) on input line 124.
+LaTeX Encoding Info:    Redeclaring text symbol \textmarried (encoding TS1) on input line 125.
+LaTeX Encoding Info:    Redeclaring text symbol \textmusicalnote (encoding TS1) on input line 126.
+LaTeX Encoding Info:    Redeclaring text symbol \texttildelow (encoding TS1) on input line 127.
+LaTeX Encoding Info:    Redeclaring text symbol \textdblhyphenchar (encoding TS1) on input line 128.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciibreve (encoding TS1) on input line 129.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciicaron (encoding TS1) on input line 130.
+LaTeX Encoding Info:    Redeclaring text symbol \textacutedbl (encoding TS1) on input line 131.
+LaTeX Encoding Info:    Redeclaring text symbol \textgravedbl (encoding TS1) on input line 132.
+LaTeX Encoding Info:    Redeclaring text symbol \textdagger (encoding TS1) on input line 133.
+LaTeX Encoding Info:    Redeclaring text symbol \textdaggerdbl (encoding TS1) on input line 134.
+LaTeX Encoding Info:    Redeclaring text symbol \textbardbl (encoding TS1) on input line 135.
+LaTeX Encoding Info:    Redeclaring text symbol \textperthousand (encoding TS1) on input line 136.
+LaTeX Encoding Info:    Redeclaring text symbol \textbullet (encoding TS1) on input line 137.
+LaTeX Encoding Info:    Redeclaring text symbol \textcelsius (encoding TS1) on input line 138.
+LaTeX Encoding Info:    Redeclaring text symbol \textdollaroldstyle (encoding TS1) on input line 139.
+LaTeX Encoding Info:    Redeclaring text symbol \textcentoldstyle (encoding TS1) on input line 140.
+LaTeX Encoding Info:    Redeclaring text symbol \textflorin (encoding TS1) on input line 141.
+LaTeX Encoding Info:    Redeclaring text symbol \textcolonmonetary (encoding TS1) on input line 142.
+LaTeX Encoding Info:    Redeclaring text symbol \textwon (encoding TS1) on input line 143.
+LaTeX Encoding Info:    Redeclaring text symbol \textnaira (encoding TS1) on input line 144.
+LaTeX Encoding Info:    Redeclaring text symbol \textguarani (encoding TS1) on input line 145.
+LaTeX Encoding Info:    Redeclaring text symbol \textpeso (encoding TS1) on input line 146.
+LaTeX Encoding Info:    Redeclaring text symbol \textlira (encoding TS1) on input line 147.
+LaTeX Encoding Info:    Redeclaring text symbol \textrecipe (encoding TS1) on input line 148.
+LaTeX Encoding Info:    Redeclaring text symbol \textinterrobang (encoding TS1) on input line 149.
+LaTeX Encoding Info:    Redeclaring text symbol \textinterrobangdown (encoding TS1) on input line 150.
+LaTeX Encoding Info:    Redeclaring text symbol \textdong (encoding TS1) on input line 151.
+LaTeX Encoding Info:    Redeclaring text symbol \texttrademark (encoding TS1) on input line 152.
+LaTeX Encoding Info:    Redeclaring text symbol \textpertenthousand (encoding TS1) on input line 153.
+LaTeX Encoding Info:    Redeclaring text symbol \textpilcrow (encoding TS1) on input line 154.
+LaTeX Encoding Info:    Redeclaring text symbol \textbaht (encoding TS1) on input line 155.
+LaTeX Encoding Info:    Redeclaring text symbol \textnumero (encoding TS1) on input line 156.
+LaTeX Encoding Info:    Redeclaring text symbol \textdiscount (encoding TS1) on input line 157.
+LaTeX Encoding Info:    Redeclaring text symbol \textestimated (encoding TS1) on input line 158.
+LaTeX Encoding Info:    Redeclaring text symbol \textopenbullet (encoding TS1) on input line 159.
+LaTeX Encoding Info:    Redeclaring text symbol \textservicemark (encoding TS1) on input line 160.
+LaTeX Encoding Info:    Redeclaring text symbol \textlquill (encoding TS1) on input line 161.
+LaTeX Encoding Info:    Redeclaring text symbol \textrquill (encoding TS1) on input line 162.
+LaTeX Encoding Info:    Redeclaring text symbol \textcent (encoding TS1) on input line 163.
+LaTeX Encoding Info:    Redeclaring text symbol \textsterling (encoding TS1) on input line 164.
+LaTeX Encoding Info:    Redeclaring text symbol \textcurrency (encoding TS1) on input line 165.
+LaTeX Encoding Info:    Redeclaring text symbol \textyen (encoding TS1) on input line 166.
+LaTeX Encoding Info:    Redeclaring text symbol \textbrokenbar (encoding TS1) on input line 167.
+LaTeX Encoding Info:    Redeclaring text symbol \textsection (encoding TS1) on input line 168.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciidieresis (encoding TS1) on input line 169.
+LaTeX Encoding Info:    Redeclaring text symbol \textcopyright (encoding TS1) on input line 170.
+LaTeX Encoding Info:    Redeclaring text symbol \textordfeminine (encoding TS1) on input line 171.
+LaTeX Encoding Info:    Redeclaring text symbol \textcopyleft (encoding TS1) on input line 172.
+LaTeX Encoding Info:    Redeclaring text symbol \textlnot (encoding TS1) on input line 173.
+LaTeX Encoding Info:    Redeclaring text symbol \textcircledP (encoding TS1) on input line 174.
+LaTeX Encoding Info:    Redeclaring text symbol \textregistered (encoding TS1) on input line 175.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciimacron (encoding TS1) on input line 176.
+LaTeX Encoding Info:    Redeclaring text symbol \textdegree (encoding TS1) on input line 177.
+LaTeX Encoding Info:    Redeclaring text symbol \textpm (encoding TS1) on input line 178.
+LaTeX Encoding Info:    Redeclaring text symbol \texttwosuperior (encoding TS1) on input line 179.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreesuperior (encoding TS1) on input line 180.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciiacute (encoding TS1) on input line 181.
+LaTeX Encoding Info:    Redeclaring text symbol \textmu (encoding TS1) on input line 182.
+LaTeX Encoding Info:    Redeclaring text symbol \textparagraph (encoding TS1) on input line 183.
+LaTeX Encoding Info:    Redeclaring text symbol \textperiodcentered (encoding TS1) on input line 184.
+LaTeX Encoding Info:    Redeclaring text symbol \textreferencemark (encoding TS1) on input line 185.
+LaTeX Encoding Info:    Redeclaring text symbol \textonesuperior (encoding TS1) on input line 186.
+LaTeX Encoding Info:    Redeclaring text symbol \textordmasculine (encoding TS1) on input line 187.
+LaTeX Encoding Info:    Redeclaring text symbol \textsurd (encoding TS1) on input line 188.
+LaTeX Encoding Info:    Redeclaring text symbol \textonequarter (encoding TS1) on input line 189.
+LaTeX Encoding Info:    Redeclaring text symbol \textonehalf (encoding TS1) on input line 190.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreequarters (encoding TS1) on input line 191.
+LaTeX Encoding Info:    Redeclaring text symbol \texteuro (encoding TS1) on input line 192.
+LaTeX Encoding Info:    Redeclaring text symbol \texttimes (encoding TS1) on input line 193.
+LaTeX Encoding Info:    Redeclaring text symbol \textdiv (encoding TS1) on input line 194.
+))
+\g__um_fam_int=\count323
+\g__um_fonts_used_int=\count324
+\l__um_primecount_int=\count325
+\g__um_primekern_muskip=\muskip19
+ (/usr/share/texlive/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex)))
+
+Package fontspec Info: 
+(fontspec)             Font family 'TeXGyreTermes(0)' created for font 'TeX
+(fontspec)             Gyre Termes' with options [Ligatures=TeX].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/OT:script=latn;language=dflt;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/B/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: <->"TeX
+(fontspec)             Gyre
+(fontspec)             Termes/B/OT:script=latn;language=dflt;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/I/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->"TeX Gyre
+(fontspec)             Termes/I/OT:script=latn;language=dflt;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/BI/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->"TeX Gyre
+(fontspec)             Termes/BI/OT:script=latn;language=dflt;+smcp;mapping=tex-text;"
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'TeXGyreTermes(1)' created for font 'TeX
+(fontspec)             Gyre Termes' with options [].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/OT:script=latn;language=dflt;+smcp;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: <->"TeX
+(fontspec)             Gyre Termes/B/OT:script=latn;language=dflt;+smcp;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->"TeX Gyre
+(fontspec)             Termes/I/OT:script=latn;language=dflt;+smcp;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"TeX Gyre
+(fontspec)             Termes/BI/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->"TeX Gyre
+(fontspec)             Termes/BI/OT:script=latn;language=dflt;+smcp;"
+
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
+(Font)                  OT1/cmr/m/n --> TU/TeXGyreTermes(1)/m/n on input line 58.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> TU/TeXGyreTermes(1)/m/it on input line 58.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> TU/TeXGyreTermes(1)/b/n on input line 58.
+
+Package fontspec Info: 
+(fontspec)             Font family 'DejaVuSansMono(0)' created for font
+(fontspec)             'DejaVu Sans Mono' with options
+(fontspec)             [WordSpace={1,0,0},HyphenChar=None,PunctuationSpace=WordSpace].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/BI/OT:script=latn;language=dflt;"
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'DejaVuSansMono(1)' created for font
+(fontspec)             'DejaVu Sans Mono' with options [].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"DejaVu Sans
+(fontspec)             Mono/BI/OT:script=latn;language=dflt;"
+
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> TU/DejaVuSansMono(1)/m/n on input line 59.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> TU/DejaVuSansMono(1)/b/n on input line 59.
+
+Package fontspec Info: 
+(fontspec)             Could not resolve font "Latin Modern Math/B" (it
+(fontspec)             probably doesn't exist).
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'LatinModernMath(0)' created for font
+(fontspec)             'Latin Modern Math' with options
+(fontspec)             [BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"Latin Modern
+(fontspec)             Math/OT:script=math;language=dflt;"
+
+
+Package fontspec Info: 
+(fontspec)             Could not resolve font "Latin Modern Math/B" (it
+(fontspec)             probably doesn't exist).
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'LatinModernMath(1)' created for font
+(fontspec)             'Latin Modern Math' with options
+(fontspec)             [BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=Latin
+(fontspec)             Modern Math,Style=MathScript},{Size=-6,Font=Latin
+(fontspec)             Modern Math,Style=MathScriptScript}}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <8.5->"Latin Modern
+(fontspec)             Math/OT:script=math;language=dflt;"<6-8.5>"Latin Modern
+(fontspec)             Math/OT:script=math;language=dflt;+ssty=0;"<-6>"Latin
+(fontspec)             Modern Math/OT:script=math;language=dflt;+ssty=1;"
+
+LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
+(Font)              `operators' in the math version `normal' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> TU/LatinModernMath(1)/m/n on input line 60.
+LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
+(Font)              `operators' in the math version `bold' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> TU/LatinModernMath(1)/b/n on input line 60.
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 1.0001.
+
+
+Package fontspec Info: 
+(fontspec)             Could not resolve font "Latin Modern Math/B" (it
+(fontspec)             probably doesn't exist).
+
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 1.0001.
+
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 1.0001.
+
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 1.0001.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'LatinModernMath(2)' created for font
+(fontspec)             'Latin Modern Math' with options
+(fontspec)             [BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=Latin
+(fontspec)             Modern Math,Style=MathScript},{Size=-6,Font=Latin
+(fontspec)             Modern
+(fontspec)             Math,Style=MathScriptScript}},ScaleAgain=1.0001,FontAdjustment={\fontdimen
+(fontspec)             8\font =6.77pt\relax \fontdimen 9\font =3.94pt\relax
+(fontspec)             \fontdimen 10\font =4.44pt\relax \fontdimen 11\font
+(fontspec)             =6.86pt\relax \fontdimen 12\font =3.45pt\relax
+(fontspec)             \fontdimen 13\font =3.63pt\relax \fontdimen 14\font
+(fontspec)             =3.63pt\relax \fontdimen 15\font =2.89pt\relax
+(fontspec)             \fontdimen 16\font =2.47pt\relax \fontdimen 17\font
+(fontspec)             =2.47pt\relax \fontdimen 18\font =2.5pt\relax
+(fontspec)             \fontdimen 19\font =2.0pt\relax \fontdimen 22\font
+(fontspec)             =2.5pt\relax \fontdimen 20\font =0pt\relax \fontdimen
+(fontspec)             21\font =0pt\relax }].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <8.5->s*[1.0001]"Latin Modern
+(fontspec)             Math/OT:script=math;language=dflt;"<6-8.5>s*[1.0001]"Latin
+(fontspec)             Modern
+(fontspec)             Math/OT:script=math;language=dflt;+ssty=0;"<-6>s*[1.0001]"Latin
+(fontspec)             Modern Math/OT:script=math;language=dflt;+ssty=1;"
+
+LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
+(Font)              `symbols' in the math version `normal' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> TU/LatinModernMath(2)/m/n on input line 60.
+LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
+(Font)              `symbols' in the math version `bold' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> TU/LatinModernMath(2)/b/n on input line 60.
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 0.9999.
+
+
+Package fontspec Info: 
+(fontspec)             Could not resolve font "Latin Modern Math/B" (it
+(fontspec)             probably doesn't exist).
+
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 0.9999.
+
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 0.9999.
+
+
+Package fontspec Info: 
+(fontspec)             Latin Modern Math scale = 0.9999.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'LatinModernMath(3)' created for font
+(fontspec)             'Latin Modern Math' with options
+(fontspec)             [BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=Latin
+(fontspec)             Modern Math,Style=MathScript},{Size=-6,Font=Latin
+(fontspec)             Modern
+(fontspec)             Math,Style=MathScriptScript}},ScaleAgain=0.9999,FontAdjustment={\fontdimen
+(fontspec)             8\font =0.4pt\relax \fontdimen 9\font =2.0pt\relax
+(fontspec)             \fontdimen 10\font =1.67pt\relax \fontdimen 11\font
+(fontspec)             =1.11pt\relax \fontdimen 12\font =6.0pt\relax
+(fontspec)             \fontdimen 13\font =0pt\relax }].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <8.5->s*[0.9999]"Latin Modern
+(fontspec)             Math/OT:script=math;language=dflt;"<6-8.5>s*[0.9999]"Latin
+(fontspec)             Modern
+(fontspec)             Math/OT:script=math;language=dflt;+ssty=0;"<-6>s*[0.9999]"Latin
+(fontspec)             Modern Math/OT:script=math;language=dflt;+ssty=1;"
+
+LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
+(Font)              `largesymbols' in the math version `normal' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> TU/LatinModernMath(3)/m/n on input line 60.
+LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
+(Font)              `largesymbols' in the math version `bold' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> TU/LatinModernMath(3)/b/n on input line 60.
+\c@theorem=\count326
+) (./macros/web.tex)
+/home/quantum/Documents/GitHub/agentic/blueprint/src/web.tex:17: Undefined control sequence.
+l.17 \home
+          {https://drmithileshkumar.github.io/agentic}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+/home/quantum/Documents/GitHub/agentic/blueprint/src/web.tex:17: LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.17 \home{h
+            ttps://drmithileshkumar.github.io/agentic}
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/home/quantum/Documents/GitHub/agentic/blueprint/src/web.tex:18: Undefined control sequence.
+l.18 \github
+            {https://github.com/drmithileshkumar/agentic}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+/home/quantum/Documents/GitHub/agentic/blueprint/src/web.tex:19: Undefined control sequence.
+l.19 \dochome
+             {https://drmithileshkumar.github.io/agentic/docs}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (18.88667pt too wide) in paragraph at lines 17--20
+[]\TU/TeXGyreTermes(0)/m/n/10 https://drmithileshkumar.github.io/agentic https://github.com/drmithileshkumar/agentic
+ []
+
+(./web.aux)
+\openout1 = `web.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+Package hyperref Info: Link coloring OFF on input line 24.
+\@outlinefile=\write3
+\openout3 = `web.out'.
+
+
+
+Package hyperref Warning: Rerun to get /PageLabels entry.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+) (/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 106.
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics-def/xetex.def
+File: xetex.def 2025/11/01 v5.0p Graphics/color driver for xetex
+))
+\Gin@req@height=\dimen175
+\Gin@req@width=\dimen176
+)
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 24.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 24.
+ [1
+
+]
+LaTeX Font Info:    Font shape `TU/LatinModernMath(2)/m/n' will be
+(Font)              scaled to size 12.00128pt on input line 26.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(2)/m/n' will be
+(Font)              scaled to size 8.00085pt on input line 26.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(2)/m/n' will be
+(Font)              scaled to size 6.00064pt on input line 26.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(3)/m/n' will be
+(Font)              scaled to size 11.99872pt on input line 26.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(3)/m/n' will be
+(Font)              scaled to size 7.99915pt on input line 26.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(3)/m/n' will be
+(Font)              scaled to size 5.99936pt on input line 26.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 26.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 26.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) (./content.tex (./chapters/environment.tex
+./chapters/environment.tex:1: Undefined control sequence.
+l.1 \chapter
+            {Lean 4 Environment Setup}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+LaTeX Font Info:    Font shape `TU/LatinModernMath(2)/m/n' will be
+(Font)              scaled to size 10.00107pt on input line 6.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(2)/m/n' will be
+(Font)              scaled to size 7.00075pt on input line 6.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(2)/m/n' will be
+(Font)              scaled to size 5.00053pt on input line 6.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(3)/m/n' will be
+(Font)              scaled to size 9.99893pt on input line 6.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(3)/m/n' will be
+(Font)              scaled to size 6.99925pt on input line 6.
+LaTeX Font Info:    Font shape `TU/LatinModernMath(3)/m/n' will be
+(Font)              scaled to size 4.99947pt on input line 6.
+[2]
+Overfull \hbox (4.18945pt too wide) in paragraph at lines 46--46
+[]\TU/DejaVuSansMono(0)/m/n/10 curl -O --location https://elan.lean-lang.org/elan-init.ps1[] 
+ []
+
+
+Overfull \hbox (3.10591pt too wide) in paragraph at lines 72--73
+[]\TU/TeXGyreTermes(0)/m/n/10 VS Code will silently download a full Lean toolchain in the background (a progress
+ []
+
+
+Overfull \hbox (50.92326pt too wide) in paragraph at lines 81--82
+\TU/TeXGyreTermes(0)/b/n/10 Everything in Lean lives inside a project \TU/TeXGyreTermes(0)/m/n/10 — a folder with a \TU/DejaVuSansMono(0)/m/n/10 lakefile.toml\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 lakefile.lean
+ []
+
+[3]
+Overfull \hbox (104.53125pt too wide) in paragraph at lines 99--99
+[]\TU/DejaVuSansMono(0)/m/n/10 lake +leanprover-community/mathlib4:lean-toolchain new MyMathlibProject math[] 
+ []
+
+
+Overfull \hbox (2.50008pt too wide) in paragraph at lines 127--128
+[]\TU/TeXGyreTermes(0)/b/n/10 Fetch the prebuilt Mathlib cache \TU/TeXGyreTermes(0)/m/n/10 (do this — avoids compiling Mathlib from source,
+ []
+
+[4]
+Overfull \hbox (60.69934pt too wide) in paragraph at lines 145--146
+[]\TU/TeXGyreTermes(0)/m/n/10 With the cursor on the last line, the Infoview (right-hand panel; restore with \TU/DejaVuSansMono(0)/m/n/10 Ctrl+Shift+Enter
+ []
+
+
+Overfull \hbox (10.76779pt too wide) in paragraph at lines 184--185
+\TU/DejaVuSansMono(0)/m/n/10 content.tex \TU/TeXGyreTermes(0)/m/n/10 assembles the blueprint by \TU/DejaVuSansMono(0)/m/n/10 \input\TU/TeXGyreTermes(0)/m/n/10 -ing each chapter in order. \TU/DejaVuSansMono(0)/m/n/10 web.tex
+ []
+
+
+Overfull \hbox (69.45953pt too wide) in paragraph at lines 184--185
+\TU/TeXGyreTermes(0)/m/n/10 and both pull in the same \TU/DejaVuSansMono(0)/m/n/10 content.tex\TU/TeXGyreTermes(0)/m/n/10 . Individual chapters live in \TU/DejaVuSansMono(0)/m/n/10 blueprint/src/chapters/\TU/TeXGyreTermes(0)/m/n/10 . 
+ []
+
+[5]
+Overfull \hbox (134.63379pt too wide) in paragraph at lines 195--195
+[]\TU/DejaVuSansMono(0)/m/n/10 leanblueprint checkdecls   # check declarations named in the blueprint exist in Lean[] 
+ []
+
+
+Overfull \hbox (42.31934pt too wide) in paragraph at lines 207--207
+[]\TU/DejaVuSansMono(0)/m/n/10 ├── lean-toolchain         # pins exact Lean version (elan reads this)[] 
+ []
+
+
+Overfull \hbox (86.46973pt too wide) in paragraph at lines 207--207
+[]\TU/DejaVuSansMono(0)/m/n/10 ├── lake-manifest.json      # resolved dependency versions (like a lockfile)[] 
+ []
+
+[6]
+Overfull \hbox (156.70898pt too wide) in paragraph at lines 235--235
+[]\TU/DejaVuSansMono(0)/m/n/10 curl -L https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-
+ []
+
+
+Overfull \hbox (0.17578pt too wide) in paragraph at lines 243--244
+\TU/DejaVuSansMono(0)/b/n/10 curl: (35) schannel: next InitializeSecurityContext failed
+ []
+
+
+Overfull \hbox (3.99065pt too wide) in paragraph at lines 253--254
+[]\TU/TeXGyreTermes(0)/m/n/10 Delete the matching file under \TU/DejaVuSansMono(0)/m/n/10 C:\Users\<you>\.elan\update-hashes 
+ []
+
+[7]
+Overfull \hbox (0.68343pt too wide) in paragraph at lines 268--269
+[][]\TU/TeXGyreTermes(0)/m/n/10 Lean projects — Lean Community (project creation, Mathlib cache, troubleshoot-
+ []
+
+) (./chapters/tutorial.tex
+./chapters/tutorial.tex:1: Undefined control sequence.
+l.1 \chapter
+            {Lean 4 Tutorial}\label{ch:tutorial}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (21.01295pt too wide) in paragraph at lines 273--2
+[]\TU/TeXGyreTermes(0)/m/n/10 See \TU/DejaVuSansMono(0)/m/n/10 docs/resources.md \TU/TeXGyreTermes(0)/m/n/10 (the project bibliography, formerly \TU/DejaVuSansMono(0)/m/n/10 00_resources.md\TU/TeXGyreTermes(0)/m/n/10 )
+ []
+
+
+Overfull \hbox (0.84608pt too wide) in paragraph at lines 13--14
+[]\TU/TeXGyreTermes(0)/m/n/10 Core tactics III — introducing and structuring (\TU/DejaVuSansMono(0)/m/n/10 intro\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 have\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 let\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 suffices\TU/TeXGyreTermes(0)/m/n/10 ) 
+ []
+
+
+Overfull \hbox (12.67653pt too wide) in paragraph at lines 16--17
+[]\TU/TeXGyreTermes(0)/m/n/10 Structuring proofs (\TU/DejaVuSansMono(0)/m/n/10 calc\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 by_contra\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 by_cases\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 contrapose\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 push_neg\TU/TeXGyreTermes(0)/m/n/10 ) 
+ []
+
+[8]
+Overfull \hbox (3.90717pt too wide) in paragraph at lines 28--28
+[]\TU/TeXGyreTermes(0)/b/n/14.4 How Lean thinks: goals, context, term vs. tactic mode 
+ []
+
+[9]
+Underfull \hbox (badness 1389) in paragraph at lines 112--113
+[]\TU/TeXGyreTermes(0)/m/n/10 Lemma’s \TU/TeXGyreTermes(0)/m/it/10 conclusion \TU/TeXGyreTermes(0)/m/n/10 matches; premises become new
+ []
+
+[10]
+Overfull \hbox (14.22363pt too wide) in paragraph at lines 136--136
+[]  \TU/DejaVuSansMono(0)/m/n/10 rw [← h]   -- replaces b with (a + 1); goal becomes a + 1 = a + 1[] 
+ []
+
+
+Overfull \hbox (10.20996pt too wide) in paragraph at lines 151--151
+[]\TU/DejaVuSansMono(0)/m/n/10 example (a b : Nat) (h1 : a = b) (h2 : a + 1 = 5) : b + 1 = 5 := by[] 
+ []
+
+[11]
+Missing character: There is no ℕ (U+2115) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℚ (U+211A) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℝ (U+211D) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (76.31703pt too wide) in paragraph at lines 197--198
+\TU/DejaVuSansMono(0)/m/n/10 norm_num \TU/TeXGyreTermes(0)/m/n/10 proves/simplifies goals about concrete numerals (\TU/DejaVuSansMono(0)/m/n/10 21 - 6 = 15\TU/TeXGyreTermes(0)/m/n/10 ). \TU/DejaVuSansMono(0)/m/n/10 norm_cast\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 push_cast
+ []
+
+[12] [13]
+Overfull \hbox (40.3125pt too wide) in paragraph at lines 286--286
+[]\TU/DejaVuSansMono(0)/m/n/10 example (P Q R : Prop) (h : P ∨ Q) (hpr : P → R) (hqr : Q → R) : R := by[] 
+ []
+
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (15.15096pt too wide) in paragraph at lines 306--307
+\TU/DejaVuSansMono(0)/m/n/10 cases \TU/TeXGyreTermes(0)/m/n/10 gets unwieldy once structures nest (an ∃ inside an ∧ inside an ∃…). \TU/DejaVuSansMono(0)/m/n/10 rcases\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 obtain
+ []
+
+[14]
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∨ (U+2228) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℕ (U+2115) in font TeX Gyre Termes Bold/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes Bold/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (14.22363pt too wide) in paragraph at lines 343--343
+[]\TU/DejaVuSansMono(0)/m/n/10 example (a b c : Nat) (h1 : a ≤ b) (h2 : b < c) : a < c := by omega[] 
+ []
+
+[15]
+Overfull \hbox (128.61328pt too wide) in paragraph at lines 361--361
+[]\TU/DejaVuSansMono(0)/m/n/10 example (a b c : Int) : (a + b + c)^2 = a^2+b^2+c^2 + 2*a*b + 2*b*c + 2*a*c := by ring[] 
+ []
+
+
+Overfull \hbox (1.02635pt too wide) in paragraph at lines 365--365
+[]\TU/DejaVuSansMono(0)/b/n/12 linarith \TU/TeXGyreTermes(0)/b/n/12 / \TU/DejaVuSansMono(0)/b/n/12 nlinarith \TU/TeXGyreTermes(0)/b/n/12 — linear / mildly-nonlinear inequal-
+ []
+
+Missing character: There is no ℕ (U+2115) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+[16]
+Overfull \hbox (70.41504pt too wide) in paragraph at lines 438--438
+[]\TU/DejaVuSansMono(0)/m/n/10 example (a b c d : Nat) (h1 : a = b) (h2 : b < c) (h3 : c ≤ d) : a < d := calc[] 
+ []
+
+[17] [18] [19]
+Overfull \hbox (72.42188pt too wide) in paragraph at lines 556--556
+[]\TU/DejaVuSansMono(0)/m/n/10 -- Continuity as preimage-of-open-is-open (schematic — exact lemma names[] 
+ []
+
+
+Overfull \hbox (94.49707pt too wide) in paragraph at lines 556--556
+[]\TU/DejaVuSansMono(0)/m/n/10 -- depend on the specific Mathlib continuity API in scope; verify with #check[] 
+ []
+
+
+Overfull \hbox (18.2373pt too wide) in paragraph at lines 556--556
+[]\TU/DejaVuSansMono(0)/m/n/10 example {α β : Type*} [TopologicalSpace α] [TopologicalSpace β][] 
+ []
+
+
+Overfull \hbox (58.37402pt too wide) in paragraph at lines 556--556
+[]    \TU/DejaVuSansMono(0)/m/n/10 (f : α → β) (h : ∀ U, IsOpen U → IsOpen (f ⁻¹' U)) : Continuous f := by[] 
+ []
+
+Missing character: There is no 𝓝 (U+1D4DD) in font DejaVu Sans Mono/OT:script=latn;language=dflt;!
+Missing character: There is no 𝓝 (U+1D4DD) in font DejaVu Sans Mono/OT:script=latn;language=dflt;!
+Missing character: There is no 𝓝 (U+1D4DD) in font DejaVu Sans Mono/OT:script=latn;language=dflt;!
+Missing character: There is no 𝓝 (U+1D4DD) in font DejaVu Sans Mono/OT:script=latn;language=dflt;!
+Missing character: There is no 𝓝 (U+1D4DD) in font DejaVu Sans Mono/OT:script=latn;language=dflt;!
+
+Overfull \hbox (80.44922pt too wide) in paragraph at lines 566--566
+[]\TU/DejaVuSansMono(0)/m/n/10 -- A continuous function composed with a continuous function is continuous[] 
+ []
+
+
+Overfull \hbox (150.68848pt too wide) in paragraph at lines 566--566
+[]\TU/DejaVuSansMono(0)/m/n/10 example {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ][] 
+ []
+
+
+Overfull \hbox (26.26465pt too wide) in paragraph at lines 566--566
+[]    \TU/DejaVuSansMono(0)/m/n/10 (f : α → β) (g : β → γ) (hf : Continuous f) (hg : Continuous g) :[] 
+ []
+
+
+Overfull \hbox (1.88753pt too wide) in paragraph at lines 568--569
+\TU/TeXGyreTermes(0)/m/n/10 Mathlib lemma name (\TU/DejaVuSansMono(0)/m/n/10 Continuous.comp\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 continuous_def\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 IsOpen.inter\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Overfull \hbox (52.5353pt too wide) in paragraph at lines 568--569
+\TU/TeXGyreTermes(0)/m/n/10 etc.) rather than on generic tactics — this is precisely the regime where \TU/DejaVuSansMono(0)/m/n/10 exact?\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 apply?\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 #loogle
+ []
+
+[20]
+Overfull \hbox (22.25098pt too wide) in paragraph at lines 591--591
+[]\TU/DejaVuSansMono(0)/m/n/10 -- Basic group identities, provable purely from the group axioms[] 
+ []
+
+
+Overfull \hbox (32.28516pt too wide) in paragraph at lines 591--591
+[]\TU/DejaVuSansMono(0)/m/n/10 example {G : Type*} [Group G] (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by[] 
+ []
+
+
+Overfull \hbox (6.19629pt too wide) in paragraph at lines 591--591
+[]\TU/DejaVuSansMono(0)/m/n/10 example {G H : Type*} [Group G] [Group H] (f : G →* H) (a : G) :[] 
+ []
+
+
+Overfull \hbox (112.5586pt too wide) in paragraph at lines 591--591
+[]\TU/DejaVuSansMono(0)/m/n/10 example {G : Type*} [Group G] (H : Subgroup G) (a b : G) (ha : a ∈ H) (hb : b ∈ H) :[] 
+ []
+
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℚ (U+211A) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℝ (U+211D) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+[21]
+Overfull \hbox (15.12488pt too wide) in paragraph at lines 609--610
+[]\TU/TeXGyreTermes(0)/b/n/10 “failed to synthesize instance” \TU/TeXGyreTermes(0)/m/n/10 — a typeclass Lean needs (e.g. \TU/DejaVuSansMono(0)/m/n/10 TopologicalSpace
+ []
+
+[22]
+Overfull \hbox (24.63782pt too wide) in paragraph at lines 641--642
+[]\TU/TeXGyreTermes(0)/b/n/10 Types, structures, classes \TU/TeXGyreTermes(0)/m/n/10 use \TU/DejaVuSansMono(0)/m/n/10 UpperCamelCase\TU/TeXGyreTermes(0)/m/n/10 : \TU/DejaVuSansMono(0)/m/n/10 Group\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 TopologicalSpace\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+[23]
+Missing character: There is no ∨ (U+2228) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ↔ (U+2194) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∘ (U+2218) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∈ (U+2208) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∪ (U+222A) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∩ (U+2229) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ⊆ (U+2286) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∖ (U+2216) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ᶜ (U+1D9C) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ⁻ (U+207B) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∣ (U+2223) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∏ (U+220F) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (0.79924pt too wide) in paragraph at lines 652--666
+ [] 
+ []
+
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+[24]
+Overfull \hbox (10.44885pt too wide) in paragraph at lines 690--691
+[]\TU/DejaVuSansMono(0)/b/n/10 Is\TU/TeXGyreTermes(0)/b/n/10 -prefixed classes \TU/TeXGyreTermes(0)/m/n/10 (\TU/DejaVuSansMono(0)/m/n/10 IsOpen\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 IsClosed\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 IsTopologicalRing\TU/TeXGyreTermes(0)/m/n/10 ) — a \TU/DejaVuSansMono(0)/m/n/10 Prop\TU/TeXGyreTermes(0)/m/n/10 -
+ []
+
+
+Overfull \hbox (18.39537pt too wide) in paragraph at lines 693--694
+\TU/TeXGyreTermes(0)/m/n/10 tions, more examples): []Mathlib naming conventions[], cataloged in \TU/DejaVuSansMono(0)/m/n/10 docs/resources.md\TU/TeXGyreTermes(0)/m/n/10 . 
+ []
+
+
+Overfull \hbox (20.24414pt too wide) in paragraph at lines 711--711
+[]\TU/DejaVuSansMono(0)/m/n/10 example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a + 1 = c + 1 := by[] 
+ []
+
+
+Overfull \hbox (52.35352pt too wide) in paragraph at lines 733--733
+[]  \TU/DejaVuSansMono(0)/m/n/10 | succ m ih => omega   -- ih available but omega doesn't need it here;[] 
+ []
+
+
+Overfull \hbox (114.56543pt too wide) in paragraph at lines 733--733
+[]                          \TU/DejaVuSansMono(0)/m/n/10 -- compare with a genuinely inductive fact like §5's add_zero'[] 
+ []
+
+[25]
+Overfull \hbox (34.29199pt too wide) in paragraph at lines 748--748
+[]\TU/DejaVuSansMono(0)/m/n/10 example (x y : Int) : (x + y) * (x + y) = x*x + 2*x*y + y*y := by ring[] 
+ []
+
+[26]
+Overfull \hbox (68.4082pt too wide) in paragraph at lines 790--790
+[]\TU/DejaVuSansMono(0)/m/n/10 example (A B C D : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) (h3 : C ⊆ D) : A ⊆ D := by[] 
+ []
+
+
+Overfull \hbox (56.36719pt too wide) in paragraph at lines 797--797
+[]\TU/DejaVuSansMono(0)/m/n/10 example {G : Type*} [Group G] (a b c : G) (h : a * b = a * c) : b = c := by[] 
+ []
+
+
+Overfull \hbox (34.29199pt too wide) in paragraph at lines 821--821
+[]\TU/DejaVuSansMono(0)/m/n/10 example (f : ℝ → ℝ) (hf : Continuous f) (U : Set ℝ) (hU : IsOpen U) :[] 
+ []
+
+
+Overfull \hbox (32.1457pt too wide) in paragraph at lines 823--824
+\TU/TeXGyreTermes(0)/m/it/10 and cross-check against \TU/DejaVuSansMono(0)/m/it/10 Mathlib.Topology.Continuous \TU/TeXGyreTermes(0)/m/it/10 in \TU/DejaVuSansMono(0)/m/it/10 docs/resources.md\TU/TeXGyreTermes(0)/m/it/10 .) 
+ []
+
+[27]) (./chapters/tactic_cheat_sheet.tex
+./chapters/tactic_cheat_sheet.tex:1: Undefined control sequence.
+l.1 \chapter
+            {Lean 4 Tactic Cheat Sheet}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Underfull \hbox (badness 4543) in paragraph at lines 28--28
+[]\TU/TeXGyreTermes(0)/m/n/10 Introduces a hypothesis/variable
+ []
+
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Underfull \hbox (badness 10000) in paragraph at lines 30--30
+[]\TU/TeXGyreTermes(0)/m/n/10 Introduces everything possible,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+[]\TU/DejaVuSansMono(0)/m/n/10 exact
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+\TU/DejaVuSansMono(0)/m/n/10 Nat.add_comm
+ []
+
+
+Underfull \hbox (badness 1874) in paragraph at lines 33--33
+[]\TU/TeXGyreTermes(0)/m/n/10 Unifies \TU/DejaVuSansMono(0)/m/n/10 e\TU/TeXGyreTermes(0)/m/n/10 ’s conclusion with the
+ []
+
+
+Underfull \hbox (badness 3919) in paragraph at lines 36--36
+[]\TU/TeXGyreTermes(0)/m/n/10 Closes goals true by computa-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--41
+[]\TU/TeXGyreTermes(0)/m/n/10 Restates the goal as a
+ []
+
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (3.29558pt too wide) in paragraph at lines 24--46
+ [] 
+ []
+
+[28]
+Underfull \hbox (badness 10000) in paragraph at lines 57--58
+[]\TU/DejaVuSansMono(0)/m/n/10 rw
+ []
+
+
+Underfull \hbox (badness 5460) in paragraph at lines 61--61
+[]\TU/DejaVuSansMono(0)/m/n/10 nth_rewrite 1
+ []
+
+
+Underfull \hbox (badness 5460) in paragraph at lines 61--62
+[]\TU/DejaVuSansMono(0)/m/n/10 nth_rewrite 1
+ []
+
+
+Underfull \hbox (badness 2020) in paragraph at lines 62--62
+[]\TU/TeXGyreTermes(0)/m/n/10 Repeatedly applies the \TU/DejaVuSansMono(0)/m/n/10 @[simp]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 63--64
+[]\TU/DejaVuSansMono(0)/m/n/10 simp
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 64--65
+[]\TU/DejaVuSansMono(0)/m/n/10 simp only
+ []
+
+
+Underfull \hbox (badness 1490) in paragraph at lines 68--68
+\TU/TeXGyreTermes(0)/m/n/10 folds, no lemma rewriting; never
+ []
+
+
+Underfull \hbox (badness 3735) in paragraph at lines 69--69
+[]\TU/TeXGyreTermes(0)/m/n/10 Proves/simplifies goals with con-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 70--70
+[]\TU/DejaVuSansMono(0)/m/n/10 norm_cast \TU/TeXGyreTermes(0)/m/n/10 /
+ []
+
+Missing character: There is no ℕ (U+2115) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℚ (U+211A) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (3.29558pt too wide) in paragraph at lines 53--74
+ [] 
+ []
+
+[29]
+Underfull \hbox (badness 1024) in paragraph at lines 85--85
+[]\TU/TeXGyreTermes(0)/m/n/10 Splits on constructors of \TU/DejaVuSansMono(0)/m/n/10 x\TU/TeXGyreTermes(0)/m/n/10 ’s
+ []
+
+
+Underfull \hbox (badness 7344) in paragraph at lines 87--87
+[]\TU/DejaVuSansMono(0)/m/n/10 rcases h with
+ []
+
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Underfull \hbox (badness 1975) in paragraph at lines 89--90
+[]\TU/DejaVuSansMono(0)/m/n/10 rintro ⟨a, b⟩
+ []
+
+Missing character: There is no ∨ (U+2228) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Underfull \hbox (badness 1418) in paragraph at lines 91--91
+[]\TU/TeXGyreTermes(0)/m/n/10 Pattern-match in tactic mode
+ []
+
+
+Overfull \hbox (3.30084pt too wide) in paragraph at lines 81--94
+ [] 
+ []
+
+[30]
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∨ (U+2228) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
+[]\TU/TeXGyreTermes(0)/m/n/10 requires \TU/DejaVuSansMono(0)/m/n/10 im-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
+\TU/DejaVuSansMono(0)/m/n/10 port Math-
+ []
+
+
+Underfull \hbox (badness 1199) in paragraph at lines 107--107
+\TU/TeXGyreTermes(0)/m/n/10 sions (run before \TU/DejaVuSansMono(0)/m/n/10 ring \TU/TeXGyreTermes(0)/m/n/10 if division
+ []
+
+Missing character: There is no ℕ (U+2115) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Underfull \hbox (badness 10000) in paragraph at lines 109--110
+[]\TU/DejaVuSansMono(0)/m/n/10 linarith [ex-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 110--111
+[]\TU/DejaVuSansMono(0)/m/n/10 nlinarith
+ []
+
+
+Underfull \hbox (badness 2856) in paragraph at lines 111--112
+[]\TU/TeXGyreTermes(0)/m/n/10 slower; last resort over
+ []
+
+
+Overfull \hbox (9.26765pt too wide) in paragraph at lines 113--113
+[]\TU/DejaVuSansMono(0)/m/n/10 native_decide| 
+ []
+
+
+Overfull \hbox (3.30084pt too wide) in paragraph at lines 101--118
+ [] 
+ []
+
+[31]
+Underfull \hbox (badness 10000) in paragraph at lines 131--131
+[]\TU/DejaVuSansMono(0)/m/n/10 contrapose \TU/TeXGyreTermes(0)/m/n/10 /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 132--132
+[]\TU/TeXGyreTermes(0)/m/n/10 Pushes ¬ inward through quanti-
+ []
+
+
+Overfull \hbox (3.30084pt too wide) in paragraph at lines 125--138
+ [] 
+ []
+
+[32]
+Underfull \hbox (badness 1776) in paragraph at lines 147--147
+[]\TU/TeXGyreTermes(0)/m/n/10 Step-by-step chain of equalities/inequalities,
+ []
+
+
+Overfull \hbox (3.30084pt too wide) in paragraph at lines 143--155
+ [] 
+ []
+
+
+Overfull \hbox (70.41504pt too wide) in paragraph at lines 162--162
+[]\TU/DejaVuSansMono(0)/m/n/10 example (a b c d : Nat) (h1 : a = b) (h2 : b < c) (h3 : c ≤ d) : a < d := calc[] 
+ []
+
+[33]
+Underfull \hbox (badness 10000) in paragraph at lines 192--193
+[]\TU/TeXGyreTermes(0)/m/n/10 Shows the type of \TU/DejaVuSansMono(0)/m/n/10 e \TU/TeXGyreTermes(0)/m/n/10 — e.g. \TU/DejaVuSansMono(0)/m/n/10 #check
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 196--196
+[]\TU/DejaVuSansMono(0)/m/n/10 #loogle\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 196--196
+\TU/DejaVuSansMono(0)/m/n/10 #leansearch\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Overfull \hbox (1.60196pt too wide) in paragraph at lines 201--201
+[]\TU/TeXGyreTermes(0)/b/n/14.4 Notation quick-typing (VS Code unicode input, back-
+ []
+
+Missing character: There is no ∀ (U+2200) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∃ (U+2203) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∧ (U+2227) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∨ (U+2228) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ↔ (U+2194) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∈ (U+2208) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∉ (U+2209) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ⊆ (U+2286) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∩ (U+2229) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∪ (U+222A) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℕ (U+2115) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℤ (U+2124) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℚ (U+211A) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℝ (U+211D) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ℂ (U+2102) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∅ (U+2205) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ⟨ (U+27E8) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ⟩ (U+27E9) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ∘ (U+2218) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+Missing character: There is no ⊢ (U+22A2) in font TeX Gyre Termes/OT:script=latn;language=dflt;mapping=tex-text;!
+
+Overfull \hbox (51.87177pt too wide) in paragraph at lines 204--216
+ [] 
+ []
+
+[34]
+Overfull \hbox (0.42564pt too wide) in paragraph at lines 226--227
+\TU/TeXGyreTermes(0)/m/n/10 treating it as done. (This is exactly the kind of silent failure the agent-hallucination
+ []
+
+) (./chapters/minimum_viable_tactics.tex
+./chapters/minimum_viable_tactics.tex:1: Undefined control sequence.
+l.1 \chapter
+            {Minimum Viable Tactic Set}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (3.68312pt too wide) in paragraph at lines 6--7
+\TU/DejaVuSansMono(0)/m/n/10 decide\TU/TeXGyreTermes(0)/m/n/10 , instructing the model to “prove this step by step using intro/rw/exact/apply/calc
+ []
+
+
+LaTeX Warning: Hyper reference `ch:tactic_cheat_sheet' on page 35 undefined on input line 12.
+
+
+LaTeX Warning: Reference `ch:tactic_cheat_sheet' on page 35 undefined on input line 12.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--19
+\TU/DejaVuSansMono(0)/m/n/10 have\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 rfl\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 con-
+ []
+
+
+Underfull \hbox (badness 1831) in paragraph at lines 20--21
+[]\TU/TeXGyreTermes(0)/m/n/10 Replace one term with another,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--21
+[]\TU/DejaVuSansMono(0)/m/n/10 cases\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 induction\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 1102) in paragraph at lines 21--22
+[]\TU/TeXGyreTermes(0)/m/n/10 Split a goal on structure; every
+ []
+
+
+Underfull \hbox (badness 1762) in paragraph at lines 22--22
+[]\TU/TeXGyreTermes(0)/m/n/10 Equality & struc-
+ []
+
+
+Underfull \hbox (badness 6758) in paragraph at lines 22--22
+[]\TU/DejaVuSansMono(0)/m/n/10 calc\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 symm\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 trans\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 23--23
+[]\TU/DejaVuSansMono(0)/m/n/10 by_contra\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 4832) in paragraph at lines 23--23
+\TU/DejaVuSansMono(0)/m/n/10 by_cases\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 exfalso\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 23--23
+\TU/DejaVuSansMono(0)/m/n/10 push_neg\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 left\TU/TeXGyreTermes(0)/m/n/10 ,
+ []
+
+[35]
+Overfull \hbox (10.29465pt too wide) in paragraph at lines 33--34
+\TU/DejaVuSansMono(0)/m/n/10 ring_nf\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 field_simp\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 linarith\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 nlinarith\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 polyrith\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 native_decide\TU/TeXGyreTermes(0)/m/n/10 . 
+ []
+
+
+Overfull \hbox (66.03204pt too wide) in paragraph at lines 48--49
+\TU/DejaVuSansMono(0)/m/n/10 sorry\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 #check\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 #eval\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 exact?\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 apply?\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 simp?\TU/TeXGyreTermes(0)/m/n/10 , \TU/DejaVuSansMono(0)/m/n/10 #loogle\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 #leansearch\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 #statesearch
+ []
+
+[36]) (./chapters/pipeline.tex
+./chapters/pipeline.tex:1: Undefined control sequence.
+l.1 \chapter
+            {Agent and Lean 4 Pipeline}\label{ch:pipeline}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (77.48091pt too wide) in paragraph at lines 5--6
+[]\TU/TeXGyreTermes(0)/m/n/10 Pantograph (arXiv:2410.16429)[], []lean-lsp-mcp[], []LeanInteract[]. Full bibliography: \TU/DejaVuSansMono(0)/m/n/10 docs/resources.md\TU/TeXGyreTermes(0)/m/n/10 . 
+ []
+
+
+Overfull \hbox (12.2168pt too wide) in paragraph at lines 29--29
+[]      \TU/DejaVuSansMono(0)/m/n/10 history.append((tactic_string, "success", result.goals))[] 
+ []
+
+
+Overfull \hbox (48.33984pt too wide) in paragraph at lines 29--29
+[]      \TU/DejaVuSansMono(0)/m/n/10 history.append((tactic_string, "error", result.error_message))[] 
+ []
+
+
+Overfull \hbox (38.30566pt too wide) in paragraph at lines 29--29
+[]      \TU/DejaVuSansMono(0)/m/n/10 # goal_stack unchanged — agent tries again from the same state,[] 
+ []
+
+[37]
+Underfull \hbox (badness 2980) in paragraph at lines 42--42
+[]\TU/TeXGyreTermes(0)/b/n/10 File + \TU/DejaVuSansMono(0)/b/n/10 lake
+ []
+
+
+Underfull \hbox (badness 4217) in paragraph at lines 42--42
+\TU/DejaVuSansMono(0)/b/n/10 env lean
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/TeXGyreTermes(0)/m/n/10 (from the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/TeXGyreTermes(0)/m/n/10 Environment
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+[]\TU/TeXGyreTermes(0)/m/n/10 Write a whole
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+\TU/DejaVuSansMono(0)/m/n/10 .lean \TU/TeXGyreTermes(0)/m/n/10 file, run
+ []
+
+
+Underfull \hbox (badness 7925) in paragraph at lines 42--43
+[]\TU/TeXGyreTermes(0)/m/n/10 No incremental state
+ []
+
+
+Underfull \hbox (badness 3919) in paragraph at lines 42--43
+\TU/TeXGyreTermes(0)/m/n/10 — every attempt re-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\TU/TeXGyreTermes(0)/m/n/10 elaborates the whole
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\TU/TeXGyreTermes(0)/m/n/10 file from scratch;
+ []
+
+
+Underfull \hbox (badness 7116) in paragraph at lines 42--43
+\TU/TeXGyreTermes(0)/m/n/10 painfully slow for a
+ []
+
+
+Underfull \hbox (badness 1072) in paragraph at lines 42--43
+\TU/TeXGyreTermes(0)/m/n/10 multi-step tactic loop;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
+\TU/TeXGyreTermes(0)/m/n/10 output is meant for
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+[]\TU/TeXGyreTermes(0)/b/n/10 leanprover-
+ []
+
+
+Overfull \hbox (9.58064pt too wide) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/b/n/10 community/repl| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+[]\TU/TeXGyreTermes(0)/m/n/10 Persistent pro-
+ []
+
+
+Underfull \hbox (badness 6675) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/m/n/10 cess, JSON in/out
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/m/n/10 over stdin/stdout,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--43
+\TU/DejaVuSansMono(0)/m/n/10 proofState
+ []
+
+
+Underfull \hbox (badness 3815) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/m/n/10 integers track state
+ []
+
+
+Underfull \hbox (badness 2080) in paragraph at lines 43--43
+[]\TU/TeXGyreTermes(0)/m/n/10 Purpose-built for ex-
+ []
+
+
+Underfull \hbox (badness 1515) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/m/n/10 actly this; incremen-
+ []
+
+
+Underfull \hbox (badness 7326) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/m/n/10 tracking via reusing
+ []
+
+
+Underfull \hbox (badness 2980) in paragraph at lines 43--43
+\TU/TeXGyreTermes(0)/m/n/10 an earlier \TU/DejaVuSansMono(0)/m/n/10 proofS-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+[]\TU/TeXGyreTermes(0)/m/n/10 “Experimental” tactic
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+\TU/TeXGyreTermes(0)/m/n/10 mode per its own
+ []
+
+
+Underfull \hbox (badness 4242) in paragraph at lines 43--44
+\TU/TeXGyreTermes(0)/m/n/10 README; one Lean
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+\TU/TeXGyreTermes(0)/m/n/10 project setups need
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+[]\TU/TeXGyreTermes(0)/b/n/10 Lean lan-
+ []
+
+
+Underfull \hbox (badness 6575) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/b/n/10 guage server
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/b/n/10 (LSP)\TU/TeXGyreTermes(0)/m/n/10 , via
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/DejaVuSansMono(0)/m/n/10 lean-lsp-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+[]\TU/TeXGyreTermes(0)/m/n/10 The same server
+ []
+
+
+Underfull \hbox (badness 3623) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 VS Code talks to;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 JSON-RPC 2.0;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+[]\TU/TeXGyreTermes(0)/m/n/10 Reuses infrastruc-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 ture that’s already
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 battle-tested by ev-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 ery human Lean
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 user; also exposes
+ []
+
+
+Overfull \hbox (21.1219pt too wide) in paragraph at lines 44--44
+\TU/TeXGyreTermes(0)/m/n/10 hover/definition/diagnostics
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+[]\TU/TeXGyreTermes(0)/m/n/10 Designed around a
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+\TU/TeXGyreTermes(0)/m/it/10 live-edited file\TU/TeXGyreTermes(0)/m/n/10 , not
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+\TU/TeXGyreTermes(0)/m/n/10 a clean append-only
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+\TU/TeXGyreTermes(0)/m/n/10 ping “propose one
+ []
+
+
+Underfull \hbox (badness 5802) in paragraph at lines 44--45
+\TU/TeXGyreTermes(0)/m/n/10 file at this position”
+ []
+
+
+Underfull \hbox (badness 2293) in paragraph at lines 44--45
+\TU/TeXGyreTermes(0)/m/n/10 is more indirect than
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+\TU/TeXGyreTermes(0)/m/n/10 the REPL’s native
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+\TU/DejaVuSansMono(0)/m/n/10 "proofState":
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+[]\TU/TeXGyreTermes(0)/m/n/10 Purpose-built ML-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/TeXGyreTermes(0)/m/n/10 facing API/REPL,
+ []
+
+
+Underfull \hbox (badness 1910) in paragraph at lines 45--45
+[]\TU/TeXGyreTermes(0)/m/n/10 Most feature-rich for
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/TeXGyreTermes(0)/m/n/10 search-heavy agent
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/TeXGyreTermes(0)/m/n/10 lished LLM+Lean
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/TeXGyreTermes(0)/m/n/10 pipelines (Draft-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+[]\TU/TeXGyreTermes(0)/m/n/10 Heavier dependency,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+\TU/TeXGyreTermes(0)/m/n/10 smaller community
+ []
+
+
+Underfull \hbox (badness 7047) in paragraph at lines 45--46
+\TU/TeXGyreTermes(0)/m/n/10 overkill if the agent
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+\TU/TeXGyreTermes(0)/m/n/10 is doing simple se-
+ []
+
+
+Overfull \hbox (15.30084pt too wide) in paragraph at lines 38--48
+ [] 
+ []
+
+
+Overfull \hbox (21.9794pt too wide) in paragraph at lines 50--51
+[]\TU/TeXGyreTermes(0)/b/n/10 Recommendation for this project: the \TU/DejaVuSansMono(0)/b/n/10 leanprover-community/repl\TU/TeXGyreTermes(0)/b/n/10 , wrapped
+ []
+
+[38]
+Overfull \hbox (1.91869pt too wide) in paragraph at lines 54--55
+\TU/DejaVuSansMono(0)/m/n/10 /path/to/repl/.lake/build/bin/repl\TU/TeXGyreTermes(0)/m/n/10 ). Communicates via \TU/TeXGyreTermes(0)/b/n/10 one JSON ob-
+ []
+
+[39]
+Overfull \hbox (7.89104pt too wide) in paragraph at lines 100--101
+\TU/TeXGyreTermes(0)/m/n/10 An invalid tactic doesn’t crash the process — it returns a \TU/DejaVuSansMono(0)/m/n/10 messages \TU/TeXGyreTermes(0)/m/n/10 array with \TU/DejaVuSansMono(0)/m/n/10 "sever-
+ []
+
+
+Overfull \hbox (218.9209pt too wide) in paragraph at lines 109--109
+[]\TU/DejaVuSansMono(0)/m/n/10 {"tactic": "exact 37", "proofState": 1}   // wrong: goal wants Int, not the literal misapplied here[] 
+ []
+
+
+Overfull \hbox (94.49707pt too wide) in paragraph at lines 109--109
+[]\TU/DejaVuSansMono(0)/m/n/10 // ← stdout (schematic — exact message text depends on the specific mismatch)[] 
+ []
+
+
+Overfull \hbox (38.30566pt too wide) in paragraph at lines 109--109
+[] \TU/DejaVuSansMono(0)/m/n/10 "messages": [{"severity": "error", "data": "type mismatch ..."}]}[] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 126--126
+[]\TU/TeXGyreTermes(0)/m/n/10 problem set
+ []
+
+
+Overfull \hbox (36.67969pt too wide) in paragraph at lines 126--126
+\TU/TeXGyreTermes(0)/m/n/10 (\TU/DejaVuSansMono(0)/m/n/10 docs/resources.md
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 126--126
+\TU/TeXGyreTermes(0)/m/n/10 topic/difficulty
+ []
+
+
+Overfull \hbox (19.54674pt too wide) in paragraph at lines 129--129
+[]\TU/DejaVuSansMono(0)/m/n/10 proofState_before| 
+ []
+
+
+Overfull \hbox (13.52623pt too wide) in paragraph at lines 131--131
+[]\TU/DejaVuSansMono(0)/m/n/10 proofState_after| 
+ []
+
+
+Underfull \hbox (badness 7504) in paragraph at lines 132--132
+[]\TU/DejaVuSansMono(0)/m/n/10 goals_before \TU/TeXGyreTermes(0)/m/n/10 /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 132--132
+[]\TU/TeXGyreTermes(0)/m/n/10 REPL
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 132--132
+\TU/DejaVuSansMono(0)/m/n/10 goal\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 goals
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 133--134
+[]\TU/DejaVuSansMono(0)/m/n/10 advanced \TU/TeXGyreTermes(0)/m/n/10 / \TU/DejaVuSansMono(0)/m/n/10 rejected \TU/TeXGyreTermes(0)/m/n/10 / \TU/DejaVuSansMono(0)/m/n/10 proved
+ []
+
+
+Underfull \hbox (badness 1668) in paragraph at lines 133--134
+\TU/TeXGyreTermes(0)/m/n/10 cepted syntactically but \TU/DejaVuSansMono(0)/m/n/10 goals_after
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 134--134
+[]\TU/TeXGyreTermes(0)/m/n/10 REPL \TU/DejaVuSansMono(0)/m/n/10 mes-
+ []
+
+
+Underfull \hbox (badness 3428) in paragraph at lines 135--136
+[]\TU/TeXGyreTermes(0)/m/n/10 time for this one REPL round-trip —
+ []
+
+
+Underfull \hbox (badness 1237) in paragraph at lines 135--136
+\TU/TeXGyreTermes(0)/m/n/10 needed to separate “slow tactic” (e.g. a
+ []
+
+
+Overfull \hbox (3.30084pt too wide) in paragraph at lines 122--138
+ [] 
+ []
+
+[40] [41]
+Overfull \hbox (15.22253pt too wide) in paragraph at lines 154--155
+\TU/TeXGyreTermes(0)/m/n/10 Within a single REPL process, each theorem attempt starts from a fresh \TU/DejaVuSansMono(0)/m/n/10 env\TU/TeXGyreTermes(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 proofState
+ []
+
+[42]
+Overfull \hbox (3.15675pt too wide) in paragraph at lines 185--186
+\TU/TeXGyreTermes(0)/m/n/10 agent’s actual reasoning trace (prompt, chain-of-thought if any, model/temperature
+ []
+
+[43]) (./chapters/mobile_llms.tex
+./chapters/mobile_llms.tex:1: Undefined control sequence.
+l.1 \chapter
+            {Mobile-Capable LLMs for Mathematical Reasoning}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (58.21252pt too wide) in paragraph at lines 10--10
+[][][][]$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][] [] [][][] [] [][][][][][][][][][][][][][][][][] [] [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]$[]| 
+ []
+
+
+Overfull \hbox (8.0923pt too wide) in paragraph at lines 10--11
+\TU/TeXGyreTermes(0)/m/n/10 most-cited on-device options. Phi-4-mini leads on reasoning quality — 88.6% on GSM8K
+ []
+
+[44]
+Overfull \hbox (4.23206pt too wide) in paragraph at lines 12--12
+[][][][]$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][] [] [][][] [] [][][][][][][][] [] [][] [] [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]$[]| 
+ []
+
+
+Overfull \hbox (57.21252pt too wide) in paragraph at lines 14--14
+[][][][]$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][] [] [][][] [] [][][][][][][][] [] [][] [] [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]$[]| 
+ []
+
+
+Overfull \hbox (1.85228pt too wide) in paragraph at lines 24--25
+[]\TU/TeXGyreTermes(0)/m/it/10 It punches far above its parameter count on math specifically. \TU/TeXGyreTermes(0)/m/n/10 With tool-integrated
+ []
+
+[45]) (./chapters/llm_in_use.tex
+./chapters/llm_in_use.tex:1: Undefined control sequence.
+l.1 \chapter
+            {The LLM We're Using}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (5.73225pt too wide) in paragraph at lines 8--9
+\TU/TeXGyreTermes(0)/m/n/10 The end-to-end harness script, \TU/DejaVuSansMono(0)/m/n/10 agents/first_e2e_test.py\TU/TeXGyreTermes(0)/m/n/10 , hardcodes the model
+ []
+
+
+Overfull \hbox (36.29883pt too wide) in paragraph at lines 27--27
+[]\TU/DejaVuSansMono(0)/m/n/10 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env[] 
+ []
+
+) [46]) [47] (./web.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+ ***********
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `web.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `web.out':
+(rerunfilecheck)             Before: <no file>
+(rerunfilecheck)             After:  7B08B8066A789608024275797295EB11;22566.
+ ) 
+Here is how much of TeX's memory you used:
+ 16285 strings out of 468173
+ 302709 string characters out of 5435520
+ 912596 words of memory out of 5000000
+ 44769 multiletter control sequences out of 15000+600000
+ 633381 words of font info for 118 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 95i,9n,110p,992b,593s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on web.pdf (47 pages).

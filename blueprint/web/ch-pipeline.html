@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['$','$'], ['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent and Lean 4 Pipeline</title>
+<link rel="next" href="ch-mobile_llms.html" title="Mobile-Capable LLMs for Mathematical Reasoning" />
+<link rel="prev" href="ch-minimum_viable_tactics.html" title="Minimum Viable Tactic Set" />
+<link rel="up" href="index.html" title="Agentic Hallucination in logical context" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/showmore.css" />
+<link rel="stylesheet" href="styles/blueprint.css" />
+<link rel="stylesheet" href="styles/extra_styles.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Agentic Hallucination in logical context</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-environment.html#a0000000002"><span class="toc_ref">1</span> <span class="toc_entry">What you’re installing</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000003"><span class="toc_ref">2</span> <span class="toc_entry">Prerequisites</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000004"><span class="toc_ref">3</span> <span class="toc_entry">Install elan</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000005"><span class="toc_ref">4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000006"><span class="toc_ref">5</span> <span class="toc_entry">Create a project</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-environment.html#a0000000007"><span class="toc_ref">5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000008"><span class="toc_ref">6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000009"><span class="toc_ref">7</span> <span class="toc_entry">Leanblueprint set up</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-environment.html#a0000000010"><span class="toc_ref">7.1</span> <span class="toc_entry">Installing it</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000011"><span class="toc_ref">7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000012"><span class="toc_ref">7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000013"><span class="toc_ref">7.4</span> <span class="toc_entry">Build commands</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000014"><span class="toc_ref">8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000015"><span class="toc_ref">9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000016"><span class="toc_ref">10</span> <span class="toc_entry">Keeping things updated</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000017"><span class="toc_ref">11</span> <span class="toc_entry">Troubleshooting</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000018"><span class="toc_ref">12</span> <span class="toc_entry">Next up</span></a>
+ </li>
+<li class="">
+  <a href="ch-environment.html#a0000000019"><span class="toc_ref">13</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000020"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000021"><span class="toc_ref">1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000022"><span class="toc_ref">2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000023"><span class="toc_ref">2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000024"><span class="toc_ref">2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000025"><span class="toc_ref">2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000026"><span class="toc_ref">2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000027"><span class="toc_ref">2.5</span> <span class="toc_entry">Quick reference</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000028"><span class="toc_ref">3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000029"><span class="toc_ref">3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000030"><span class="toc_ref">3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000031"><span class="toc_ref">3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000032"><span class="toc_ref">4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000033"><span class="toc_ref">4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000034"><span class="toc_ref">4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000035"><span class="toc_ref">4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000036"><span class="toc_ref">4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000037"><span class="toc_ref">5</span> <span class="toc_entry">Case analysis and induction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000038"><span class="toc_ref">5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000039"><span class="toc_ref">5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000040"><span class="toc_ref">5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000041"><span class="toc_ref">6</span> <span class="toc_entry">Automation and decision procedures</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000042"><span class="toc_ref">6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000043"><span class="toc_ref">6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000044"><span class="toc_ref">6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000045"><span class="toc_ref">6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000046"><span class="toc_ref">6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000047"><span class="toc_ref">6.6</span> <span class="toc_entry">Choosing among them</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000048"><span class="toc_ref">7</span> <span class="toc_entry">Structuring proofs</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000049"><span class="toc_ref">7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000050"><span class="toc_ref">7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000051"><span class="toc_ref">7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000052"><span class="toc_ref">7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000053"><span class="toc_ref">8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000054"><span class="toc_ref">8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000055"><span class="toc_ref">8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000056"><span class="toc_ref">8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000057"><span class="toc_ref">9</span> <span class="toc_entry">Tactic combinators</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000058"><span class="toc_ref">10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000059"><span class="toc_ref">11</span> <span class="toc_entry">Worked examples — Topology</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000060"><span class="toc_ref">12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000061"><span class="toc_ref">13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000062"><span class="toc_ref">14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000063"><span class="toc_ref">15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-tutorial.html#a0000000064"><span class="toc_ref">15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000065"><span class="toc_ref">15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000066"><span class="toc_ref">15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000067"><span class="toc_ref">15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000068"><span class="toc_ref">15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000069"><span class="toc_ref">15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000070"><span class="toc_ref">16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html#a0000000071"><span class="toc_ref">17</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000072"><span class="toc_ref">1</span> <span class="toc_entry">Reading a goal state</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000073"><span class="toc_ref">2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000074"><span class="toc_ref">3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000075"><span class="toc_ref">4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000076"><span class="toc_ref">5</span> <span class="toc_entry">Automation / decision procedures</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000077"><span class="toc_ref">6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000078"><span class="toc_ref">7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000079"><span class="toc_ref">8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000080"><span class="toc_ref">9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000081"><span class="toc_ref">10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html#a0000000082"><span class="toc_ref">11</span> <span class="toc_entry">Common gotchas</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000083"><span class="toc_ref">1</span> <span class="toc_entry">Why a restricted set at all</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000084"><span class="toc_ref">2</span> <span class="toc_entry">The floor set</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000085"><span class="toc_ref">3</span> <span class="toc_entry">Explicitly excluded</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000086"><span class="toc_ref">4</span> <span class="toc_entry">Undecided</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000087"><span class="toc_ref">5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html#a0000000088"><span class="toc_ref">6</span> <span class="toc_entry">Empirical tracking</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active current">
+  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent and Lean 4 Pipeline</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="ch-pipeline.html#a0000000089"><span class="toc_ref">1</span> <span class="toc_entry">The loop, restated precisely</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000090"><span class="toc_ref">2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000091"><span class="toc_ref">3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-pipeline.html#a0000000092"><span class="toc_ref">3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000093"><span class="toc_ref">3.2</span> <span class="toc_entry">One tactic step</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000094"><span class="toc_ref">3.3</span> <span class="toc_entry">The error case</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000095"><span class="toc_ref">3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000096"><span class="toc_ref">4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000097"><span class="toc_ref">5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="ch-pipeline.html#a0000000098"><span class="toc_ref">5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000099"><span class="toc_ref">5.2</span> <span class="toc_entry">Session/state switching</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000100"><span class="toc_ref">5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000101"><span class="toc_ref">6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000102"><span class="toc_ref">7</span> <span class="toc_entry">Open design decisions</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000103"><span class="toc_ref">8</span> <span class="toc_entry">What this doc feeds</span></a>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html#a0000000104"><span class="toc_ref">9</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-mobile_llms.html#a0000000105"><span class="toc_ref">1</span> <span class="toc_entry">The landscape (2026)</span></a>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html#a0000000106"><span class="toc_ref">2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="ch-llm_in_use.html#a0000000107"><span class="toc_ref">1</span> <span class="toc_entry">What the harness calls</span></a>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html#a0000000108"><span class="toc_ref">2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html#a0000000109"><span class="toc_ref">3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li ><a href="dep_graph_document.html">Dependency graph</a></li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="ch:pipeline">5 Agent and Lean 4 Pipeline</h1>
+
+<p><em>Agentic Hallucinations — Independent Study.</em> Design spec for how the agent and Lean 4 actually communicate, and what “environment switching” means across this project’s full stack. Written to be concrete enough to hand to an implementer (human or Claude Code) as a blueprint — not just a description. </p>
+<p>Sources: <a href ="https://github.com/leanprover-community/repl">leanprover-community/repl</a> (protocol fetched and quoted directly below), <a href ="https://arxiv.org/abs/2410.16429">Pantograph (arXiv:2410.16429)</a>, <a href ="https://github.com/oOo0oOo/lean-lsp-mcp">lean-lsp-mcp</a>, <a href ="https://github.com/augustepoiroux/leaninteract">LeanInteract</a>. Full bibliography: <span class="ttfamily">docs/resources.md</span>. </p>
+<h1 id="a0000000089">1 The loop, restated precisely</h1>
+<p>From the original project brief: the agent is given a theorem, proposes one tactic, Lean verifies it, and either returns a new goal state or an error — repeat until the goal list is empty (proved) or some stopping condition is hit (budget exhausted, agent gives up, non-termination). </p>
+<p>Stated as a state machine: </p>
+<pre class="verbatim">
+state = (theorem, goal_stack, history)
+loop:
+  agent.observe(goal_stack, history) → tactic_string
+  result = lean.apply(tactic_string, goal_stack)
+  if result.ok and result.goals == []:
+      state = PROVED; stop
+  elif result.ok:
+      goal_stack = result.goals
+      history.append((tactic_string, "success", result.goals))
+  else:
+      history.append((tactic_string, "error", result.error_message))
+      # goal_stack unchanged — agent tries again from the same state,
+      # now with the error message added to what it can see
+  if budget_exhausted or agent_signals_stop:
+      state = FAILED; stop
+</pre>
+<p>Everything in this document is about making <span class="ttfamily">lean.apply(...)</span> a real, callable thing, and about what <span class="ttfamily">goal_stack</span> and <span class="ttfamily">result</span> actually look like on the wire — because <em>that</em> representation is what determines what the agent can see, and therefore what “hallucination” even means operationally (proposing a tactic that’s invalid given what it could see, vs. one that’s invalid period). </p>
+<h1 id="a0000000090">2 Candidate interfaces, surveyed</h1>
+<p>There is no single official “Lean API for agents” — four real options exist, each with different tradeoffs: </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Interface</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">How it works</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Strengths</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Weaknesses</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">File + <span class="ttfamily">lake env lean</span></b> (from the Environment Setup chapter, §8) </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Write a whole <span class="ttfamily">.lean</span> file, run <span class="ttfamily">lake env lean file.lean</span>, parse stdout/stderr </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Zero extra dependencies; exactly what CI and the setup doc already verify </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> No incremental state — every attempt re-elaborates the whole file from scratch; painfully slow for a multi-step tactic loop; output is meant for humans, not machines </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">leanprover-community/repl</b> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Persistent process, JSON in/out over stdin/stdout, <span class="ttfamily">proofState</span> integers track state incrementally </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Purpose-built for exactly this; incremental (no re-elaboration per tactic); structured JSON; supports backtracking via reusing an earlier <span class="ttfamily">proofState</span>/<span class="ttfamily">env</span> id </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> “Experimental” tactic mode per its own README; one Lean process = one project’s environment, so multi-project setups need multiple processes (see §5) </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">Lean language server (LSP)</b>, via <span class="ttfamily">lake serve</span> or wrapped as <span class="ttfamily">lean-lsp-mcp</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> The same server VS Code talks to; JSON-RPC 2.0; query goal state at a file position </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Reuses infrastructure that’s already battle-tested by every human Lean user; also exposes hover/definition/diagnostics beyond just tactic state </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Designed around a <em>live-edited file</em>, not a clean append-only tactic stream — mapping “propose one tactic” onto “edit this file at this position” is more indirect than the REPL’s native <span class="ttfamily">{"tactic": ..., "proofState": ...}</span> shape </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">Pantograph</b> </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Purpose-built ML-facing API/REPL, supports tree search (MCTS) natively </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Most feature-rich for search-heavy agent designs; used in published LLM+Lean pipelines (Draft-Sketch-Prove) </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Heavier dependency, smaller community than the REPL above; overkill if the agent is doing simple sequential tactic proposal rather than tree search </p>
+
+    </td>
+  </tr>
+</table> </div>
+<p><b class="bfseries">Recommendation for this project: the <span class="ttfamily">leanprover-community/repl</span>, wrapped in Python (directly, or via <span class="ttfamily">LeanInteract</span>).</b> It matches the project’s stated loop shape almost exactly (see the tactic-mode example below), is incremental (fast — no re-elaborating the whole file per tactic), and is simple enough to reason about and log precisely, which matters more here than raw proof-search power. Revisit Pantograph if/when the harness grows a tree-search or backtracking-heavy agent design rather than the linear one-tactic-at-a-time loop described in the project brief. </p>
+<h1 id="a0000000091">3 The REPL protocol, concretely</h1>
+<p>Run via <span class="ttfamily">lake exe repl</span> (or, pointed at a specific project’s dependencies: <span class="ttfamily">lake env /path/to/repl/.lake/build/bin/repl</span>). Communicates via <b class="bfseries">one JSON object per command, blank-line separated</b>, on stdin, with one JSON object back on stdout. </p>
+<h2 id="a0000000092">3.1 Starting a theorem (command mode to tactic mode)</h2>
+<p>You open tactic mode by sending a command containing a <span class="ttfamily">sorry</span>; the response gives you a <span class="ttfamily">proofState</span> id to start from: </p>
+<pre class="verbatim">
+// → stdin
+{"cmd": "theorem my_thm (x : Unit) : Nat := by sorry"}
+
+// ← stdout
+{"sorries":
+ [{"proofState": 0,
+   "pos": {"line": 1, "column": 29},
+   "goal": "x : Unit\n⊢ Nat",
+   "endPos": {"line": 1, "column": 34}}],
+ "messages":
+ [{"severity": "warning", "pos": {...}, "endPos": {...},
+   "data": "declaration uses 'sorry'"}],
+ "env": 0}
+</pre>
+<p><span class="ttfamily">goal</span> here — <span class="ttfamily">"x : Unit\n⊢ Nat"</span> — is exactly the goal-state text this project’s tutorial (the Lean 4 Tutorial chapter, §1) teaches how to read. This is the string (or a structured equivalent) the agent should be shown at each step. </p>
+<h2 id="a0000000093">3.2 One tactic step</h2>
+<pre class="verbatim">
+// → stdin
+{"tactic": "apply Int.natAbs", "proofState": 0}
+
+// ← stdout
+{"proofState": 1, "goals": ["x : Unit\n⊢ Int"]}
+</pre>
+<pre class="verbatim">
+// → stdin
+{"tactic": "exact -37", "proofState": 1}
+
+// ← stdout
+{"proofState": 2, "goals": []}
+</pre>
+<p><span class="ttfamily">"goals": []</span> is the terminal success state — the theorem is proved. This is the exact shape of <span class="ttfamily">lean.apply()</span> from §1: input is <span class="ttfamily">{tactic, proofState}</span>, output is a new <span class="ttfamily">proofState</span> plus the resulting <span class="ttfamily">goals</span> list (empty on success). </p>
+<h2 id="a0000000094">3.3 The error case</h2>
+<p>An invalid tactic doesn’t crash the process — it returns a <span class="ttfamily">messages</span> array with <span class="ttfamily">"severity": "error"</span> and the proof state does <b class="bfseries">not</b> advance (you’re still at the same <span class="ttfamily">proofState</span>, free to try again): </p>
+<pre class="verbatim">
+// → stdin
+{"tactic": "exact 37", "proofState": 1}   // wrong: goal wants Int, not the literal misapplied here
+
+// ← stdout (schematic — exact message text depends on the specific mismatch)
+{"proofState": 1,
+ "messages": [{"severity": "error", "data": "type mismatch ..."}]}
+</pre>
+<p>This is the critical mechanic for the hallucination analysis: <b class="bfseries">a rejected tactic does not lose progress</b> — the agent is still at <span class="ttfamily">proofState 1</span> and can retry. So “how many iterations to converge” (from the project’s core question) is naturally just <em>the count of tactic-submission round-trips</em>, separable into accepted-and-advanced vs. rejected-and-retried, per <span class="ttfamily">proofState</span>. </p>
+<h2 id="a0000000095">3.4 Backtracking and persistence</h2>
+<p>Any earlier <span class="ttfamily">env</span> or <span class="ttfamily">proofState</span> integer can be reused as the starting point for a new command — this <em>is</em> backtracking, for free, without re-running anything. States can also be pickled to <span class="ttfamily">.olean</span> files and restored later (<span class="ttfamily">{"pickleTo": "path", "proofState": n}</span> / <span class="ttfamily">{"unpickleProofStateFrom": "path"}</span>), which matters for §6 (long-running logging) and for resuming an interrupted batch run. </p>
+<h1 id="a0000000096">4 Data model: what gets exchanged per step</h1>
+<p>Distilling the above into the fields the harness needs to track per iteration: </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Field</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Source</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Notes</b> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">theorem_id</span> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> problem set (<span class="ttfamily">docs/resources.md</span> topic/difficulty split, Goal 9) </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> which problem this attempt belongs to </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">attempt_id</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> harness </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> one per full proof attempt (a theorem may be attempted multiple times) </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">step_index</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> harness </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> position in this attempt’s tactic sequence </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">proofState_before</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> REPL </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> the <span class="ttfamily">proofState</span> id the tactic was proposed against </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">tactic_string</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> agent output </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> exactly what the agent proposed, verbatim — no normalization before logging </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">proofState_after</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> REPL </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> new id if accepted; unchanged if rejected </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">goals_before</span> / <span class="ttfamily">goals_after</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> REPL <span class="ttfamily">goal</span>/<span class="ttfamily">goals</span> field </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> the actual text shown to / returned to the agent </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">outcome</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> derived </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">advanced</span> / <span class="ttfamily">rejected</span> / <span class="ttfamily">proved</span> (<span class="ttfamily">goals == []</span>) / <span class="ttfamily">no_progress</span> (accepted syntactically but <span class="ttfamily">goals_after == goals_before</span>) </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">error_message</span> </p>
+
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> REPL <span class="ttfamily">messages</span> </p>
+
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> full text, only present on <span class="ttfamily">outcome == rejected</span> </p>
+
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><span class="ttfamily">wall_time_ms</span> </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> harness </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> time for this one REPL round-trip — needed to separate “slow tactic” (e.g. a heavy <span class="ttfamily">simp</span>/<span class="ttfamily">aesop</span> call) from a hung process (§7) </p>
+
+    </td>
+  </tr>
+</table> </div>
+<p>This table is the seed of the logging schema for Goal 8 (agent-thinking logging system) — that doc should extend this with <em>why</em> the agent chose the tactic (its reasoning/prompt context), not just what Lean did with it. </p>
+<h1 id="a0000000097">5 Environment switching — three distinct senses</h1>
+<p>“Environment switching” turns out to mean three different things at three different layers. Conflating them is an easy source of bugs once the harness is running many theorems across topics. </p>
+<h2 id="a0000000098">5.1 Toolchain/project switching</h2>
+<p>Each Lean <b class="bfseries">project</b> pins a <span class="ttfamily">lean-toolchain</span> (exact compiler version) and a <span class="ttfamily">lakefile</span> dependency set (which Mathlib commit, which other libraries). A single REPL process is started via <span class="ttfamily">lake env &lt;repl-binary&gt;</span> <b class="bfseries">inside a specific project directory</b> and inherits <em>that</em> project’s toolchain and imports for its whole lifetime. </p>
+<p>For this project’s problem set (set theory / topology / algebra, all drawn from Mathlib per the Lean 4 Tutorial chapter, §10–12), <b class="bfseries">one Mathlib-linked project should suffice for all three topics</b> — Mathlib is a single library spanning all of them, so topic segmentation is a <em>content/selection</em> concern, not an environment concern. Toolchain switching only becomes real if the problem set later pulls in an external benchmark repo with its own pinned toolchain (e.g. cloning <span class="ttfamily">miniF2F</span> or <span class="ttfamily">PutnamBench</span> directly rather than re-stating their theorems inside our own project — see <span class="ttfamily">docs/resources.md</span> §3). In that case, the harness needs one REPL process (and one working directory) per distinct toolchain, and a router that dispatches each theorem attempt to the correct process based on which benchmark it came from. </p>
+<h2 id="a0000000099">5.2 Session/state switching</h2>
+<p>Within a single REPL process, each theorem attempt starts from a fresh <span class="ttfamily">env</span>/<span class="ttfamily">proofState</span> (§3). Retrying a theorem, or exploring two different tactic choices from the same point, is just reusing an earlier <span class="ttfamily">proofState</span> id rather than starting over — cheap, and exactly what makes backtracking-capable agent designs (or simply “let me log both the accepted path and the road not taken”) tractable. The harness needs a clear policy here: does a new <em>attempt</em> at the same theorem get a fresh <span class="ttfamily">proofState 0</span>, or does it resume from wherever the last attempt got stuck? (Recommendation: fresh state per attempt, logged as a new <span class="ttfamily">attempt_id</span> — resuming from a stuck point conflates “the agent tried again” with “the agent kept going,” which are different statistical events.) </p>
+<h2 id="a0000000100">5.3 Interface switching (human vs. machine)</h2>
+<p>This is the sense closest to the original phrasing of Goal 7 (the not-yet-written fluency guide) and to the Environment Setup chapter, §8: VS Code + the Lean 4 extension is how <em>you</em> build, debug, and sanity-check problems interactively (Infoview, hover, <span class="ttfamily">exact?</span> suggestions rendered inline); the REPL (or LSP-via-MCP) is how the <em>harness</em> talks to Lean headlessly, with no human in the loop. A theorem should generally be authored and manually verified once in VS Code (confirm it’s actually provable, get a feel for its difficulty) before it’s added to the problem set the harness runs against — the REPL is not a good place to <em>discover</em> whether a theorem statement itself is even correct, only to run an already-trusted theorem through repeated automated attempts. </p>
+<h1 id="a0000000101">6 Failure modes at the plumbing level</h1>
+<p>Distinct from the mathematical error taxonomy in the Lean 4 Tutorial chapter, §13 (wrong term, wrong lemma name, missing instance, incomplete, no-progress, silent <span class="ttfamily">sorry</span>), the harness also needs to handle failures in the <em>plumbing itself</em> — these are infrastructure bugs, not agent hallucinations, and conflating the two categories would corrupt the statistical analysis: </p>
+<ul class="itemize">
+  <li><p><b class="bfseries">Malformed JSON / protocol violation</b> — the agent (or a bug in the harness) sends something the REPL can’t parse. Should be caught and logged as a harness error, never attributed to the agent’s mathematical reasoning. </p>
+</li>
+  <li><p><b class="bfseries">Process crash</b> — the REPL process dies mid-session (e.g. Mathlib bug, memory exhaustion). Needs a restart-and-resume policy; whatever attempt was in flight should be marked <span class="ttfamily">incomplete_infra_failure</span>, not <span class="ttfamily">failed</span>. </p>
+</li>
+  <li><p><b class="bfseries">Non-terminating tactic</b> — some tactics (<span class="ttfamily">simp</span> with a bad lemma set, certain <span class="ttfamily">aesop</span> configurations) can hang rather than error. The harness needs a <b class="bfseries">per-tactic timeout</b> with a hard kill, and that timeout event is itself a data point worth logging (which tactics the agent proposes that are prone to hanging is exactly the kind of pattern the hallucination analysis wants to catch). </p>
+</li>
+  <li><p><b class="bfseries">Resource exhaustion across a long run</b> — REPL processes accumulate <span class="ttfamily">Environment</span>/<span class="ttfamily">proofState</span> objects in memory; a long batch run needs periodic process restarts (using the pickling mechanism from §3 to preserve any state worth keeping) rather than one REPL process for the entire experiment. </p>
+</li>
+</ul>
+<h1 id="a0000000102">7 Open design decisions</h1>
+<p>Flagging these explicitly rather than silently deciding them — they affect the statistics, so they’re worth deciding deliberately once the logging doc (Goal 8) and problem set (Goal 9) exist alongside this one: </p>
+<ol class="enumerate">
+  <li><p><b class="bfseries">What counts as “one iteration”?</b> A single <span class="ttfamily">{"tactic": ...}</span> call, or a semicolon/<span class="ttfamily">&lt;;&gt;</span>-chained combinator treated as one agent turn (per the Lean 4 Tutorial chapter, §9’s note on this same ambiguity)? Affects every downstream “iterations to converge” statistic. </p>
+</li>
+  <li><p><b class="bfseries">Retry budget policy.</b> Fixed max tactics per theorem? Max wall-clock time? Does the agent get to see the full history of its own rejected attempts, or only the current goal state? </p>
+</li>
+  <li><p><b class="bfseries">What exactly gets shown to the agent on error</b> — the raw Lean error string (verbose, sometimes includes internal term representations) or a cleaned/truncated version? This is a real methodological choice: a cleaner error message could materially change the agent’s hallucination rate, which means it needs to be fixed and reported, not tuned ad hoc per run. </p>
+</li>
+  <li><p><b class="bfseries">Attempt independence.</b> Are repeated attempts at the same theorem statistically independent draws (fresh <span class="ttfamily">proofState 0</span>, no memory of prior attempts) or is the agent allowed to see its own history across attempts? Both are defensible, but they answer different questions, and the analysis needs to know which one was run. </p>
+</li>
+</ol>
+<h1 id="a0000000103">8 What this doc feeds</h1>
+<ul class="itemize">
+  <li><p><b class="bfseries">Goal 8 (agent-thinking logging system)</b> extends §4’s per-step schema with the agent’s actual reasoning trace (prompt, chain-of-thought if any, model/temperature metadata) — this doc defines the <em>Lean-side</em> half of each logged record; Goal 8 defines the <em>agent-side</em> half. </p>
+</li>
+  <li><p><b class="bfseries">Goal 9 (problem set)</b> should be authored and hand-verified via the VS Code path (§5c) before being fed to the harness described here. </p>
+</li>
+  <li><p><b class="bfseries">Goal 7 (environment-switching fluency guide)</b> is the practitioner-facing companion to §5 — this doc explains the <em>architecture</em> of the three switching senses; Goal 7 should be the concrete day-to-day checklist (“here’s how you personally move between VS Code, a terminal REPL session, and reading harness logs without losing track of which project/state you’re in”). </p>
+</li>
+</ul>
+<h1 id="a0000000104">9 References</h1>
+<ul class="itemize">
+  <li><p><a href ="https://github.com/leanprover-community/repl">leanprover-community/repl</a> — protocol and JSON examples in §3 quoted directly from this README </p>
+</li>
+  <li><p><a href ="https://arxiv.org/abs/2410.16429">Pantograph: A Machine-to-Machine Interaction Interface for Advanced Theorem Proving, High Level Reasoning, and Data Extraction in Lean 4</a> — Aniva, Sun, Miranda, Barrett, Koyejo (arXiv:2410.16429) </p>
+</li>
+  <li><p><a href ="https://github.com/oOo0oOo/lean-lsp-mcp">lean-lsp-mcp</a> </p>
+</li>
+  <li><p><a href ="https://github.com/augustepoiroux/leaninteract">LeanInteract</a> — Python wrapper, likely implementation choice once past design stage </p>
+</li>
+  <li><p>The Lean 4 Tutorial chapter, §13 (mathematical error taxonomy, distinct from §6’s infrastructure failures here) </p>
+</li>
+  <li><p>Full annotated bibliography, including the agent-Lean systems this design was compared against (LeanDojo/ReProver, LeanAgent, Prover Agent, APOLLO): <span class="ttfamily">docs/resources.md</span> </p>
+</li>
+</ul>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <svg  id="showmore-minus" class="icon icon-eye-minus showmore"><use xlink:href="symbol-defs.svg#icon-eye-minus"></use></svg>
+
+  <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
+
+  <a href="ch-minimum_viable_tactics.html" title="Minimum Viable Tactic Set"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="index.html" title="Agentic Hallucination in logical context"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="ch-mobile_llms.html" title="Mobile-Capable LLMs for Mathematical Reasoning"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+<script type="text/javascript" src="js/js.cookie.min.js"></script>
+<script type="text/javascript" src="js/showmore.js"></script>
+</body>
+</html>

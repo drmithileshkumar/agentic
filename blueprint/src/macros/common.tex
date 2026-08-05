@@ -9,6 +9,50 @@
 % (this is what the [theorem] arguments mean) and never resets it.
 % If you want for instance to number them within chapters then you can add
 % [chapter] at the end of the next line.
+
+\usepackage{amssymb, amsthm, mathtools}
+\usepackage[unicode,colorlinks=true,linkcolor=blue,urlcolor=magenta, citecolor=blue]{hyperref}
+
+\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+
+\usepackage{iftex}
+\ifPDFTeX
+  % pdfLaTeX path: map Unicode -> LaTeX commands
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp}
+  \usepackage{newunicodechar}
+  % common mappings used in your chapter
+  \newunicodechar{α}{\ensuremath{\alpha}}
+  \newunicodechar{∧}{\ensuremath{\land}}
+  \newunicodechar{∨}{\ensuremath{\lor}}
+  \newunicodechar{∃}{\ensuremath{\exists}}
+  \newunicodechar{∀}{\ensuremath{\forall}}
+  \newunicodechar{⊢}{\ensuremath{\vdash}}
+  \newunicodechar{≤}{\ensuremath{\le}}
+  \newunicodechar{≥}{\ensuremath{\ge}}
+  \newunicodechar{≠}{\ensuremath{\neq}}
+  \newunicodechar{ℕ}{\ensuremath{\mathbb{N}}}
+  \newunicodechar{ℤ}{\ensuremath{\mathbb{Z}}}
+  \newunicodechar{ℚ}{\ensuremath{\mathbb{Q}}}
+  \newunicodechar{ℝ}{\ensuremath{\mathbb{R}}}
+  \newunicodechar{ℂ}{\ensuremath{\mathbb{C}}}
+  \newunicodechar{∅}{\ensuremath{\varnothing}}
+  \newunicodechar{⟨}{\ensuremath{\langle}}
+  \newunicodechar{⟩}{\ensuremath{\rangle}}
+  \newunicodechar{∈}{\ensuremath{\in}}
+  \newunicodechar{∉}{\ensuremath{\notin}}
+  % add more mappings as needed
+\else
+  % XeLaTeX / LuaLaTeX path: full Unicode fonts
+  \usepackage{fontspec}
+  \usepackage{unicode-math}
+  \setmainfont{TeX Gyre Termes} % or your preferred text font
+  \setmonofont{DejaVu Sans Mono} % monospaced with box-drawing
+  \setmathfont{Latin Modern Math} % or XITS/TeX Gyre Math
+\fi
+
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}

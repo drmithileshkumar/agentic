@@ -12,8 +12,10 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agentic Hallucination in logical context</title>
-<link rel="next" href="ch-environment.html" title="Lean 4 Environment Setup" />
+<title>Minimum Viable Tactic Set</title>
+<link rel="next" href="ch-pipeline.html" title="Agent and Lean 4 Pipeline" />
+<link rel="prev" href="ch-tactic_cheat_sheet.html" title="Lean 4 Tactic Cheat Sheet" />
+<link rel="up" href="index.html" title="Agentic Hallucination in logical context" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 <link rel="stylesheet" href="styles/showmore.css" />
@@ -24,6 +26,7 @@
 <body>
 <header>
 <svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Agentic Hallucination in logical context</a></h1>
 </header>
 
 <div class="wrapper">
@@ -333,10 +336,10 @@
 
   </ul>
  </li>
-<li class="">
+<li class=" active current">
   <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
-  <span class="expand-toc">▶</span>
-  <ul class="sub-toc-1">
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
      <li class="">
   <a href="ch-minimum_viable_tactics.html#a0000000083"><span class="toc_ref">1</span> <span class="toc_entry">Why a restricted set at all</span></a>
  </li>
@@ -459,419 +462,193 @@
 
 
 <div class="main-text">
- <div class="titlepage">
-<h1>Agentic Hallucination in logical context</h1>
-<p class="authors">
-<span class="author">Anshika Jain Mithilesh Kumar</span>
-</p>
-</div>
-</div> <!--main-text -->
-<nav class=local_toc>
-<ul>
-  <li>	
-  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000002"><span class="toc_ref">1</span> <span class="toc_entry">What you’re installing</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000003"><span class="toc_ref">2</span> <span class="toc_entry">Prerequisites</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000004"><span class="toc_ref">3</span> <span class="toc_entry">Install elan</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000005"><span class="toc_ref">4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000006"><span class="toc_ref">5</span> <span class="toc_entry">Create a project</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000007"><span class="toc_ref">5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
-  </li>
+<h1 id="ch:minimum_viable_tactics">4 Minimum Viable Tactic Set</h1>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000008"><span class="toc_ref">6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000009"><span class="toc_ref">7</span> <span class="toc_entry">Leanblueprint set up</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000010"><span class="toc_ref">7.1</span> <span class="toc_entry">Installing it</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000011"><span class="toc_ref">7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000012"><span class="toc_ref">7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000013"><span class="toc_ref">7.4</span> <span class="toc_entry">Build commands</span></a>
-  </li>
+<h1 id="a0000000083">1 Why a restricted set at all</h1>
+<p>The harness (<span class="ttfamily">agents/first_e2e_test.py</span>) already makes a real design decision on this: its system prompt explicitly bans <span class="ttfamily">ring</span>, <span class="ttfamily">omega</span>, <span class="ttfamily">simp</span>, <span class="ttfamily">aesop</span>, <span class="ttfamily">tauto</span>, and <span class="ttfamily">decide</span>, instructing the model to “prove this step by step using intro/rw/exact/apply/calc instead, so the proof trace is actually informative for the study.” </p>
+<p>The reason is specific to what this project studies. A decision procedure like <span class="ttfamily">ring</span> or <span class="ttfamily">omega</span> either closes a goal outright or fails — it gives no partial signal about <em>which</em> reasoning step was wrong. Since this project’s subject is hallucinations in the agent’s step-by-step reasoning, a tactic that swallows several reasoning steps into one opaque call is close to useless as data: a failure only says “the decision procedure didn’t apply here,” not anything about the agent’s own reasoning. This chapter makes that already-made decision explicit and generalizes it into a usable reference, rather than inventing a new policy. </p>
+<h1 id="a0000000084">2 The floor set</h1>
+<p>The following tactics, all drawn from the Tactic Cheat Sheet chapter (<a href="#." >§<span >3</span></a>), are the ones needed to make progress on a goal one legible reasoning step at a time. Nothing here is a decision procedure; each one corresponds to a single, inspectable move. </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Category</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000014"><span class="toc_ref">8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000015"><span class="toc_ref">9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000016"><span class="toc_ref">10</span> <span class="toc_entry">Keeping things updated</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000017"><span class="toc_ref">11</span> <span class="toc_entry">Troubleshooting</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000018"><span class="toc_ref">12</span> <span class="toc_entry">Next up</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000019"><span class="toc_ref">13</span> <span class="toc_entry">References</span></a>
-  </li>
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Tactics</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000020"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000021"><span class="toc_ref">1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000022"><span class="toc_ref">2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000023"><span class="toc_ref">2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000024"><span class="toc_ref">2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000025"><span class="toc_ref">2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000026"><span class="toc_ref">2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000027"><span class="toc_ref">2.5</span> <span class="toc_entry">Quick reference</span></a>
-  </li>
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Role</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000028"><span class="toc_ref">3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000029"><span class="toc_ref">3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000030"><span class="toc_ref">3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000031"><span class="toc_ref">3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p>Structural </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000032"><span class="toc_ref">4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000033"><span class="toc_ref">4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000034"><span class="toc_ref">4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000035"><span class="toc_ref">4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000036"><span class="toc_ref">4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
-  </li>
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">intro</span>, <span class="ttfamily">exact</span>, <span class="ttfamily">apply</span>, <span class="ttfamily">have</span>, <span class="ttfamily">rfl</span>, <span class="ttfamily">constructor</span>, <span class="ttfamily">use</span> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000037"><span class="toc_ref">5</span> <span class="toc_entry">Case analysis and induction</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000038"><span class="toc_ref">5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000039"><span class="toc_ref">5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000040"><span class="toc_ref">5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
-  </li>
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Open and close goals directly; no search or automation </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000041"><span class="toc_ref">6</span> <span class="toc_entry">Automation and decision procedures</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000042"><span class="toc_ref">6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000043"><span class="toc_ref">6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000044"><span class="toc_ref">6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000045"><span class="toc_ref">6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000046"><span class="toc_ref">6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000047"><span class="toc_ref">6.6</span> <span class="toc_entry">Choosing among them</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Rewriting </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000048"><span class="toc_ref">7</span> <span class="toc_entry">Structuring proofs</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000049"><span class="toc_ref">7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000050"><span class="toc_ref">7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000051"><span class="toc_ref">7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000052"><span class="toc_ref">7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
-  </li>
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">rw [h]</span>, <span class="ttfamily">rw [← h]</span>, <span class="ttfamily">nth_rewrite</span> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000053"><span class="toc_ref">8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000054"><span class="toc_ref">8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000055"><span class="toc_ref">8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000056"><span class="toc_ref">8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
-  </li>
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Replace one term with another, named explicitly by the agent </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000057"><span class="toc_ref">9</span> <span class="toc_entry">Tactic combinators</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000058"><span class="toc_ref">10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000059"><span class="toc_ref">11</span> <span class="toc_entry">Worked examples — Topology</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000060"><span class="toc_ref">12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000061"><span class="toc_ref">13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000062"><span class="toc_ref">14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000063"><span class="toc_ref">15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000064"><span class="toc_ref">15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000065"><span class="toc_ref">15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000066"><span class="toc_ref">15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000067"><span class="toc_ref">15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000068"><span class="toc_ref">15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000069"><span class="toc_ref">15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Case analysis / induction </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000070"><span class="toc_ref">16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000071"><span class="toc_ref">17</span> <span class="toc_entry">References</span></a>
-  </li>
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">cases</span>, <span class="ttfamily">induction</span>, <span class="ttfamily">rcases</span>, <span class="ttfamily">obtain</span> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000072"><span class="toc_ref">1</span> <span class="toc_entry">Reading a goal state</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000073"><span class="toc_ref">2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000074"><span class="toc_ref">3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000075"><span class="toc_ref">4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000076"><span class="toc_ref">5</span> <span class="toc_entry">Automation / decision procedures</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000077"><span class="toc_ref">6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000078"><span class="toc_ref">7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000079"><span class="toc_ref">8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000080"><span class="toc_ref">9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000081"><span class="toc_ref">10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000082"><span class="toc_ref">11</span> <span class="toc_entry">Common gotchas</span></a>
-  </li>
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Split a goal on structure; every branch stays visible </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000083"><span class="toc_ref">1</span> <span class="toc_entry">Why a restricted set at all</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000084"><span class="toc_ref">2</span> <span class="toc_entry">The floor set</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000085"><span class="toc_ref">3</span> <span class="toc_entry">Explicitly excluded</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000086"><span class="toc_ref">4</span> <span class="toc_entry">Undecided</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000087"><span class="toc_ref">5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000088"><span class="toc_ref">6</span> <span class="toc_entry">Empirical tracking</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Equality &amp; structuring </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent and Lean 4 Pipeline</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000089"><span class="toc_ref">1</span> <span class="toc_entry">The loop, restated precisely</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000090"><span class="toc_ref">2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000091"><span class="toc_ref">3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000092"><span class="toc_ref">3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000093"><span class="toc_ref">3.2</span> <span class="toc_entry">One tactic step</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000094"><span class="toc_ref">3.3</span> <span class="toc_entry">The error case</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000095"><span class="toc_ref">3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
-  </li>
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">calc</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span>, <span class="ttfamily">congr</span> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000096"><span class="toc_ref">4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000097"><span class="toc_ref">5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000098"><span class="toc_ref">5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000099"><span class="toc_ref">5.2</span> <span class="toc_entry">Session/state switching</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000100"><span class="toc_ref">5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
-  </li>
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Chain justified steps explicitly </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000101"><span class="toc_ref">6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000102"><span class="toc_ref">7</span> <span class="toc_entry">Open design decisions</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000103"><span class="toc_ref">8</span> <span class="toc_entry">What this doc feeds</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000104"><span class="toc_ref">9</span> <span class="toc_entry">References</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p>Logic / contradiction </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-mobile_llms.html#a0000000105"><span class="toc_ref">1</span> <span class="toc_entry">The landscape (2026)</span></a>
-  </li>
-  <li>	
-  <a href="ch-mobile_llms.html#a0000000106"><span class="toc_ref">2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
-  </li>
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">by_contra</span>, <span class="ttfamily">by_cases</span>, <span class="ttfamily">exfalso</span>, <span class="ttfamily">push_neg</span>, <span class="ttfamily">left</span>, <span class="ttfamily">right</span> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-llm_in_use.html#a0000000107"><span class="toc_ref">1</span> <span class="toc_entry">What the harness calls</span></a>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html#a0000000108"><span class="toc_ref">2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html#a0000000109"><span class="toc_ref">3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
-  </li>
+    </td>
+    <td  style="text-align:left" 
+        rowspan=""
+        colspan="">
+      <p> Restructure the goal without deciding it </p>
 
-	</ul>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p>Goal management </p>
+
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <span class="ttfamily">·</span> (focus), <span class="ttfamily">&lt;;&gt;</span> </p>
+
+    </td>
+    <td  style="text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Sequence and scope tactics across multiple goals </p>
+
+    </td>
+  </tr>
+</table> </div>
+<h1 id="a0000000085">3 Explicitly excluded</h1>
+<p>Banned by the harness today: <span class="ttfamily">ring</span>, <span class="ttfamily">omega</span>, <span class="ttfamily">simp</span> (all variants: <span class="ttfamily">simp_all</span>, <span class="ttfamily">simp only</span>, <span class="ttfamily">simp?</span>, <span class="ttfamily">simp at</span>), <span class="ttfamily">aesop</span>, <span class="ttfamily">tauto</span>, <span class="ttfamily">decide</span>. </p>
+<p>Not currently referenced by the harness’s ban list, but the same family of decision procedure for the same reason — excluded here too, pending explicit reconsideration: <span class="ttfamily">ring_nf</span>, <span class="ttfamily">field_simp</span>, <span class="ttfamily">linarith</span>, <span class="ttfamily">nlinarith</span>, <span class="ttfamily">polyrith</span>, <span class="ttfamily">native_decide</span>. </p>
+<h1 id="a0000000086">4 Undecided</h1>
+<ul class="itemize">
+  <li><p><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span> — narrower than <span class="ttfamily">simp</span>, but still automated lemma search rather than a single named step. Not yet run against a real goal in this project, so not yet placed on either list. </p>
+</li>
+  <li><p><span class="ttfamily">dsimp</span> — unfolds definitions only, no lemma database; arguably closer to the floor set than to <span class="ttfamily">simp</span> despite the name. Same status: undecided until it’s actually needed. </p>
+</li>
 </ul>
-</nav>
+<h1 id="a0000000087">5 Discovery and debugging tools — not proof steps</h1>
+<p><span class="ttfamily">sorry</span>, <span class="ttfamily">#check</span>, <span class="ttfamily">#eval</span>, <span class="ttfamily">exact?</span>, <span class="ttfamily">apply?</span>, <span class="ttfamily">simp?</span>, <span class="ttfamily">#loogle</span>/<span class="ttfamily">#leansearch</span>/<span class="ttfamily">#statesearch</span> are all tools a human uses while writing or debugging a proof. None of them are tactics an agent should ever propose as a logged step: <span class="ttfamily">sorry</span> admits the goal without proving it (exactly the kind of silent failure this study needs to catch, per the Tactic Cheat Sheet’s gotchas section), and the <span class="ttfamily">?</span>-suffixed tools search the library rather than performing an inspectable reasoning step themselves. </p>
+<h1 id="a0000000088">6 Empirical tracking</h1>
+<p>The floor set above is derived from the harness’s existing design and the cheat sheet, not yet from a completed proof run — <span class="ttfamily">agents/first_e2e_test.py</span> has not been executed yet (see <span class="ttfamily">agents/README.md</span>, which flags an unverified exception-handling branch). The table below is the place to record, tactic by tactic, which of the above were actually exercised by a real proof and which turned out to be unnecessary. </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Tactic</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Needed for</b> </p>
+
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px; text-align:left; border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Confirmed?</b> </p>
+
+    </td>
+  </tr>
+</table> </div>
+
+</div> <!--main-text -->
 </div> <!-- content-wrapper -->
 </div> <!-- content -->
 </div> <!-- wrapper -->
@@ -881,7 +658,11 @@
 
   <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
 
-  <a href="ch-environment.html" title="Lean 4 Environment Setup"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="ch-tactic_cheat_sheet.html" title="Lean 4 Tactic Cheat Sheet"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="index.html" title="Agentic Hallucination in logical context"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="ch-pipeline.html" title="Agent and Lean 4 Pipeline"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

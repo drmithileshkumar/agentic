@@ -3,10 +3,139 @@
 \providecommand*\HyPL@Entry[1]{}
 \HyPL@Entry{0<</S/D>>}
 \HyPL@Entry{1<</S/D>>}
-\@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction to Groups}{1}{chapter.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {1}Lean 4 Environment Setup}{1}{chapter.1}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap:groups}{{1}{1}{Introduction to Groups}{chapter.1}{}}
-\newlabel{def:group}{{1}{1}{Group}{theorem.1}{}}
-\newlabel{thm:fundamental_thm}{{2}{1}{Fundamental Theorem}{theorem.2}{}}
-\gdef \@abspage@last{2}
+\newlabel{ch:environment}{{1}{1}{Lean 4 Environment Setup}{chapter.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {1.1}What you're installing}{1}{section.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.2}Prerequisites}{1}{section.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.3}Install elan}{2}{section.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.4}Install the Lean 4 VS Code extension}{2}{section.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.5}Create a project}{2}{section.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.5.1}Working in an already-cloned repository}{3}{subsection.1.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.6}Verify Mathlib is wired up}{4}{section.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.7}Leanblueprint set up}{4}{section.1.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.7.1}Installing it}{4}{subsection.1.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.7.2}Two dependencies for a full local build}{4}{subsection.1.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.7.3}How blueprint/src is organized}{4}{subsection.1.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.7.4}Build commands}{5}{subsection.1.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.8}Project anatomy (what's actually on disk)}{5}{section.1.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.9}Command line vs.\ VS Code --- two ways to talk to Lean}{5}{section.1.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.10}Keeping things updated}{6}{section.1.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.11}Troubleshooting}{6}{section.1.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.12}Next up}{6}{section.1.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1.13}References}{6}{section.1.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {2}Lean 4 Tutorial}{7}{chapter.2}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:tutorial}{{2}{7}{Lean 4 Tutorial}{chapter.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}How Lean thinks: goals, context, term vs.\ tactic mode}{8}{section.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Core tactics I --- closing goals}{8}{section.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}\texttt  {rfl} --- reflexivity}{8}{subsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}\texttt  {exact} --- direct proof}{8}{subsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}\texttt  {apply} --- working backwards}{9}{subsection.2.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.4}\texttt  {assumption}}{9}{subsection.2.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.5}Quick reference}{9}{subsection.2.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Core tactics II --- rewriting}{9}{section.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}\texttt  {rw} --- precise, one substitution at a time}{9}{subsection.2.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}\texttt  {simp} --- automated simplification}{10}{subsection.2.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}\texttt  {norm\_num}, \texttt  {norm\_cast}, \texttt  {push\_cast}}{11}{subsection.2.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Core tactics III --- introducing and structuring}{11}{section.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}\texttt  {intro} --- assuming hypotheses}{11}{subsection.2.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}\texttt  {have} and \texttt  {let} --- intermediate steps}{11}{subsection.2.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}\texttt  {suffices} --- working backwards from a stronger claim}{12}{subsection.2.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}\texttt  {show} --- restating the goal}{12}{subsection.2.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}Case analysis and induction}{12}{section.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.1}\texttt  {cases} --- splitting on constructors}{12}{subsection.2.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.2}\texttt  {induction} --- proof by mathematical induction}{12}{subsection.2.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.3}\texttt  {rcases} / \texttt  {obtain} --- recursive destructuring (Mathlib)}{13}{subsection.2.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.6}Automation and decision procedures}{13}{section.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.1}\texttt  {omega} --- linear arithmetic over ℕ/ℤ}{13}{subsection.2.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.2}\texttt  {ring} / \texttt  {ring\_nf} --- polynomial identities}{14}{subsection.2.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.3}\texttt  {linarith} / \texttt  {nlinarith} --- linear / mildly-nonlinear inequalities}{14}{subsection.2.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.4}\texttt  {decide} / \texttt  {native\_decide}}{14}{subsection.2.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.5}\texttt  {aesop} --- general automated search}{14}{subsection.2.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.6}Choosing among them}{14}{subsection.2.6.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.7}Structuring proofs}{15}{section.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7.1}\texttt  {by\_contra} --- proof by contradiction}{15}{subsection.2.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7.2}\texttt  {by\_cases} --- splitting on a proposition}{15}{subsection.2.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7.3}\texttt  {contrapose} / \texttt  {push\_neg}}{15}{subsection.2.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7.4}\texttt  {calc} --- calculational proofs}{15}{subsection.2.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.8}Equality machinery: \texttt  {ext}, \texttt  {funext}, \texttt  {congr}, \texttt  {symm}, \texttt  {trans}}{16}{section.2.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.8.1}\texttt  {funext} and \texttt  {ext} --- extensionality}{16}{subsection.2.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.8.2}\texttt  {congr} --- from function equality to argument equality}{16}{subsection.2.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.8.3}\texttt  {symm} / \texttt  {trans}}{16}{subsection.2.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.9}Tactic combinators}{16}{section.2.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.10}Worked examples --- Set theory}{17}{section.2.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.11}Worked examples --- Topology}{17}{section.2.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.12}Worked examples --- Algebra}{18}{section.2.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.13}Reading errors and diagnosing failed proofs}{19}{section.2.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.14}From tactics to the agent pipeline}{20}{section.2.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.15}Mathlib conventions: naming, dot notation, anonymous constructors}{20}{section.2.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.15.1}Capitalization signals the kind of thing}{20}{subsection.2.15.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.15.2}The symbol to word dictionary}{21}{subsection.2.15.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.15.3}Hypothesis ordering: ``of''}{21}{subsection.2.15.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.15.4}≤ / < vs ≥ / >}{21}{subsection.2.15.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.15.5}Dot notation and the anonymous constructor}{21}{subsection.2.15.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.15.6}Structural suffixes worth recognizing}{21}{subsection.2.15.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.16}Exercises (with worked solutions)}{22}{section.2.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.17}References}{24}{section.2.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Lean 4 Tactic Cheat Sheet}{25}{chapter.3}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:tactic_cheat_sheet}{{3}{25}{Lean 4 Tactic Cheat Sheet}{chapter.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Reading a goal state}{25}{section.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Core / structural --- closing and opening goals}{26}{section.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Rewriting \& simplification}{27}{section.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Case analysis, induction, destructuring}{28}{section.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Automation / decision procedures}{28}{section.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Logic, contradiction, structuring}{29}{section.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.7}Equality, extensionality, congruence}{29}{section.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.8}Combinators (gluing tactics together)}{29}{section.3.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.9}Debugging \& discovery}{30}{section.3.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.10}Notation quick-typing (VS Code unicode input, backslash prefix)}{30}{section.3.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.11}Common gotchas}{30}{section.3.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Minimum Viable Tactic Set}{31}{chapter.4}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:minimum_viable_tactics}{{4}{31}{Minimum Viable Tactic Set}{chapter.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Why a restricted set at all}{31}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}The floor set}{31}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Explicitly excluded}{32}{section.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Undecided}{32}{section.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Discovery and debugging tools --- not proof steps}{32}{section.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Empirical tracking}{32}{section.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Agent and Lean 4 Pipeline}{33}{chapter.5}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:pipeline}{{5}{33}{Agent and Lean 4 Pipeline}{chapter.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}The loop, restated precisely}{33}{section.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Candidate interfaces, surveyed}{34}{section.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}The REPL protocol, concretely}{35}{section.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Starting a theorem (command mode to tactic mode)}{35}{subsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}One tactic step}{35}{subsection.5.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}The error case}{35}{subsection.5.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.4}Backtracking and persistence}{36}{subsection.5.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}Data model: what gets exchanged per step}{36}{section.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}Environment switching --- three distinct senses}{37}{section.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}Toolchain/project switching}{37}{subsection.5.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}Session/state switching}{37}{subsection.5.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.3}Interface switching (human vs.\ machine)}{37}{subsection.5.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.6}Failure modes at the plumbing level}{37}{section.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.7}Open design decisions}{38}{section.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.8}What this doc feeds}{38}{section.5.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.9}References}{39}{section.5.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Mobile-Capable LLMs for Mathematical Reasoning}{40}{chapter.6}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:mobile_llms}{{6}{40}{Mobile-Capable LLMs for Mathematical Reasoning}{chapter.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}The landscape (2026)}{40}{section.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Model choice: Qwen2.5-Math-1.5B-Instruct}{40}{section.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {7}The LLM We're Using}{42}{chapter.7}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:llm_in_use}{{7}{42}{The LLM We're Using}{chapter.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.1}What the harness calls}{42}{section.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.2}It is a constant, not configuration}{42}{section.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.3}Status: current state, not a final choice}{43}{section.7.3}\protected@file@percent }
+\gdef \@abspage@last{44}

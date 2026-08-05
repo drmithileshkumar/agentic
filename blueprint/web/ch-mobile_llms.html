@@ -12,8 +12,10 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agentic Hallucination in logical context</title>
-<link rel="next" href="ch-environment.html" title="Lean 4 Environment Setup" />
+<title>Mobile-Capable LLMs for Mathematical Reasoning</title>
+<link rel="next" href="ch-llm_in_use.html" title="The LLM We’re Using" />
+<link rel="prev" href="ch-pipeline.html" title="Agent and Lean 4 Pipeline" />
+<link rel="up" href="index.html" title="Agentic Hallucination in logical context" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 <link rel="stylesheet" href="styles/showmore.css" />
@@ -24,6 +26,7 @@
 <body>
 <header>
 <svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Agentic Hallucination in logical context</a></h1>
 </header>
 
 <div class="wrapper">
@@ -421,10 +424,10 @@
 
   </ul>
  </li>
-<li class="">
+<li class=" active current">
   <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
-  <span class="expand-toc">▶</span>
-  <ul class="sub-toc-1">
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
      <li class="">
   <a href="ch-mobile_llms.html#a0000000105"><span class="toc_ref">1</span> <span class="toc_entry">The landscape (2026)</span></a>
  </li>
@@ -459,419 +462,58 @@
 
 
 <div class="main-text">
- <div class="titlepage">
-<h1>Agentic Hallucination in logical context</h1>
-<p class="authors">
-<span class="author">Anshika Jain Mithilesh Kumar</span>
-</p>
-</div>
-</div> <!--main-text -->
-<nav class=local_toc>
-<ul>
-  <li>	
-  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000002"><span class="toc_ref">1</span> <span class="toc_entry">What you’re installing</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000003"><span class="toc_ref">2</span> <span class="toc_entry">Prerequisites</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000004"><span class="toc_ref">3</span> <span class="toc_entry">Install elan</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000005"><span class="toc_ref">4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000006"><span class="toc_ref">5</span> <span class="toc_entry">Create a project</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000007"><span class="toc_ref">5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
-  </li>
+<h1 id="ch:mobile_llms">6 Mobile-Capable LLMs for Mathematical Reasoning</h1>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000008"><span class="toc_ref">6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000009"><span class="toc_ref">7</span> <span class="toc_entry">Leanblueprint set up</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000010"><span class="toc_ref">7.1</span> <span class="toc_entry">Installing it</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000011"><span class="toc_ref">7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000012"><span class="toc_ref">7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000013"><span class="toc_ref">7.4</span> <span class="toc_entry">Build commands</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000014"><span class="toc_ref">8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000015"><span class="toc_ref">9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000016"><span class="toc_ref">10</span> <span class="toc_entry">Keeping things updated</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000017"><span class="toc_ref">11</span> <span class="toc_entry">Troubleshooting</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000018"><span class="toc_ref">12</span> <span class="toc_entry">Next up</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000019"><span class="toc_ref">13</span> <span class="toc_entry">References</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000020"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000021"><span class="toc_ref">1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000022"><span class="toc_ref">2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000023"><span class="toc_ref">2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000024"><span class="toc_ref">2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000025"><span class="toc_ref">2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000026"><span class="toc_ref">2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000027"><span class="toc_ref">2.5</span> <span class="toc_entry">Quick reference</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000028"><span class="toc_ref">3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000029"><span class="toc_ref">3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000030"><span class="toc_ref">3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000031"><span class="toc_ref">3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000032"><span class="toc_ref">4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000033"><span class="toc_ref">4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000034"><span class="toc_ref">4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000035"><span class="toc_ref">4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000036"><span class="toc_ref">4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000037"><span class="toc_ref">5</span> <span class="toc_entry">Case analysis and induction</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000038"><span class="toc_ref">5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000039"><span class="toc_ref">5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000040"><span class="toc_ref">5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000041"><span class="toc_ref">6</span> <span class="toc_entry">Automation and decision procedures</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000042"><span class="toc_ref">6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000043"><span class="toc_ref">6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000044"><span class="toc_ref">6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000045"><span class="toc_ref">6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000046"><span class="toc_ref">6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000047"><span class="toc_ref">6.6</span> <span class="toc_entry">Choosing among them</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000048"><span class="toc_ref">7</span> <span class="toc_entry">Structuring proofs</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000049"><span class="toc_ref">7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000050"><span class="toc_ref">7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000051"><span class="toc_ref">7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000052"><span class="toc_ref">7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000053"><span class="toc_ref">8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000054"><span class="toc_ref">8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000055"><span class="toc_ref">8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000056"><span class="toc_ref">8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000057"><span class="toc_ref">9</span> <span class="toc_entry">Tactic combinators</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000058"><span class="toc_ref">10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000059"><span class="toc_ref">11</span> <span class="toc_entry">Worked examples — Topology</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000060"><span class="toc_ref">12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000061"><span class="toc_ref">13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000062"><span class="toc_ref">14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000063"><span class="toc_ref">15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000064"><span class="toc_ref">15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000065"><span class="toc_ref">15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000066"><span class="toc_ref">15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000067"><span class="toc_ref">15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000068"><span class="toc_ref">15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000069"><span class="toc_ref">15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000070"><span class="toc_ref">16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000071"><span class="toc_ref">17</span> <span class="toc_entry">References</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000072"><span class="toc_ref">1</span> <span class="toc_entry">Reading a goal state</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000073"><span class="toc_ref">2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000074"><span class="toc_ref">3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000075"><span class="toc_ref">4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000076"><span class="toc_ref">5</span> <span class="toc_entry">Automation / decision procedures</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000077"><span class="toc_ref">6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000078"><span class="toc_ref">7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000079"><span class="toc_ref">8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000080"><span class="toc_ref">9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000081"><span class="toc_ref">10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000082"><span class="toc_ref">11</span> <span class="toc_entry">Common gotchas</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000083"><span class="toc_ref">1</span> <span class="toc_entry">Why a restricted set at all</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000084"><span class="toc_ref">2</span> <span class="toc_entry">The floor set</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000085"><span class="toc_ref">3</span> <span class="toc_entry">Explicitly excluded</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000086"><span class="toc_ref">4</span> <span class="toc_entry">Undecided</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000087"><span class="toc_ref">5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000088"><span class="toc_ref">6</span> <span class="toc_entry">Empirical tracking</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent and Lean 4 Pipeline</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000089"><span class="toc_ref">1</span> <span class="toc_entry">The loop, restated precisely</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000090"><span class="toc_ref">2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000091"><span class="toc_ref">3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000092"><span class="toc_ref">3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000093"><span class="toc_ref">3.2</span> <span class="toc_entry">One tactic step</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000094"><span class="toc_ref">3.3</span> <span class="toc_entry">The error case</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000095"><span class="toc_ref">3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000096"><span class="toc_ref">4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000097"><span class="toc_ref">5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000098"><span class="toc_ref">5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000099"><span class="toc_ref">5.2</span> <span class="toc_entry">Session/state switching</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000100"><span class="toc_ref">5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000101"><span class="toc_ref">6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000102"><span class="toc_ref">7</span> <span class="toc_entry">Open design decisions</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000103"><span class="toc_ref">8</span> <span class="toc_entry">What this doc feeds</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000104"><span class="toc_ref">9</span> <span class="toc_entry">References</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-mobile_llms.html#a0000000105"><span class="toc_ref">1</span> <span class="toc_entry">The landscape (2026)</span></a>
-  </li>
-  <li>	
-  <a href="ch-mobile_llms.html#a0000000106"><span class="toc_ref">2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-llm_in_use.html#a0000000107"><span class="toc_ref">1</span> <span class="toc_entry">What the harness calls</span></a>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html#a0000000108"><span class="toc_ref">2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html#a0000000109"><span class="toc_ref">3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
-  </li>
-
-	</ul>
-  </li>
+<p>This chapter surveys which language models are actually practical to run on a phone for mathematical reasoning tasks, then argues for a specific model to use in our hallucination study. </p>
+<h1 id="a0000000105">1 The landscape (2026)</h1>
+<p>Two families of models are viable on-device today, and they trade off differently. </p>
+<p><b class="bfseries">General-purpose edge models.</b> Phi-4-mini (3.8B) and Gemma&#160;3&#160;4B are the two most-cited on-device options. Phi-4-mini leads on reasoning quality — 88.6% on GSM8K — and runs at roughly 13–18 tokens/sec on an iPhone&#160;17&#160;Pro, 10–15 tok/s on an iPhone&#160;16&#160;Pro, once quantized.<a class="footnote" href="#a0000000110">
+  <sup class="footnotemark">1</sup>
+</a> Gemma&#160;3&#160;4B is the faster of the two (around 27 tok/s on iPhone&#160;16&#160;Pro via Google’s AI Edge SDK) and is generally rated the best all-around edge model, though its math-specific numbers are less standout than Phi-4-mini’s.<a class="footnote" href="#a0000000111">
+  <sup class="footnotemark">2</sup>
+</a> Both are general chat/instruction models that happen to be good at math, not models built for math. </p>
+<p><b class="bfseries">Math-specialized small models.</b> The Qwen2.5-Math family (0.5B/1.5B/7B/72B) is trained specifically for mathematical reasoning via a self-improvement pipeline, and is released with official GGUF quantizations for llama.cpp-style local inference.<a class="footnote" href="#a0000000112">
+  <sup class="footnotemark">3</sup>
+</a> GLM-Z1-9B is another math-strong small model, but at 9B it sits at the edge of what’s comfortable on a phone rather than squarely inside it.<a class="footnote" href="#a0000000113">
+  <sup class="footnotemark">4</sup>
+</a> </p>
+<p><b class="bfseries">Quantization.</b> Q4_K_M (4 bits/weight) is the practical standard for mobile deployment in 2026, keeping roughly 95% of full-precision quality at a quarter of the file size.<a class="footnote" href="#a0000000114">
+  <sup class="footnotemark">5</sup>
+</a> Across the board, 1–3B parameters is the comfortable range for typical phones; 7–9B only works on current flagship hardware. </p>
+<h1 id="a0000000106">2 Model choice: Qwen2.5-Math-1.5B-Instruct</h1>
+<p>We pick <b class="bfseries">Qwen2.5-Math-1.5B-Instruct</b> for this project. </p>
+<p><b class="bfseries">What it is.</b> A 1.5B-parameter member of the Qwen2.5-Math series, instruction-tuned and trained via an iterative self-improvement process described in the Qwen2.5-Math technical report.<a class="footnote" href="#a0000000115">
+  <sup class="footnotemark">6</sup>
+</a> It ships with official GGUF weights, so it runs directly under llama.cpp / MLC-LLM without any conversion step. </p>
+<p><b class="bfseries">Why.</b> </p>
+<ul class="itemize">
+  <li><p><em>It punches far above its parameter count on math specifically.</em> With tool-integrated reasoning it scores 79.7 on the MATH benchmark<a class="footnote" href="#a0000000116">
+  <sup class="footnotemark">7</sup>
+</a> — competitive with, or ahead of, general models 2–3\(\times \) its size on math tasks. That’s a stronger reasoning-per-parameter trade than either Phi-4-mini or Gemma&#160;3&#160;4B offers. </p>
+</li>
+  <li><p><em>It is genuinely small.</em> At 1.5B and Q4 quantization, the memory footprint is roughly 1 GB, which runs on mid-range Android hardware, not just this year’s flagship iPhone. That matters if we want results that generalize past top-tier devices. </p>
+</li>
+  <li><p><em>It’s a math specialist, not a generalist doing math.</em> Since this project studies hallucinations <em>in mathematical tasks</em>, a model trained specifically on math gives a cleaner read on math-specific failure modes, rather than mixing in general-instruction-following weaknesses. </p>
+</li>
+  <li><p><em>Fully open and offline.</em> Open weights plus official GGUF builds mean we can run everything locally with no API dependency — important for reproducibility, since we’re not at the mercy of an upstream model being silently updated mid-study. </p>
+</li>
+  <li><p><em>The self-improvement training story is itself interesting.</em> The model was partly trained on math data it generated and filtered itself. That’s a plausible source of distinctive hallucination signatures worth comparing against a purely human-data-trained baseline. </p>
+</li>
 </ul>
-</nav>
+<p><b class="bfseries">Caveat.</b> The 79.7 MATH score relies on tool-integrated reasoning (code execution), not pure chain-of-thought; the CoT-only score is lower. Since our study cares about the model’s own reasoning failures, we should benchmark both modes ourselves rather than citing the TIR number as if it reflects unaided reasoning. </p>
+
+</div> <!--main-text -->
+<footer id="footnotes">
+<ol>
+  <li id="a0000000110"><a href="https://www.promptquorum.com/power-local-llm/mobile-llm-models-phi4-gemma-smollm">https://www.promptquorum.com/power-local-llm/mobile-llm-models-phi4-gemma-smollm</a></li>
+  <li id="a0000000111"><a href="https://awesomeagents.ai/leaderboards/edge-mobile-llm-leaderboard/">https://awesomeagents.ai/leaderboards/edge-mobile-llm-leaderboard/</a></li>
+  <li id="a0000000112"><a href="https://github.com/QwenLM/Qwen2.5-Math">https://github.com/QwenLM/Qwen2.5-Math</a></li>
+  <li id="a0000000113"><a href="https://www.siliconflow.com/articles/en/best-open-source-LLM-for-math">https://www.siliconflow.com/articles/en/best-open-source-LLM-for-math</a></li>
+  <li id="a0000000114"><a href="https://www.siliconflow.com/articles/en/best-lightweight-LLMs-for-mobile-devices">https://www.siliconflow.com/articles/en/best-lightweight-LLMs-for-mobile-devices</a></li>
+  <li id="a0000000115"><a href="https://arxiv.org/pdf/2409.12122">https://arxiv.org/pdf/2409.12122</a></li>
+  <li id="a0000000116"><a href="https://www.emergentmind.com/topics/qwen2-5-math-1-5b">https://www.emergentmind.com/topics/qwen2-5-math-1-5b</a></li>
+</ol>
+</footer>
 </div> <!-- content-wrapper -->
 </div> <!-- content -->
 </div> <!-- wrapper -->
@@ -881,7 +523,11 @@
 
   <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
 
-  <a href="ch-environment.html" title="Lean 4 Environment Setup"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="ch-pipeline.html" title="Agent and Lean 4 Pipeline"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="index.html" title="Agentic Hallucination in logical context"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="ch-llm_in_use.html" title="The LLM We’re Using"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

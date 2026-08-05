@@ -1,2 +1,23 @@
 /.lake
 .venv/
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+# Ignore all files in any print/ folder but allow .tex, .log and .pdf
+/blueprint/print/**
+!/blueprint/print/*.tex
+!/blueprint/print/*.log
+!/blueprint/print/*.pdf
+!/blueprint/print/**/*.tex
+!/blueprint/print/**/*.log
+!/blueprint/print/**/*.pdf
+
+/print/**
+!/print/*.tex
+!/print/*.log
+!/print/*.pdf
+!/print/**/*.tex
+!/print/**/*.log
+!/print/**/*.pdf

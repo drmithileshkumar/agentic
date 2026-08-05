@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1784713270.42283 "print.tex" "/home/quantum/Documents/GitHub/agentic/blueprint/print/print.pdf" "print" 1784713271.72903 0
+["pdflatex"] 1785914284.90432 "print.tex" "/home/quantum/Documents/GitHub/agentic/blueprint/print/print.pdf" "print" 1785914286.50876 0
   "/etc/texmf/web2c/texmf.cnf" 1779266514.12167 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/quantum/Documents/GitHub/agentic/blueprint/print/print.aux" 1784713271.39209 536 9039a69b704a24ffd16c4e5027f98d73 "pdflatex"
-  "/home/quantum/Documents/GitHub/agentic/blueprint/print/print.out" 1784713271.39209 159 d66b34b6b8ba40839098af4ff2e849f8 "pdflatex"
+  "/home/quantum/Documents/GitHub/agentic/blueprint/print/print.aux" 1785914286.3448 17166 6011b04b26afad4ff0f8f622ca4bd581 "pdflatex"
+  "/home/quantum/Documents/GitHub/agentic/blueprint/print/print.out" 1785914286.3458 24592 92d319c70e53c1b87d9f30a25ad05e06 "pdflatex"
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -80,8 +80,14 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1769369718 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/usr/share/texmf/web2c/texmf.cnf" 1769369718 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/var/lib/texmf/web2c/xetex/xelatex.fmt" 1779267742 5951183 a3edd7225bd8cf3ecc00390093af2506 ""
-  "chapters/environment.tex" 1784713166.38642 362 ae45a84d05b8a52b0f41eb5b816834cd ""
-  "content.tex" 1784713044.10165 398 83b3076e3d7d462dba493b687dce32c5 ""
+  "chapters/environment.tex" 1785312053.92478 13910 938a75207c7d984e0ebc4744df61a727 ""
+  "chapters/llm_in_use.tex" 1785911216.19084 1909 8dc057d2ee91130dac020253fea7210d ""
+  "chapters/minimum_viable_tactics.tex" 1785911216.19091 5296 0590d5eedadc01ee9ffc3512226094c1 ""
+  "chapters/mobile_llms.tex" 1785911216.19099 4569 014e8a79b64fc158a2edc9ea5e9e8748 ""
+  "chapters/pipeline.tex" 1785914256.21654 18356 629fffbf0daf2bd2bca21097597ea88f ""
+  "chapters/tactic_cheat_sheet.tex" 1785312053.92505 16009 2971480cbda0e45bd47c4e0669c4f8a8 ""
+  "chapters/tutorial.tex" 1785312053.9253 48234 9f2a9efea1321b58ab5cc04d5fe1cee9 ""
+  "content.tex" 1785914117.86209 607 77187004eb011931a2a32e34baa65f51 ""
   "macros/common.tex" 1784712630.74503 820 60fafcc3aa944a5e60030581a943ef6b ""
   "macros/print.tex" 1784712630.74546 1101 87627b2ec24fef68edc71c13f43f7bab ""
   "print.tex" 1784713264.81305 1161 6d53929ff56fcb2759ca37bc41d54c37 ""

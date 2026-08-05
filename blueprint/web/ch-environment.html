@@ -12,8 +12,10 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agentic Hallucination in logical context</title>
-<link rel="next" href="ch-environment.html" title="Lean 4 Environment Setup" />
+<title>Lean 4 Environment Setup</title>
+<link rel="next" href="ch-tutorial.html" title="Lean 4 Tutorial" />
+<link rel="prev" href="index.html" title="Agentic Hallucination in logical context" />
+<link rel="up" href="index.html" title="Agentic Hallucination in logical context" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 <link rel="stylesheet" href="styles/showmore.css" />
@@ -24,15 +26,16 @@
 <body>
 <header>
 <svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Agentic Hallucination in logical context</a></h1>
 </header>
 
 <div class="wrapper">
 <nav class="toc">
 <ul class="sub-toc-0">
-<li class="">
+<li class=" active current">
   <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
-  <span class="expand-toc">▶</span>
-  <ul class="sub-toc-1">
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
      <li class="">
   <a href="ch-environment.html#a0000000002"><span class="toc_ref">1</span> <span class="toc_entry">What you’re installing</span></a>
  </li>
@@ -459,419 +462,255 @@
 
 
 <div class="main-text">
- <div class="titlepage">
-<h1>Agentic Hallucination in logical context</h1>
-<p class="authors">
-<span class="author">Anshika Jain Mithilesh Kumar</span>
-</p>
-</div>
-</div> <!--main-text -->
-<nav class=local_toc>
-<ul>
-  <li>	
-  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000002"><span class="toc_ref">1</span> <span class="toc_entry">What you’re installing</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000003"><span class="toc_ref">2</span> <span class="toc_entry">Prerequisites</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000004"><span class="toc_ref">3</span> <span class="toc_entry">Install elan</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000005"><span class="toc_ref">4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000006"><span class="toc_ref">5</span> <span class="toc_entry">Create a project</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000007"><span class="toc_ref">5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
-  </li>
+<h1 id="ch:environment">1 Lean 4 Environment Setup</h1>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000008"><span class="toc_ref">6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000009"><span class="toc_ref">7</span> <span class="toc_entry">Leanblueprint set up</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-environment.html#a0000000010"><span class="toc_ref">7.1</span> <span class="toc_entry">Installing it</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000011"><span class="toc_ref">7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000012"><span class="toc_ref">7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000013"><span class="toc_ref">7.4</span> <span class="toc_entry">Build commands</span></a>
-  </li>
+<p><em>Agentic Hallucinations — Independent Study.</em> Target OS: Windows. </p>
+<p>This document walks through installing Lean 4, connecting it to Mathlib, and verifying a working end-to-end setup. It also explains the pieces (<span class="ttfamily">elan</span>, <span class="ttfamily">lake</span>, <span class="ttfamily">lean-toolchain</span>) you’ll be switching between constantly once the agent\(\leftrightarrow \)Lean harness is running. </p>
+<h1 id="a0000000002">1 What you’re installing</h1>
+<p>Three components, each with a distinct job: </p>
+<div class="centered"> <table class="tabular">
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Component</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000014"><span class="toc_ref">8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000015"><span class="toc_ref">9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000016"><span class="toc_ref">10</span> <span class="toc_entry">Keeping things updated</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000017"><span class="toc_ref">11</span> <span class="toc_entry">Troubleshooting</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000018"><span class="toc_ref">12</span> <span class="toc_entry">Next up</span></a>
-  </li>
-  <li>	
-  <a href="ch-environment.html#a0000000019"><span class="toc_ref">13</span> <span class="toc_entry">References</span></a>
-  </li>
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> <b class="bfseries">Role</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000020"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000021"><span class="toc_ref">1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000022"><span class="toc_ref">2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000023"><span class="toc_ref">2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000024"><span class="toc_ref">2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000025"><span class="toc_ref">2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000026"><span class="toc_ref">2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000027"><span class="toc_ref">2.5</span> <span class="toc_entry">Quick reference</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">elan</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000028"><span class="toc_ref">3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000029"><span class="toc_ref">3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000030"><span class="toc_ref">3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000031"><span class="toc_ref">3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
-  </li>
+    </td>
+    <td  style="border-top-style:solid; border-top-color:black; border-top-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Version manager. Installs and switches Lean toolchain versions automatically per-project (reads <span class="ttfamily">lean-toolchain</span>). Analogous to <span class="ttfamily">nvm</span> for Node or <span class="ttfamily">pyenv</span> for Python. </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000032"><span class="toc_ref">4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000033"><span class="toc_ref">4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000034"><span class="toc_ref">4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000035"><span class="toc_ref">4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000036"><span class="toc_ref">4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">lake</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000037"><span class="toc_ref">5</span> <span class="toc_entry">Case analysis and induction</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000038"><span class="toc_ref">5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000039"><span class="toc_ref">5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000040"><span class="toc_ref">5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
-  </li>
+    </td>
+    <td  style="None" 
+        rowspan=""
+        colspan="">
+      <p> Lean’s build tool and package manager (bundled with elan). Creates projects, resolves dependencies, builds, and runs executables. Analogous to <span class="ttfamily">cargo</span> or <span class="ttfamily">npm</span>. </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000041"><span class="toc_ref">6</span> <span class="toc_entry">Automation and decision procedures</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000042"><span class="toc_ref">6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000043"><span class="toc_ref">6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000044"><span class="toc_ref">6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000045"><span class="toc_ref">6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000046"><span class="toc_ref">6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000047"><span class="toc_ref">6.6</span> <span class="toc_entry">Choosing among them</span></a>
-  </li>
+    </td>
+  </tr>
+  <tr>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p><b class="bfseries">Lean 4 VS Code extension</b> </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000048"><span class="toc_ref">7</span> <span class="toc_entry">Structuring proofs</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000049"><span class="toc_ref">7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000050"><span class="toc_ref">7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000051"><span class="toc_ref">7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000052"><span class="toc_ref">7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
-  </li>
+    </td>
+    <td  style="border-bottom-style:solid; border-bottom-color:black; border-bottom-width:1px" 
+        rowspan=""
+        colspan="">
+      <p> Editor integration. Talks to the Lean language server, renders the goal state (Infoview), shows diagnostics inline. </p>
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000053"><span class="toc_ref">8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000054"><span class="toc_ref">8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000055"><span class="toc_ref">8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000056"><span class="toc_ref">8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
-  </li>
+    </td>
+  </tr>
+</table> </div>
+<p>You do <b class="bfseries">not</b> install “Lean” directly — elan installs and manages the actual <span class="ttfamily">lean</span> compiler versions on demand, per project. </p>
+<h1 id="a0000000003">2 Prerequisites</h1>
+<p>Open Command Prompt and confirm Git and curl are present: </p>
+<pre class="verbatim">
+git --version
+curl --version
+</pre>
+<p>If either errors, install <a href ="https://git-scm.com/download/win">Git for Windows</a> (accept defaults; choose VS Code as Git’s default editor when prompted) and reopen the terminal. </p>
+<p>Install <a href ="https://code.visualstudio.com/Download">VS Code</a> if you don’t have it. In the installer, check <b class="bfseries">“Add to PATH”</b> and <b class="bfseries">“Register Code as an editor for supported file types.”</b> </p>
+<h1 id="a0000000004">3 Install elan</h1>
+<p>Open a new terminal (PowerShell or Command Prompt) and run: </p>
+<pre class="verbatim">
+curl -O --location https://elan.lean-lang.org/elan-init.ps1
+powershell -ExecutionPolicy Bypass -f elan-init.ps1
+</pre>
+<p>When prompted, choose <b class="bfseries"><span class="ttfamily">1</span></b> for the default installation. Then clean up and restart your terminal: </p>
+<pre class="verbatim">
+del elan-init.ps1
+exit
+</pre>
+<p>Open a fresh terminal and confirm: </p>
+<pre class="verbatim">
+elan --version
+lake --version
+</pre>
+<p>Both should print version numbers. If <span class="ttfamily">lake</span> is not recognized, close and reopen the terminal (elan modifies your <span class="ttfamily">PATH</span>, which only takes effect in new shells) — or restart your machine if that doesn’t resolve it. </p>
+<h1 id="a0000000005">4 Install the Lean 4 VS Code extension</h1>
+<p>In VS Code: <span class="ttfamily">Ctrl+Shift+X</span> \(\rightarrow \) search <span class="ttfamily">lean4</span> \(\rightarrow \) install the official extension published by <b class="bfseries">leanprover</b>. Choose “Trust Publisher &amp; Install” if prompted. This opens the <b class="bfseries">Lean 4 Setup Guide</b>, which double-checks the above steps automatically — worth glancing at, but everything in it is covered here. </p>
+<p><b class="bfseries">Sanity check:</b> </p>
+<ol class="enumerate">
+  <li><p><span class="ttfamily">Ctrl+N</span> \(\rightarrow \) new file \(\rightarrow \) <span class="ttfamily">Ctrl+S</span> \(\rightarrow \) save as <span class="ttfamily">Test.lean</span> anywhere. </p>
+</li>
+  <li><p>VS Code will silently download a full Lean toolchain in the background (a progress popup appears bottom-right; the Infoview is unavailable until this finishes — can take several minutes the first time). </p>
+</li>
+  <li><p>Type <span class="ttfamily">#eval 1 + 1</span> into the file. </p>
+</li>
+  <li><p>Hover over <span class="ttfamily">eval</span> — you should see a tooltip showing <span class="ttfamily">2</span>, with no red squiggles. </p>
+</li>
+</ol>
+<p>If that works, Lean itself is installed correctly. </p>
+<h1 id="a0000000006">5 Create a project</h1>
+<p><b class="bfseries">Everything in Lean lives inside a project</b> — a folder with a <span class="ttfamily">lakefile.toml</span>/<span class="ttfamily">lakefile.lean</span> (dependency + build config) and a <span class="ttfamily">lean-toolchain</span> file (pins the Lean version). A loose <span class="ttfamily">.lean</span> file outside a project will throw confusing errors, especially once you <span class="ttfamily">import</span> anything. </p>
+<p>Two project types you’ll use: </p>
+<p><b class="bfseries">A. Plain project (no Mathlib)</b> — for isolated tactic experiments: </p>
+<pre class="verbatim">
+lake new MyLeanProject
+cd MyLeanProject
+lake build
+</pre>
+<p><b class="bfseries">B. Mathlib-dependent project</b> — for anything touching real math (topology, algebra, set theory — i.e. your actual problem set): </p>
+<pre class="verbatim">
+lake +leanprover-community/mathlib4:lean-toolchain new MyMathlibProject math
+cd MyMathlibProject
+lake build
+</pre>
+<p>The <span class="ttfamily">math</span> keyword adds Mathlib as a dependency so <span class="ttfamily">import Mathlib</span> works. First build after this can take a while — it’s fetching Mathlib’s dependency graph. </p>
+<h2 id="a0000000007">5.1 Working in an already-cloned repository</h2>
+<p>Everything above (<span class="ttfamily">lake new ... math</span>) is for starting a project from scratch. Joining a project that already exists — this one, for instance — is a different situation: the repository already carries its own <span class="ttfamily">lakefile.toml</span> and <span class="ttfamily">lean-toolchain</span>, so you skip <span class="ttfamily">lake new</span>/<span class="ttfamily">lake init</span> entirely and simply clone it. </p>
+<pre class="verbatim">
+git clone https://github.com/drmithileshkumar/agentic.git
+cd agentic
+</pre>
+<p><b class="bfseries">What to refresh.</b> A fresh clone has no <span class="ttfamily">.lake/</span> directory — it’s gitignored, and entirely regenerable, so it is never part of what you clone. Refreshing it means fetching the prebuilt Mathlib cache and building: </p>
+<pre class="verbatim">
+lake exe cache get
+lake build
+</pre>
+<p>Note that <span class="ttfamily">lake update</span> is <b class="bfseries">not</b> needed here. That command resolves dependencies to newer versions — a different operation, covered below in “Keeping things updated.” A first clone should build against exactly what <span class="ttfamily">lake-manifest.json</span> already pins. </p>
+<p><b class="bfseries">A lake gotcha worth knowing.</b> <span class="ttfamily">lake init &lt;package-name&gt; &lt;template&gt;</span> takes the package name first and the template second (<span class="ttfamily">std</span>/<span class="ttfamily">exe</span>/<span class="ttfamily">lib</span>/<span class="ttfamily">math</span>). If the folder is literally named <span class="ttfamily">math</span>, running <span class="ttfamily">lake init</span> on its own parses <span class="ttfamily">math</span> as the package <em>name</em> with no template given — and you silently get a plain <span class="ttfamily">std</span> project rather than the Mathlib-enabled one you wanted. Keep the project folder’s name distinct from <span class="ttfamily">math</span>, and always pass the template explicitly: </p>
+<pre class="verbatim">
+lake init myproject math
+</pre>
+<p><b class="bfseries">Fetch the prebuilt Mathlib cache</b> (do this — avoids compiling Mathlib from source, which takes hours): </p>
+<pre class="verbatim">
+lake exe cache get
+</pre>
+<p>Open the project in VS Code: <span class="ttfamily">code .</span> from inside the folder, or <span class="ttfamily">File &gt; Open Folder</span>. Click <b class="bfseries">“Trust authors”</b> when prompted. </p>
+<h1 id="a0000000008">6 Verify Mathlib is wired up</h1>
+<p>Create <span class="ttfamily">MyMathlibProject/MyMathlibProject/Test.lean</span>: </p>
+<pre class="verbatim">
+import Mathlib.Topology.Basic
 
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000057"><span class="toc_ref">9</span> <span class="toc_entry">Tactic combinators</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000058"><span class="toc_ref">10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000059"><span class="toc_ref">11</span> <span class="toc_entry">Worked examples — Topology</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000060"><span class="toc_ref">12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000061"><span class="toc_ref">13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000062"><span class="toc_ref">14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000063"><span class="toc_ref">15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tutorial.html#a0000000064"><span class="toc_ref">15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000065"><span class="toc_ref">15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000066"><span class="toc_ref">15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000067"><span class="toc_ref">15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000068"><span class="toc_ref">15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000069"><span class="toc_ref">15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000070"><span class="toc_ref">16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tutorial.html#a0000000071"><span class="toc_ref">17</span> <span class="toc_entry">References</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000072"><span class="toc_ref">1</span> <span class="toc_entry">Reading a goal state</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000073"><span class="toc_ref">2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000074"><span class="toc_ref">3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000075"><span class="toc_ref">4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000076"><span class="toc_ref">5</span> <span class="toc_entry">Automation / decision procedures</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000077"><span class="toc_ref">6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000078"><span class="toc_ref">7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000079"><span class="toc_ref">8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000080"><span class="toc_ref">9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000081"><span class="toc_ref">10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
-  </li>
-  <li>	
-  <a href="ch-tactic_cheat_sheet.html#a0000000082"><span class="toc_ref">11</span> <span class="toc_entry">Common gotchas</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000083"><span class="toc_ref">1</span> <span class="toc_entry">Why a restricted set at all</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000084"><span class="toc_ref">2</span> <span class="toc_entry">The floor set</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000085"><span class="toc_ref">3</span> <span class="toc_entry">Explicitly excluded</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000086"><span class="toc_ref">4</span> <span class="toc_entry">Undecided</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000087"><span class="toc_ref">5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
-  </li>
-  <li>	
-  <a href="ch-minimum_viable_tactics.html#a0000000088"><span class="toc_ref">6</span> <span class="toc_entry">Empirical tracking</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent and Lean 4 Pipeline</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000089"><span class="toc_ref">1</span> <span class="toc_entry">The loop, restated precisely</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000090"><span class="toc_ref">2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000091"><span class="toc_ref">3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000092"><span class="toc_ref">3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000093"><span class="toc_ref">3.2</span> <span class="toc_entry">One tactic step</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000094"><span class="toc_ref">3.3</span> <span class="toc_entry">The error case</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000095"><span class="toc_ref">3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000096"><span class="toc_ref">4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000097"><span class="toc_ref">5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-pipeline.html#a0000000098"><span class="toc_ref">5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000099"><span class="toc_ref">5.2</span> <span class="toc_entry">Session/state switching</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000100"><span class="toc_ref">5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000101"><span class="toc_ref">6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000102"><span class="toc_ref">7</span> <span class="toc_entry">Open design decisions</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000103"><span class="toc_ref">8</span> <span class="toc_entry">What this doc feeds</span></a>
-  </li>
-  <li>	
-  <a href="ch-pipeline.html#a0000000104"><span class="toc_ref">9</span> <span class="toc_entry">References</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-mobile_llms.html#a0000000105"><span class="toc_ref">1</span> <span class="toc_entry">The landscape (2026)</span></a>
-  </li>
-  <li>	
-  <a href="ch-mobile_llms.html#a0000000106"><span class="toc_ref">2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
-  </li>
-
-	</ul>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
-	<ul>
-		   <li>	
-  <a href="ch-llm_in_use.html#a0000000107"><span class="toc_ref">1</span> <span class="toc_entry">What the harness calls</span></a>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html#a0000000108"><span class="toc_ref">2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
-  </li>
-  <li>	
-  <a href="ch-llm_in_use.html#a0000000109"><span class="toc_ref">3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
-  </li>
-
-	</ul>
-  </li>
+#check TopologicalSpace
+</pre>
+<p>With the cursor on the last line, the Infoview (right-hand panel; restore with <span class="ttfamily">Ctrl+Shift+Enter</span> if it’s hidden) should show: </p>
+<pre class="verbatim">
+TopologicalSpace.{u} (α : Type u) : Type u
+</pre>
+<p>No errors \(\rightarrow \) the environment is fully wired: elan \(\rightarrow \) lake \(\rightarrow \) Mathlib \(\rightarrow \) VS Code language server \(\rightarrow \) Infoview. </p>
+<h1 id="a0000000009">7 Leanblueprint set up</h1>
+<p><a href ="https://github.com/PatrickMassot/leanblueprint">Leanblueprint</a> turns a LaTeX blueprint into a website with a dependency graph, plus a PDF. </p>
+<h2 id="a0000000010">7.1 Installing it</h2>
+<p>This repository already has this done — the virtual environment and <span class="ttfamily">leanblueprint</span> were added at commit <span class="ttfamily">d2ed81a</span> — so the instructions below are for reference, or for reproducing the setup elsewhere, rather than something you need to redo in this checkout. </p>
+<p>Install it into a project-local virtual environment rather than globally: </p>
+<pre class="verbatim">
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install leanblueprint
+</pre>
+<p>Add <span class="ttfamily">.venv/</span> to <span class="ttfamily">.gitignore</span> — it’s a local environment, not project content. </p>
+<h2 id="a0000000011">7.2 Two dependencies for a full local build</h2>
+<p>Beyond the Python package, a <em>full local</em> build needs two pieces of system software: </p>
+<ul class="itemize">
+  <li><p><b class="bfseries">Graphviz</b> — renders the dependency graph, via the <span class="ttfamily">dot</span> and <span class="ttfamily">tred</span> binaries. </p>
+</li>
+  <li><p><b class="bfseries">A TeX distribution</b> (MiKTeX or TeX Live) — needed for the PDF, and also for <span class="ttfamily">kpsewhich</span>, which the HTML path uses to locate files. So this is required even if you only ever build the website. </p>
+</li>
 </ul>
-</nav>
+<p>Neither is installed by <span class="ttfamily">pip</span>. CI already has both, so pushing and letting the workflow build is a reliable fallback if you’d rather not install them locally. </p>
+<h2 id="a0000000012">7.3 How blueprint/src is organized</h2>
+<p><span class="ttfamily">content.tex</span> assembles the blueprint by <span class="ttfamily">\input</span>-ing each chapter in order. <span class="ttfamily">web.tex</span> and <span class="ttfamily">print.tex</span> are the two entry points — the website and the PDF respectively — and both pull in the same <span class="ttfamily">content.tex</span>. Individual chapters live in <span class="ttfamily">blueprint/src/chapters/</span>. </p>
+<h2 id="a0000000013">7.4 Build commands</h2>
+<p>Run these from the <span class="ttfamily">blueprint/</span> directory: </p>
+<pre class="verbatim">
+leanblueprint web          # build the website
+leanblueprint pdf          # build the PDF
+leanblueprint serve        # serve the website locally
+leanblueprint checkdecls   # check declarations named in the blueprint exist in Lean
+</pre>
+<h1 id="a0000000014">8 Project anatomy (what’s actually on disk)</h1>
+<pre class="verbatim">
+MyMathlibProject/
+├── lakefile.toml          # dependencies, build targets
+├── lean-toolchain         # pins exact Lean version (elan reads this)
+├── lake-manifest.json      # resolved dependency versions (like a lockfile)
+├── .lake/                  # build artifacts, downloaded deps — safe to delete/regenerate
+└── MyMathlibProject/
+    └── Test.lean           # your actual Lean source
+</pre>
+<p><span class="ttfamily">lean-toolchain</span> is the important one for environment switching: elan silently swaps the active Lean version based on whatever this file says, per-project, with no manual intervention. If two projects pin different Lean versions, moving between their folders in a terminal changes which <span class="ttfamily">lean</span>/<span class="ttfamily">lake</span> binary actually runs — this matters once the agent harness is juggling multiple project directories. </p>
+<h1 id="a0000000015">9 Command line vs. VS Code — two ways to talk to Lean</h1>
+<p>You’ll use both, for different purposes: </p>
+<ul class="itemize">
+  <li><p><b class="bfseries">VS Code (interactive)</b>: editing proofs by hand, reading goal states, learning tactics. This is where <em>you</em> work. </p>
+</li>
+  <li><p><b class="bfseries">Terminal / <span class="ttfamily">lake env lean</span> / <span class="ttfamily">lake build</span></b>: batch-checking a file, scripting, and — critically — how the <b class="bfseries">agent harness</b> will talk to Lean. The agent won’t have an Infoview; it will invoke Lean non-interactively (or via the Lean REPL / language server protocol) and parse structured output. Understanding what VS Code is doing under the hood <em>is</em> understanding the harness. </p>
+</li>
+</ul>
+<p>Run a single file from the command line to see raw output (no pretty Infoview): </p>
+<pre class="verbatim">
+lake env lean MyMathlibProject/Test.lean
+</pre>
+<p>No output = success. Errors print as plain text — this is closer to what the agent will actually receive. </p>
+<h1 id="a0000000016">10 Keeping things updated</h1>
+<pre class="verbatim">
+curl -L https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain -o lean-toolchain
+lake update
+lake exe cache get
+lake build
+</pre>
+<p>Run this inside a project when Mathlib has moved on and you want the latest version. </p>
+<p><em>Note: this section is for pulling a newer Mathlib version into a project you’re already working in. If you’ve just cloned the repository for the first time, you don’t need <span class="ttfamily">lake update</span> — see “Working in an already-cloned repository” above instead.</em> </p>
+<h1 id="a0000000017">11 Troubleshooting</h1>
+<p><b class="bfseries"><span class="ttfamily">curl: (35) schannel: next InitializeSecurityContext failed</span></b> during <span class="ttfamily">lake exe cache get</span> — usually antivirus intercepting downloads. Disable it temporarily and re-run with the force flag: </p>
+<pre class="verbatim">
+lake exe cache get!
+</pre>
+<p><b class="bfseries"><span class="ttfamily">uncaught exception: no such file or directory (error code: 2)</span></b> — a corrupted toolchain download. Fix: </p>
+<ol class="enumerate">
+  <li><p>Delete the offending folder under <span class="ttfamily">C:\Users\&lt;you&gt;\.elan\toolchains</span> </p>
+</li>
+  <li><p>Delete the matching file under <span class="ttfamily">C:\Users\&lt;you&gt;\.elan\update-hashes</span> </p>
+</li>
+  <li><p>Re-run <span class="ttfamily">lake build</span> — it re-downloads automatically. </p>
+</li>
+</ol>
+<p><b class="bfseries">Disk cleanup</b> — safe to delete: <span class="ttfamily">.lake/</span> inside any project (regenerates on build), old entries in <span class="ttfamily">~/.elan/toolchains</span>, and <span class="ttfamily">~/.cache/mathlib</span>. </p>
+<h1 id="a0000000018">12 Next up</h1>
+<p>With this environment working, the next docs cover: core tactics (interactive), a tactic cheat sheet, a full tutorial, and the agent\(\leftrightarrow \)Lean pipeline design that reuses the command-line invocation pattern from the command-line section above. </p>
+<h1 id="a0000000019">13 References</h1>
+<ul class="itemize">
+  <li><p><a href ="https://lean-lang.org/install/">Install — Lean Lang (recommended VS Code path)</a> </p>
+</li>
+  <li><p><a href ="https://lean-lang.org/install/manual/">Manual Installation — Lean Lang (Windows/macOS/Linux CLI steps)</a> </p>
+</li>
+  <li><p><a href ="https://leanprover-community.github.io/install/project.html">Lean projects — Lean Community (project creation, Mathlib cache, troubleshooting)</a> </p>
+</li>
+  <li><p><a href ="https://github.com/leanprover/elan">elan (Lean version manager) — GitHub</a> </p>
+</li>
+  <li><p><a href ="https://github.com/leanprover/vscode-lean4/blob/master/vscode-lean4/manual/manual.md">Lean 4 VS Code extension manual</a> </p>
+</li>
+</ul>
+<p>See <span class="ttfamily">docs/resources.md</span> (the project bibliography, formerly <span class="ttfamily">00_resources.md</span>) for the full project bibliography.  </p>
+
+</div> <!--main-text -->
 </div> <!-- content-wrapper -->
 </div> <!-- content -->
 </div> <!-- wrapper -->
@@ -881,7 +720,11 @@
 
   <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
 
-  <a href="ch-environment.html" title="Lean 4 Environment Setup"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="index.html" title="Agentic Hallucination in logical context"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="index.html" title="Agentic Hallucination in logical context"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="ch-tutorial.html" title="Lean 4 Tutorial"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 
