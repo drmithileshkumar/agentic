@@ -1,0 +1,5 @@
+/.lake
+
+# Python tooling under problems/
+__pycache__/
+*.pyc
