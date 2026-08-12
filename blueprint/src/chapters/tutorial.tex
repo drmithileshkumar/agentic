@@ -1,0 +1,836 @@
+\chapter{Lean 4 Tutorial}
+\label{ch:tutorial}
+
+\emph{Agentic Hallucinations --- Independent Study.} A from-scratch tutorial in tactic-mode proof writing, building toward the topic-segmented problem set (set theory, topology, algebra) this project will run the agent against.
+
+Primary sources: \href{https://lean4.dev/tactics}{lean4.dev/tactics} (course + per-tactic pages), \href{https://leanprover.github.io/theorem_proving_in_lean4/}{Theorem Proving in Lean 4}, \href{https://leanprover-community.github.io/mathematics_in_lean/}{Mathematics in Lean} (Avigad \& Massot), \href{https://leanprover-community.github.io/mathlib4_docs/tactics.html}{Mathlib4 tactic docs}. Full annotated bibliography: \texttt{docs/resources.md}. Environment setup assumed complete --- see the Lean 4 Environment Setup chapter.
+
+\section*{Table of contents}
+
+\begin{enumerate}
+  \item How Lean thinks: goals, context, term vs.\ tactic mode
+  \item Core tactics I --- closing goals (\texttt{exact}, \texttt{apply}, \texttt{assumption}, \texttt{rfl})
+  \item Core tactics II --- rewriting (\texttt{rw}, \texttt{simp} and its variants)
+  \item Core tactics III --- introducing and structuring (\texttt{intro}, \texttt{have}, \texttt{let}, \texttt{suffices})
+  \item Case analysis and induction (\texttt{cases}, \texttt{induction}, \texttt{rcases}, \texttt{obtain})
+  \item Automation and decision procedures (\texttt{omega}, \texttt{ring}, \texttt{linarith}, \texttt{nlinarith}, \texttt{decide}, \texttt{aesop})
+  \item Structuring proofs (\texttt{calc}, \texttt{by\_contra}, \texttt{by\_cases}, \texttt{contrapose}, \texttt{push\_neg})
+  \item Equality machinery (\texttt{ext}, \texttt{funext}, \texttt{congr}, \texttt{symm}, \texttt{trans})
+  \item Tactic combinators (\texttt{<;>}, \texttt{·}, \texttt{first}, \texttt{repeat}, \texttt{all\_goals})
+  \item Worked examples --- Set theory
+  \item Worked examples --- Topology
+  \item Worked examples --- Algebra
+  \item Reading errors and diagnosing failed proofs
+  \item From tactics to the agent pipeline
+  \item Mathlib conventions: naming, dot notation, anonymous constructors
+  \item Exercises (with worked solutions)
+\end{enumerate}
+
+\section{How Lean thinks: goals, context, term vs.\ tactic mode}
+
+Every Lean proof is, underneath, a \textbf{term} --- a value whose type is the proposition being proved. \texttt{theorem add\_comm' (a b : Nat) : a + b = b + a := Nat.add\_comm a b} is a complete proof written directly as a term: \texttt{Nat.add\_comm a b} is a value, and its type happens to be \texttt{a + b = b + a}.
+
+Writing proof terms directly gets unwieldy fast, so almost all real proofs use \textbf{tactic mode}, entered with \texttt{by}:
+
+\begin{verbatim}
+theorem add_comm' (a b : Nat) : a + b = b + a := by
+  exact Nat.add_comm a b
+\end{verbatim}
+
+Inside \texttt{by}, you're not writing a term --- you're issuing \emph{tactics}, each of which transforms a \textbf{goal state} into a new (possibly empty) goal state. A goal state looks like:
+
+\begin{verbatim}
+a b : Nat
+⊢ a + b = b + a
+\end{verbatim}
+
+Above \texttt{⊢} is the \textbf{local context}: every variable and hypothesis currently in scope. After \texttt{⊢} is the \textbf{goal}: the proposition still to be proved. A tactic either closes the goal (context becomes empty --- done), transforms it into a different goal, or splits it into multiple goals (e.g.\ one per case of an \texttt{induction}).
+
+This is exactly the loop this project automates: an LLM agent looks at a goal state, proposes one tactic, and Lean reports back either a new goal state or an error. \textbf{Everything in this tutorial is really a catalog of the ``moves'' the agent has available at each step}, which is why the taxonomy of \emph{which} move it picks --- and how often it picks a wrong one --- is the statistical object of interest for the hallucination analysis (see \texttt{docs/resources.md} \S5).
+
+\textbf{A style note before we start:} Lean tactic mode is whitespace-sensitive in a specific way --- tactics separated by newlines run in sequence on the current (first) goal; \texttt{·} (a centered dot, typed \texttt{\textbackslash{}.}) explicitly focuses a single goal so that indented tactics under it apply only there. You'll see this constantly once goals start splitting (\S5 onward).
+
+\section{Core tactics I --- closing goals}
+
+\subsection{\texttt{rfl} --- reflexivity}
+
+Closes a goal \texttt{a = a} up to Lean's notion of \emph{definitional} equality --- not just syntactic identity, but anything that reduces to the same normal form by unfolding definitions and computing.
+
+\begin{verbatim}
+example : 2 + 2 = 4 := by rfl
+example (n : Nat) : n = n := by rfl
+\end{verbatim}
+
+\texttt{rfl} fails as soon as the two sides aren't definitionally equal, even if they're \emph{provably} equal by some other route --- that's when you need \texttt{rw}, \texttt{simp}, \texttt{ring}, or \texttt{omega} instead.
+
+\subsection{\texttt{exact} --- direct proof}
+
+\texttt{exact e} closes the goal by supplying a term \texttt{e} whose type matches exactly.
+
+\begin{verbatim}
+example (h : 2 + 2 = 4) : 2 + 2 = 4 := by exact h
+example (n : Nat) : n + 0 = n := by exact Nat.add_zero n
+\end{verbatim}
+
+If you don't know the exact lemma name, \texttt{exact?} searches the library and suggests one:
+
+\begin{verbatim}
+example (n : Nat) : n + 0 = n := by exact?
+-- Suggests: exact Nat.add_zero n
+\end{verbatim}
+
+\subsection{\texttt{apply} --- working backwards}
+
+\texttt{apply e} unifies the \emph{conclusion} of \texttt{e}'s type with the goal, and turns any remaining \emph{premises} of \texttt{e} into new goals. Where \texttt{exact} needs everything handed to it, \texttt{apply} lets Lean fill in what it can infer and leaves the rest for you.
+
+\begin{verbatim}
+example (a b c : Nat) (hab : a = b) (hbc : b = c) : a = c := by
+  apply Eq.trans
+  · exact hab
+  · exact hbc
+\end{verbatim}
+
+\texttt{Eq.trans : a = b → b = c → a = c} doesn't fully match the goal \texttt{a = c} on its own --- \texttt{apply} inserts a metavariable for the missing middle term and creates two new goals for the two premises. This is exactly why \texttt{apply} sometimes produces goals that look stranger than the original: it's exposing structure the lemma needed that wasn't visible in your one-line goal.
+
+\texttt{apply?} is the library-search analog for \texttt{apply}.
+
+\subsection{\texttt{assumption}}
+
+Scans the local context for a hypothesis whose type matches the goal exactly, closing it if found.
+
+\begin{verbatim}
+example (P Q : Prop) (hp : P) (hq : Q) : P := by assumption  -- finds hp
+\end{verbatim}
+
+\subsection{Quick reference}
+
+\begin{center}
+\begin{tabular}{@{}p{0.28\linewidth}p{0.66\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Use when} \\
+\hline
+\texttt{exact e} & You have exactly what's needed \\
+\texttt{apply lemma} & Lemma's \emph{conclusion} matches; premises become new goals \\
+\texttt{assumption} & Goal matches a hypothesis, don't want to name it \\
+\texttt{rfl} & Both sides compute to the same value \\
+\texttt{exact?} / \texttt{apply?} & You don't know the lemma name \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Core tactics II --- rewriting}
+
+\subsection{\texttt{rw} --- precise, one substitution at a time}
+
+Given \texttt{h : a = b}, \texttt{rw [h]} finds \texttt{a} in the goal and replaces every occurrence with \texttt{b}.
+
+\begin{verbatim}
+example (a b : Nat) (h : a = b) : a + 1 = b + 1 := by
+  rw [h]   -- goal becomes b + 1 = b + 1
+\end{verbatim}
+
+Note this closes automatically --- \texttt{rw} calls \texttt{rfl} after rewriting if that finishes the goal. Direction matters: \texttt{rw [h]} goes left-to-right (per \texttt{h}'s statement); \texttt{rw [← h]} (type \texttt{\textbackslash{}l} or \texttt{\textbackslash{}leftarrow} for \texttt{←}) goes right-to-left.
+
+\begin{verbatim}
+example (a b : Nat) (h : a + 1 = b) : b = a + 1 := by
+  rw [← h]   -- replaces b with (a + 1); goal becomes a + 1 = a + 1
+\end{verbatim}
+
+Chain multiple rewrites in one call --- they apply left to right in sequence:
+
+\begin{verbatim}
+example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
+  rw [h1, h2]
+\end{verbatim}
+
+Rewrite inside a hypothesis instead of the goal with \texttt{at}:
+
+\begin{verbatim}
+example (a b : Nat) (h1 : a = b) (h2 : a + 1 = 5) : b + 1 = 5 := by
+  rw [h1] at h2
+  exact h2
+\end{verbatim}
+
+\textbf{Common trap:} \texttt{rw} replaces \emph{all} syntactic occurrences of the LHS pattern, which is occasionally more than you want (\texttt{rw [h]} on \texttt{a + a = 10} with \texttt{h : a = b} gives \texttt{b + b = 10}, not just one side). Use \texttt{nth\_rewrite n [h]} to target a specific occurrence.
+
+\subsection{\texttt{simp} --- automated simplification}
+
+Where \texttt{rw} applies rules you name, \texttt{simp} repeatedly applies a large database of lemmas tagged \texttt{@[simp]} until nothing more simplifies, and frequently closes the goal outright.
+
+\begin{verbatim}
+example (n : Nat) : n + 0 + 0 + 0 = n := by simp
+example (xs : List Nat) : xs ++ [] = xs := by simp
+\end{verbatim}
+
+Feed it extra lemmas or local hypotheses in brackets:
+
+\begin{verbatim}
+example (a b : Nat) (h : a = 5) : a + b = 5 + b := by simp [h]
+\end{verbatim}
+
+\textbf{\texttt{simp} is not omniscient.} It's a simplifier, not a general prover --- it won't discover a proof strategy, only apply known-good rewrite rules to a fixed point. \texttt{a * (b + c) = a*b + a*c} is \emph{not} closed by bare \texttt{simp} (distributivity isn't tagged \texttt{@[simp]}); that's a job for \texttt{ring}.
+
+Four variants worth knowing cold:
+
+\begin{center}
+\begin{tabular}{@{}p{0.24\linewidth}p{0.70\linewidth}@{}}
+\hline
+\textbf{Variant} & \textbf{Behavior} \\
+\hline
+\texttt{simp only [l1, l2, ...]} & Uses \textbf{only} the listed lemmas --- reproducible, doesn't silently change behavior if the global simp set grows. Preferred in anything meant to be stable. \\
+\texttt{simp\_all} & Simplifies the goal \textbf{and every hypothesis}, using each hypothesis as an extra rewrite rule. Powerful for messy contexts, but harder to predict. \\
+\texttt{simp?} & Runs \texttt{simp}, then prints the minimal \texttt{simp only [...]} that achieves the same result --- the standard way to convert an exploratory \texttt{simp} into a reproducible one. \\
+\texttt{dsimp} & \emph{Definitional} simplification only --- unfolds/computes, never applies a proved rewrite lemma. Never fails unexpectedly, but also never does as much. \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{verbatim}
+example (n : Nat) : n + 0 = n := by
+  simp?
+  -- Try this: simp only [Nat.add_zero]
+\end{verbatim}
+
+\texttt{simp at h} / \texttt{simp at *} target hypotheses or everything at once, exactly like \texttt{rw}'s \texttt{at}.
+
+\subsection{\texttt{norm\_num}, \texttt{norm\_cast}, \texttt{push\_cast}}
+
+\texttt{norm\_num} proves/simplifies goals about concrete numerals (\texttt{21 - 6 = 15}). \texttt{norm\_cast}/\texttt{push\_cast} normalize numeric-type coercions (moving between ℕ, ℤ, ℚ, ℝ) --- essential once problems mix integer and real arithmetic, common in the topology/analysis parts of the problem set.
+
+\section{Core tactics III --- introducing and structuring}
+
+\subsection{\texttt{intro} --- assuming hypotheses}
+
+When the goal is an implication \texttt{P → Q} or a universal \texttt{∀ x, P x}, \texttt{intro} moves the antecedent/quantified variable into the context.
+
+\begin{verbatim}
+example (P Q : Prop) : P → Q → P := by
+  intro hp hq
+  exact hp
+
+example : ∀ n : Nat, n = n := by
+  intro n
+  rfl
+\end{verbatim}
+
+\texttt{intro} can destructure as it introduces:
+
+\begin{verbatim}
+example (P Q : Prop) : P ∧ Q → Q ∧ P := by
+  intro ⟨hp, hq⟩
+  exact ⟨hq, hp⟩
+\end{verbatim}
+
+Prefer explicit names (\texttt{intro n hn}) over the bare \texttt{intros}, which auto-generates opaque names like \texttt{a✝} --- fine for quick exploration, bad for anything you or an agent needs to refer back to later in the proof.
+
+\subsection{\texttt{have} and \texttt{let} --- intermediate steps}
+
+\texttt{have h : T := proof} states and proves an intermediate fact, adding \texttt{h : T} to the context. The \emph{value} is opaque afterward --- only its type matters to the rest of the proof.
+
+\begin{verbatim}
+example (a b : Nat) (ha : a > 5) (hb : b > 3) : a + b > 8 := by
+  have hab : a + b > 5 + 3 := by omega
+  omega
+\end{verbatim}
+
+\texttt{let x := val} introduces a \textbf{transparent} local definition --- its value, not just its type, is visible to later tactics like \texttt{rfl}.
+
+\begin{verbatim}
+example : 10 = 5 + 5 := by
+  let x := 5
+  rfl   -- works because x unfolds to 5
+\end{verbatim}
+
+Use \texttt{have} for propositions/proofs you'll reference by type; use \texttt{let} for computed values you want to reuse and potentially unfold later.
+
+\subsection{\texttt{suffices} --- working backwards from a stronger claim}
+
+\texttt{suffices h : T by tac} replaces the goal with \texttt{T}, where \texttt{tac} discharges the \emph{original} goal assuming \texttt{h : T}.
+
+\begin{verbatim}
+example (n : Nat) : n + n ≥ n := by
+  suffices h : n ≤ n + n by omega
+  omega
+\end{verbatim}
+
+Read it as: ``it suffices to show \texttt{T}; here's how \texttt{T} implies what I actually wanted (\texttt{by tac}); now let me prove \texttt{T}.''
+
+\subsection{\texttt{show} --- restating the goal}
+
+\texttt{show T} changes the displayed goal to a definitionally-equal \texttt{T} --- purely for clarity/debugging, doesn't change what's actually being proved.
+
+\section{Case analysis and induction}
+
+\subsection{\texttt{cases} --- splitting on constructors}
+
+\texttt{cases x} produces one goal per constructor of \texttt{x}'s type, replacing \texttt{x} with that constructor's shape in each branch.
+
+\begin{verbatim}
+example (b : Bool) : b = true ∨ b = false := by
+  cases b with
+  | true => left; rfl
+  | false => right; rfl
+
+example (n : Nat) : n = 0 ∨ n > 0 := by
+  cases n with
+  | zero => left; rfl
+  | succ m => right; omega
+\end{verbatim}
+
+\texttt{cases} also works on propositions built from inductive types --- \texttt{Or} has two constructors (\texttt{inl}/\texttt{inr}), \texttt{And} has one with two fields:
+
+\begin{verbatim}
+example (P Q R : Prop) (h : P ∨ Q) (hpr : P → R) (hqr : Q → R) : R := by
+  cases h with
+  | inl hp => exact hpr hp
+  | inr hq => exact hqr hq
+\end{verbatim}
+
+\subsection{\texttt{induction} --- proof by mathematical induction}
+
+\texttt{induction x with} produces a base case and, for each recursive constructor, a step case that includes an \textbf{induction hypothesis} \texttt{ih}.
+
+\begin{verbatim}
+theorem add_zero' (n : Nat) : n + 0 = n := by
+  induction n with
+  | zero => rfl
+  | succ m ih =>
+    -- ih : m + 0 = m
+    -- goal : (m + 1) + 0 = m + 1
+    simp [ih]
+\end{verbatim}
+
+The induction hypothesis is the entire point --- it's the license to \emph{assume} the property holds for the smaller case while proving it for the larger one. Forgetting to use \texttt{ih} (proving the step case ``from scratch'') is a common failure mode both for beginners and, notably, for agents that don't track what's actually available in context.
+
+\subsection{\texttt{rcases} / \texttt{obtain} --- recursive destructuring (Mathlib)}
+
+\texttt{cases} gets unwieldy once structures nest (an ∃ inside an ∧ inside an ∃\ldots). \texttt{rcases}/\texttt{obtain} (both require \texttt{import Mathlib.Tactic.Cases} / are available under \texttt{import Mathlib.Tactic}) destructure all of that in one pattern.
+
+\begin{verbatim}
+example (h : ∃ n m : Nat, n < m ∧ m < 10) : True := by
+  rcases h with ⟨n, m, hnm, hm10⟩
+  trivial
+
+example (h : ∃ n : Nat, n > 0 ∧ n < 10) : True := by
+  obtain ⟨n, hn_pos, hn_lt⟩ := h
+  trivial
+\end{verbatim}
+
+Pattern language: \texttt{⟨p1, p2⟩} destructs pairs/∃/∧; \texttt{p1 | p2} splits ∨; \texttt{rfl} substitutes an equality the instant it's introduced (extremely handy --- see below); \texttt{\_} discards a part you don't need.
+
+\begin{verbatim}
+example (h : ∃ n : Nat, n = 5) : 5 = 5 := by
+  rcases h with ⟨_, rfl⟩   -- n is substituted by 5 everywhere
+  rfl
+\end{verbatim}
+
+\texttt{rintro} fuses \texttt{intro} with an \texttt{rcases} pattern: \texttt{rintro ⟨a, b⟩ ⟨c, d⟩} introduces and destructures two arguments in one line.
+
+\textbf{\texttt{cases}/\texttt{induction} vs.\ \texttt{rcases}/\texttt{obtain}:} the former are core-Lean and exhaustive (they force you to name every constructor case); the latter are Mathlib conveniences layered on top, better for existentials and nested nonsense, worse for anything where you actually need the inductive structure (like a genuine induction).
+
+\section{Automation and decision procedures}
+
+These tactics are \emph{decision procedures} or \emph{heuristic search} over specific fragments of mathematics --- when your goal falls in their fragment, they either succeed or definitively fail (no partial credit, no ``almost'').
+
+\subsection{\texttt{omega} --- linear arithmetic over ℕ/ℤ}
+
+Handles \texttt{+}, \texttt{-}, comparisons, and multiplication/division/modulo \textbf{by constants} (not variable × variable).
+
+\begin{verbatim}
+example (n : Nat) : n ≤ n + 1 := by omega
+example (a b c : Nat) (h1 : a ≤ b) (h2 : b < c) : a < c := by omega
+example (n : Nat) : n / 2 ≤ n := by omega
+example (n : Nat) (h : n % 2 = 0) : 2 * (n / 2) = n := by omega
+\end{verbatim}
+
+\texttt{omega} automatically pulls in every relevant hypothesis in context --- you never tell it which ones to use. It correctly understands \texttt{Nat}'s truncated subtraction (\texttt{a - b = 0} when \texttt{a < b}) and \texttt{Int}'s standard subtraction, which is a frequent source of confusion when porting a proof between the two.
+
+It fails immediately on anything nonlinear:
+
+\begin{verbatim}
+-- example (x y : Nat) : x * y = y * x := by omega   -- fails: nonlinear
+example (x y : Nat) : x * y = y * x := by ring         -- use ring instead
+\end{verbatim}
+
+\subsection{\texttt{ring} / \texttt{ring\_nf} --- polynomial identities}
+
+Proves equalities that follow purely from ring axioms (associativity, commutativity, distributivity) --- no need to spell out the expansion by hand.
+
+\begin{verbatim}
+example (x y : Int) : (x + y)^2 = x^2 + 2*x*y + y^2 := by ring
+example (a b c : Int) : (a + b + c)^2 = a^2+b^2+c^2 + 2*a*b + 2*b*c + 2*a*c := by ring
+\end{verbatim}
+
+\texttt{ring} cannot handle division (use \texttt{field\_simp} first) or inequalities (use \texttt{nlinarith}) or anything involving an opaque function. \texttt{ring\_nf} normalizes an expression to canonical form \emph{without} requiring it close the goal --- useful mid-proof.
+
+\subsection{\texttt{linarith} / \texttt{nlinarith} --- linear / mildly-nonlinear inequalities}
+
+\texttt{linarith} proves linear (in)equalities from hypotheses over ordered fields, by finding a linear combination that derives a contradiction from the negated goal. \texttt{nlinarith} extends it with limited nonlinear preprocessing (it can use provided facts like squares being nonnegative):
+
+\begin{verbatim}
+example (x : Int) : x * x ≥ 0 := by nlinarith [sq_nonneg x]
+\end{verbatim}
+
+\subsection{\texttt{decide} / \texttt{native\_decide}}
+
+Evaluate a \texttt{Decidable} proposition directly to \texttt{true}/\texttt{false}. \texttt{decide} runs inside the kernel (slow, fully trusted); \texttt{native\_decide} compiles to native code first (fast, relies on trusting the compiler --- appropriate for larger finite checks, not for anything safety-critical in the proof).
+
+\subsection{\texttt{aesop} --- general automated search}
+
+\texttt{aesop} searches over a registered rule set (\texttt{@[aesop]}-tagged lemmas plus built-ins) trying to close the goal by whatever combination works. \texttt{aesop?} prints the proof it found, which is the standard way to turn an \texttt{aesop} call into a reproducible, auditable tactic sequence.
+
+\subsection{Choosing among them}
+
+\begin{center}
+\begin{tabular}{@{}p{0.40\linewidth}p{0.50\linewidth}@{}}
+\hline
+\textbf{Goal shape} & \textbf{Tactic} \\
+\hline
+Concrete numeral computation & \texttt{norm\_num} \\
+Linear arithmetic, ℕ/ℤ & \texttt{omega} \\
+Polynomial equality & \texttt{ring} \\
+Equality with division & \texttt{field\_simp} then \texttt{ring} \\
+Linear inequalities & \texttt{linarith} \\
+Nonlinear inequalities & \texttt{nlinarith} (feed it hints) \\
+Decidable finite check & \texttt{decide} / \texttt{native\_decide} \\
+``Try everything reasonable'' & \texttt{aesop} \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Structuring proofs}
+
+\subsection{\texttt{by\_contra} --- proof by contradiction}
+
+\texttt{by\_contra h} turns a goal \texttt{P} into a goal \texttt{False}, adding \texttt{h : ¬P} to the context.
+
+\begin{verbatim}
+example (P : Prop) (h : ¬P → False) : P := by
+  by_contra hP
+  exact h hP
+\end{verbatim}
+
+\subsection{\texttt{by\_cases} --- splitting on a proposition}
+
+\texttt{by\_cases h : P} produces two goals: one with \texttt{h : P}, one with \texttt{h : ¬P}.
+
+\begin{verbatim}
+example (n : Nat) : n = 0 ∨ n ≠ 0 := by
+  by_cases h : n = 0
+  · exact Or.inl h
+  · exact Or.inr h
+\end{verbatim}
+
+Both tactics rely on classical reasoning (excluded middle) --- standard throughout Mathlib, but worth knowing if a proof needs to stay constructive.
+
+\subsection{\texttt{contrapose} / \texttt{push\_neg}}
+
+\texttt{contrapose} turns a goal \texttt{P → Q} into \texttt{¬Q → ¬P}; \texttt{contrapose!} additionally runs \texttt{push\_neg} on the result. \texttt{push\_neg} on its own pushes a ¬ inward through quantifiers and connectives via De Morgan's laws --- e.g.\ turning \texttt{¬∀ x, P x} into \texttt{∃ x, ¬P x}, or \texttt{¬(a < b)} into \texttt{b ≤ a}. Both are usually paired with \texttt{by\_contra} or \texttt{by\_cases} to get a negated hypothesis into a \emph{usable} shape rather than a raw \texttt{¬(...)} blob.
+
+\subsection{\texttt{calc} --- calculational proofs}
+
+Chains a sequence of relational steps, each independently justified, reading like a proof on paper.
+
+\begin{verbatim}
+example (a b c d : Nat) (h1 : a = b) (h2 : b < c) (h3 : c ≤ d) : a < d := calc
+  a = b := h1
+  _ < c := h2
+  _ ≤ d := h3
+\end{verbatim}
+
+Each \texttt{\_} refers to the previous line's right-hand side. \texttt{calc} can mix relations (\texttt{=}, \texttt{<}, \texttt{≤}, \texttt{≠}) as long as they compose transitively, and any tactic can justify a step:
+
+\begin{verbatim}
+example (x y : Int) : (x + y)^2 = x^2 + 2*x*y + y^2 := calc
+  (x + y)^2 = (x + y) * (x + y) := by ring
+  _ = x*x + x*y + y*x + y*y       := by ring
+  _ = x^2 + 2*x*y + y^2           := by ring
+\end{verbatim}
+
+\texttt{calc} is worth reaching for whenever a proof's \emph{legibility} matters as much as its correctness --- which, notably, includes anywhere you'd want a human (or a later analysis pass) to audit \emph{why} the agent believed a step, not just \emph{that} Lean accepted it.
+
+\section{Equality machinery: \texttt{ext}, \texttt{funext}, \texttt{congr}, \texttt{symm}, \texttt{trans}}
+
+\subsection{\texttt{funext} and \texttt{ext} --- extensionality}
+
+Two functions are equal exactly when they agree everywhere; two sets are equal exactly when they have the same elements. \texttt{funext x} reduces \texttt{f = g} to \texttt{f x = g x}; \texttt{ext} (Mathlib, more general) applies whatever extensionality lemma fits the goal's type --- functions, sets, structures, products.
+
+\begin{verbatim}
+example : (fun x : Nat => x + 0) = (fun x => x) := by
+  funext x
+  simp
+
+example (A B : Set Nat) (h : ∀ x, x ∈ A ↔ x ∈ B) : A = B := by
+  ext x
+  exact h x
+
+example (A B : Set α) : A ∩ B = B ∩ A := by
+  ext x
+  constructor
+  · intro ⟨ha, hb⟩; exact ⟨hb, ha⟩
+  · intro ⟨hb, ha⟩; exact ⟨ha, hb⟩
+\end{verbatim}
+
+Marking a custom structure \texttt{@[ext]} auto-generates an extensionality lemma the \texttt{ext} tactic can then use.
+
+\subsection{\texttt{congr} --- from function equality to argument equality}
+
+\texttt{congr} reduces a goal \texttt{f a = f b} to \texttt{a = b} (and, for multi-argument functions, one subgoal per argument).
+
+\subsection{\texttt{symm} / \texttt{trans}}
+
+\texttt{symm} flips \texttt{a = b} to \texttt{b = a} in the goal; \texttt{trans y} splits \texttt{a = c} into \texttt{a = y} and \texttt{y = c} --- the tactic-mode analog of a manual \texttt{Eq.trans}/one \texttt{calc} step.
+
+\section{Tactic combinators}
+
+Combinators glue tactics together without you manually tracking every resulting goal:
+
+\begin{verbatim}
+-- Runs `simp` on every goal produced by `cases`
+example (b : Bool) : b || true = true := by cases b <;> simp
+
+-- Focuses exactly the first goal
+example (P Q : Prop) (hp : P) (hq : Q) : P ∧ Q := by
+  constructor
+  · exact hp
+  · exact hq
+\end{verbatim}
+
+\begin{center}
+\begin{tabular}{@{}p{0.24\linewidth}p{0.70\linewidth}@{}}
+\hline
+\textbf{Combinator} & \textbf{Behavior} \\
+\hline
+\texttt{t1 <;> t2} & Run \texttt{t2} on every goal \texttt{t1} produces \\
+\texttt{· tac} & Focus the first goal; \texttt{tac} must close it \\
+\texttt{first | t1 | t2} & Try \texttt{t1}; on failure try \texttt{t2} \\
+\texttt{repeat tac} & Repeat until \texttt{tac} fails \\
+\texttt{all\_goals tac} & Run on every goal; fails if any fails \\
+\texttt{any\_goals tac} & Run on every goal; fails only if none succeed \\
+\hline
+\end{tabular}
+\end{center}
+
+These matter for the agent harness specifically: a single agent-proposed ``tactic'' is often, in practice, a short combinator expression (\texttt{intro n; cases n <;> simp}) rather than one atomic step --- which affects how we define ``one iteration'' in the statistical analysis (see \texttt{docs/resources.md} \S5 and the Agent\(\leftrightarrow\)Lean 4 Pipeline chapter).
+
+\section{Worked examples --- Set theory}
+
+Sets in Mathlib are \texttt{Set α} for some ambient type \texttt{α}; membership is \texttt{x ∈ s}. The single most useful tactic here is \texttt{ext} --- almost every ``these two sets are equal'' goal reduces to ``these two sets have the same members,'' which reduces to an iff you prove pointwise.
+
+\begin{verbatim}
+-- Intersection is commutative
+example (A B : Set α) : A ∩ B = B ∩ A := by
+  ext x
+  simp only [Set.mem_inter_iff]
+  tauto
+
+-- Distributivity of ∩ over ∪
+example (A B C : Set α) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  simp only [Set.mem_inter_iff, Set.mem_union]
+  tauto
+
+-- Subset proofs: intro the element, chase membership
+example (A B C : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) : A ⊆ C := by
+  intro x hx
+  exact h2 (h1 hx)
+
+-- Existentials over sets
+example (A : Set Nat) (h : ∃ n ∈ A, n > 5) : ∃ n, n ∈ A := by
+  obtain ⟨n, hn, _⟩ := h
+  exact ⟨n, hn⟩
+\end{verbatim}
+
+Note the pattern: \texttt{ext x} to get down to elements, \texttt{simp only [Set.mem\_...]} (or plain \texttt{simp}) to unfold membership into a propositional statement, then propositional tactics (\texttt{tauto}, \texttt{constructor}, \texttt{intro}/\texttt{exact}) to close it. \texttt{⊆} unfolds definitionally to \texttt{∀ x, x ∈ A → x ∈ B}, so subset proofs are almost always \texttt{intro x hx; ...}.
+
+\section{Worked examples --- Topology}
+
+Mathlib's \texttt{TopologicalSpace α} typeclass carries an \texttt{IsOpen : Set α → Prop} predicate plus the usual axioms (arbitrary unions of opens are open, finite intersections of opens are open, the whole space and empty set are open). A function \texttt{f : α → β} between topological spaces is \texttt{Continuous f} exactly when the preimage of every open set is open --- this is \emph{the} recurring proof shape for continuity goals.
+
+\begin{verbatim}
+-- Continuity as preimage-of-open-is-open (schematic — exact lemma names
+-- depend on the specific Mathlib continuity API in scope; verify with #check
+-- or `exact?` before relying on this in a real proof)
+example {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (f : α → β) (h : ∀ U, IsOpen U → IsOpen (f ⁻¹' U)) : Continuous f := by
+  exact continuous_def.mpr h
+\end{verbatim}
+
+Limits are expressed via \texttt{Tendsto} and neighborhood filters \texttt{𝓝}: ``the limit of \texttt{2*x} as \texttt{x → 3} is \texttt{6}'' is \texttt{Tendsto (fun x : ℝ => 2 * x) (𝓝 3) (𝓝 6)}. Continuity-at-a-point is definitionally \texttt{ContinuousAt f x ↔ Tendsto f (𝓝 x) (𝓝 (f x))}.
+
+\begin{verbatim}
+-- A continuous function composed with a continuous function is continuous
+example {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+    (f : α → β) (g : β → γ) (hf : Continuous f) (hg : Continuous g) :
+    Continuous (g ∘ f) := by
+  exact hg.comp hf
+\end{verbatim}
+
+\textbf{Honest caveat for this section:} topology proofs lean heavily on knowing the \emph{right} Mathlib lemma name (\texttt{Continuous.comp}, \texttt{continuous\_def}, \texttt{IsOpen.inter}, etc.) rather than on generic tactics --- this is precisely the regime where \texttt{exact?}/\texttt{apply?}/\texttt{\#loogle} stop being optional conveniences and become load-bearing. Expect this to be a rich source of ``wrong lemma name'' hallucinations once the agent starts working topology problems --- worth flagging explicitly in the error taxonomy (\texttt{docs/resources.md} \S5, and the future logging-system doc).
+
+\section{Worked examples --- Algebra}
+
+Mathlib's algebraic hierarchy (\texttt{Monoid}, \texttt{Group}, \texttt{Ring}, \texttt{Field}, \ldots) is built from typeclasses; a \texttt{Subgroup G} is a bundled structure (carrier set + closure proofs), and a group homomorphism \texttt{f : G →* H} is a bundled function plus a proof it respects multiplication (\texttt{map\_mul}).
+
+\begin{verbatim}
+-- Basic group identities, provable purely from the group axioms
+example {G : Type*} [Group G] (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
+  exact mul_inv_rev a b
+
+example {G : Type*} [Group G] (a : G) : a * a⁻¹ = 1 := by
+  exact mul_inv_cancel a
+
+-- Homomorphisms preserve the identity and inverses
+example {G H : Type*} [Group G] [Group H] (f : G →* H) (a : G) :
+    f (a⁻¹) = (f a)⁻¹ := by
+  exact map_inv f a
+
+-- Subgroup membership is closed under the group operation
+example {G : Type*} [Group G] (H : Subgroup G) (a b : G) (ha : a ∈ H) (hb : b ∈ H) :
+    a * b ∈ H := by
+  exact H.mul_mem ha hb
+\end{verbatim}
+
+For concrete numeric rings (ℤ, ℚ, ℝ, polynomial rings), reach for \texttt{ring}/\texttt{ring\_nf} first --- it closes anything that follows from ring axioms alone without needing a single named lemma:
+
+\begin{verbatim}
+example (a b : Int) : (a + b) * (a - b) = a^2 - b^2 := by ring
+\end{verbatim}
+
+\textbf{Recurring pattern across all three topic areas:} generic tactics (\texttt{ring}, \texttt{omega}, \texttt{simp}, \texttt{tauto}, \texttt{ext}) get you very far in set theory and basic algebra, where the underlying structure is ``compute and compare.'' Topology (and deeper algebra --- quotients, isomorphism theorems) leans much more on \emph{finding the specific lemma that encodes the mathematical fact you need}, which is a fundamentally different skill --- and, again, plausibly a different hallucination profile for the agent to exhibit. This distinction should directly inform how the problem set (\texttt{docs/resources.md}, Goal 9) is difficulty-tiered.
+
+\section{Reading errors and diagnosing failed proofs}
+
+Lean's error messages are the raw signal the agent harness will parse programmatically (see the pipeline chapter), so it's worth learning to read them precisely rather than pattern-matching on vibes.
+
+\textbf{``type mismatch''} --- the term you supplied has a different type than the goal expects. Almost always from \texttt{exact}, or an \texttt{apply} where unification failed silently upstream. Read the \emph{expected} vs.\ \emph{got} types Lean prints; the mismatch is usually one argument, one implicit, or a coercion away.
+
+\textbf{``unknown identifier / unknown constant''} --- you referenced a lemma name that doesn't exist (wrong name, wrong namespace, or it's simply not the name Mathlib uses). This is the single most common \emph{hallucination} failure mode for an LLM proposing tactics: confidently citing a plausible-sounding lemma (\texttt{Nat.mul\_comm\_left} when the real name is \texttt{Nat.mul\_left\_comm}, say) that was never in the library. \texttt{exact?}/\texttt{apply?}/\texttt{\#loogle} exist specifically to route around needing to \emph{remember} exact names.
+
+\textbf{``failed to synthesize instance''} --- a typeclass Lean needs (e.g.\ \texttt{TopologicalSpace α}, \texttt{DecidableEq α}) isn't available in context. Usually means a hypothesis or \texttt{variable} declaration is missing, not that the proof strategy is wrong.
+
+\textbf{``unsolved goals''} at the end of a \texttt{by} block --- the tactic sequence ran out without closing everything. Check the last-printed goal state; it tells you exactly what's left.
+
+\textbf{A goal that doesn't shrink} after a tactic that ``succeeded'' (no error, but the goal looks identical) --- almost always \texttt{rw}/\texttt{simp} finding nothing to rewrite, silently doing nothing rather than erroring. Worth explicitly distinguishing from a genuine error in the agent's logs: \emph{tactic accepted but made no progress} is a distinct category from \emph{tactic rejected}, and both are distinct again from \emph{tactic accepted, goal changed, but agent is now further from a proof than before}.
+
+\textbf{\texttt{sorry} compiles.} A file with \texttt{sorry} anywhere in a proof still type-checks and reports no errors --- Lean treats \texttt{sorry} as ``trust me.'' This is the sharpest trap for automated pipelines: a proof search that terminates because the agent inserted \texttt{sorry} looks, from the outside, identical to success unless you explicitly grep for it. Any harness built on top of this tutorial's material \textbf{must} treat \texttt{sorry}/\texttt{admit} as a distinct terminal state, not a success.
+
+This taxonomy --- wrong-term, wrong-name, missing-instance, incomplete, no-progress, silently-admitted --- is a first pass at exactly the category system the project's core statistical question depends on (\texttt{docs/resources.md} \S5--6). It should be revisited and refined once real agent transcripts exist to check it against.
+
+\section{From tactics to the agent pipeline}
+
+Everything above described tactics as something \emph{you} type in VS Code, watching the Infoview update live. The agent harness replaces that human loop with a programmatic one: the agent receives a serialized goal state (context + goal, roughly what's printed above the \texttt{⊢} in every example in this document), proposes one tactic string, and receives back either the next goal state or one of the error categories from \S13 --- with no Infoview, no hover tooltips, no \texttt{exact?} search run interactively (though the agent can still \emph{issue} \texttt{exact?} as a tactic and read its output).
+
+Concretely, this means the command-line invocation from the Lean 4 Environment Setup chapter, \S8 (\texttt{lake env lean file.lean}, or the Lean REPL / language server protocol) is the actual interface the agent talks to --- not VS Code. Every tactic in this tutorial is a string the agent must produce \emph{syntactically correctly} before Lean even attempts to check whether it's \emph{semantically} valid, which means malformed syntax (missing \texttt{import}, wrong bracket type, a \texttt{Mathlib}-only tactic invoked without the import) is itself a distinct failure mode, prior to and separate from a mathematically wrong tactic.
+
+The next documents in this project build directly on this:
+
+\begin{itemize}
+  \item The Agent\(\leftrightarrow\)Lean 4 Pipeline chapter (Goal 6) --- the exact protocol between agent and Lean, and how goal states get serialized/parsed.
+  \item The agent-thinking logging design (Goal 8) --- what gets recorded at each of these steps, building on the error taxonomy in \S13.
+  \item The problem set (Goal 9) --- segmented using exactly the topic split in \S10--12 (set theory / topology / algebra), difficulty-tiered partly along the ``generic tactics suffice'' vs.\ ``requires exact lemma recall'' axis observed in \S12.
+\end{itemize}
+
+\section{Mathlib conventions: naming, dot notation, anonymous constructors}
+
+Section 13 flagged ``wrong lemma name'' as a major hallucination category once problems require real Mathlib recall (topology and deeper algebra especially). It's worth knowing that Mathlib names are \textbf{not arbitrary} --- they follow a documented, learnable scheme. Internalizing it (for you and, eventually, as prior knowledge encoded into the agent's prompting) turns ``guess the name'' into ``derive the name.''
+
+\subsection{Capitalization signals the kind of thing}
+
+\begin{enumerate}
+  \item \textbf{Proofs and theorem names} (terms of a \texttt{Prop}) use \texttt{snake\_case}: \texttt{add\_comm}, \texttt{mul\_zero}, \texttt{lt\_of\_le\_of\_ne}.
+  \item \textbf{Types, structures, classes} use \texttt{UpperCamelCase}: \texttt{Group}, \texttt{TopologicalSpace}, \texttt{Subgroup}.
+  \item \textbf{Everything else} (functions, other data) uses \texttt{lowerCamelCase}.
+\end{enumerate}
+
+So seeing \texttt{Nat.add\_comm} (snake\_case after the dot) tells you it's a proof; seeing \texttt{TopologicalSpace} (UpperCamelCase) tells you it's a class before you've read anything else about it.
+
+\subsection{The symbol to word dictionary}
+
+Names are built by spelling out the symbols in the statement. The core dictionary (abbreviated from the official guide):
+
+\begin{center}
+\begin{tabular}{@{}llllll@{}}
+\hline
+\textbf{Symbol} & \textbf{Word} & \textbf{Symbol} & \textbf{Word} & \textbf{Symbol} & \textbf{Word} \\
+\hline
+∨ & \texttt{or} & ∧ & \texttt{and} & ¬ & \texttt{not} \\
+→ & \texttt{of} / (often omitted) & ↔ & \texttt{iff} & ∃ & \texttt{exists} \\
+= & \texttt{eq} (often omitted) & ≠ & \texttt{ne} & ∘ & \texttt{comp} \\
+∈ & \texttt{mem} & ∪ & \texttt{union} & ∩ & \texttt{inter} \\
+⊆ & (usually spelled \texttt{subset}) & ∖ & \texttt{sdiff} & ᶜ & \texttt{compl} \\
++ & \texttt{add} & - (binary) & \texttt{sub} & - (unary) & \texttt{neg} \\
+* & \texttt{mul} & \textasciicircum{} & \texttt{pow} & ⁻¹ & \texttt{inv} \\
+≤ / < & \texttt{le}/\texttt{lt} (or \texttt{ge}/\texttt{gt}) & ∣ & \texttt{dvd} & ∑ / ∏ & \texttt{sum}/\texttt{prod} \\
+\hline
+\end{tabular}
+\end{center}
+
+Knowing this, a name like \texttt{mul\_left\_cancel} is readable on sight: ``multiplication, left [argument], cancel[lation].'' \texttt{not\_le\_of\_gt} reads as ``not (≤), given (>)'' --- matching its actual statement \texttt{a < b → ¬ b ≤ a}. This is exactly the skill that turns \texttt{exact?}/\texttt{\#loogle} from a crutch into a check.
+
+\subsection{Hypothesis ordering: ``of''}
+
+When a name encodes hypotheses, they're listed via \texttt{\_of\_} \textbf{in the order they appear in the statement}, not reversed: a theorem \texttt{A → B → C} is named \texttt{C\_of\_A\_of\_B}. \texttt{lt\_of\_le\_of\_ne} therefore states something like \texttt{a ≤ b → a ≠ b → a < b} --- conclusion first, then each hypothesis in argument order.
+
+\subsection{≤ / < vs ≥ / >}
+
+Mathlib almost always states things with ≤ / <, never ≥ / >, but still uses \texttt{ge}/\texttt{gt} in \emph{names} in a few specific situations: when two occurrences of the same relation in one name need to be told apart (\texttt{le}/\texttt{lt} for the first, \texttt{ge}/\texttt{gt} for a swapped second), when matching another relation's argument order, or when describing an argument-swapped version. If you're hunting for a lemma and \texttt{\_le\_} isn't found, try \texttt{\_ge\_} before giving up.
+
+\subsection{Dot notation and the anonymous constructor}
+
+\texttt{h.left}, \texttt{h.mp}, \texttt{f.comp g} --- a leading dot after a term calls a function in that term's namespace with the term as first explicit argument of matching type. \texttt{And.left : P ∧ Q → P} becomes \texttt{h.left} when \texttt{h : P ∧ Q}. This is why \texttt{Continuous.comp}, seen in \S11, can be written \texttt{hg.comp hf}.
+
+The anonymous constructor \texttt{⟨...⟩} builds a term of a structure/inductive type by position, letting Lean infer \emph{which} constructor from the expected type --- this is what's happening every time you write \texttt{⟨n, hn⟩} to prove an ∃, or \texttt{⟨hp, hq⟩} to prove a ∧.
+
+\subsection{Structural suffixes worth recognizing}
+
+\begin{itemize}
+  \item \textbf{\texttt{.ext}} --- a lemma of shape \texttt{(∀ x, f x = g x) → f = g}; the thing \texttt{ext} (\S8) invokes.
+  \item \textbf{\texttt{.ext\_iff}} --- the bidirectional version, \texttt{f = g ↔ ∀ x, f x = g x}.
+  \item \textbf{\texttt{.inj} / \texttt{\_injective} / \texttt{\_inj}} --- injectivity; \texttt{.inj} is usually a unidirectional, auto-generated constructor fact, \texttt{\_inj} a bidirectional iff, \texttt{\_injective} a full \texttt{Function.Injective f} statement.
+  \item \textbf{\texttt{Is}-prefixed classes} (\texttt{IsOpen}, \texttt{IsClosed}, \texttt{IsTopologicalRing}) --- a \texttt{Prop}-valued class describing an extra property of data you already have, as opposed to extra data itself.
+\end{itemize}
+
+Full reference (symbol dictionary, capitalization rules, structural-lemma conventions, more examples): \href{https://leanprover-community.github.io/contribute/naming.html}{Mathlib naming conventions}, cataloged in \texttt{docs/resources.md}.
+
+\section{Exercises (with worked solutions)}
+
+Work these before moving to the pipeline docs --- they exercise every tactic family from \S2--9 and preview the topic split from \S10--12. Solutions follow each prompt; cover them and attempt the proof first.
+
+\textbf{1. Core tactics.} Prove \texttt{(P Q : Prop) (hpq : P → Q) (hp : P) : Q}.
+
+\begin{verbatim}
+example (P Q : Prop) (hpq : P → Q) (hp : P) : Q := by
+  exact hpq hp
+\end{verbatim}
+
+\textbf{2. Rewriting.} Prove \texttt{(a b c : Nat) (h1 : a = b) (h2 : b = c) : a + 1 = c + 1}.
+
+\begin{verbatim}
+example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a + 1 = c + 1 := by
+  rw [h1, h2]
+\end{verbatim}
+
+\textbf{3. \texttt{have}/\texttt{suffices}.} Prove \texttt{(n : Nat) (h : n > 10) : n > 0} two ways: with \texttt{have}, then with \texttt{suffices}.
+
+\begin{verbatim}
+example (n : Nat) (h : n > 10) : n > 0 := by
+  have h' : n > 10 := h
+  omega
+
+example (n : Nat) (h : n > 10) : n > 0 := by
+  suffices h' : n > 10 by omega
+  exact h
+\end{verbatim}
+
+\textbf{4. Induction.} Prove \texttt{(n : Nat) : n < n + 1} by induction (don't just reach for \texttt{omega} --- practice using \texttt{ih}).
+
+\begin{verbatim}
+example (n : Nat) : n < n + 1 := by
+  induction n with
+  | zero => omega
+  | succ m ih => omega   -- ih available but omega doesn't need it here;
+                          -- compare with a genuinely inductive fact like §5's add_zero'
+\end{verbatim}
+
+\emph{(Note: this particular fact is linear and \texttt{omega} alone would close the top-level goal without induction --- the exercise is in the induction mechanics: naming \texttt{ih}, understanding it's unused here because the fact doesn't recurse on \texttt{n}'s structure. Try \texttt{theorem double\_ge (n : Nat) : n ≤ 2 * n} by induction for a case where \texttt{ih} is genuinely load-bearing.)}
+
+\textbf{5. Case split + automation.} Prove \texttt{(n : Nat) : n \% 2 = 0 ∨ n \% 2 = 1}.
+
+\begin{verbatim}
+example (n : Nat) : n % 2 = 0 ∨ n % 2 = 1 := by omega
+\end{verbatim}
+
+\textbf{6. \texttt{ring} vs \texttt{omega}.} Prove \texttt{(x y : Int) : (x + y) * (x + y) = x*x + 2*x*y + y*y}, and separately \texttt{(a b : Nat) (h : a ≤ b) : a + 3 ≤ b + 3}. Identify which tactic fits which.
+
+\begin{verbatim}
+example (x y : Int) : (x + y) * (x + y) = x*x + 2*x*y + y*y := by ring
+example (a b : Nat) (h : a ≤ b) : a + 3 ≤ b + 3 := by omega
+\end{verbatim}
+
+\textbf{7. \texttt{by\_contra}.} Prove \texttt{(n : Nat) (h : ¬ n = 0) : n > 0}.
+
+\begin{verbatim}
+example (n : Nat) (h : ¬ n = 0) : n > 0 := by
+  by_contra hc
+  push_neg at hc
+  omega
+\end{verbatim}
+
+\textbf{8. \texttt{calc}.} Prove \texttt{(a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c} with an explicit \texttt{calc} chain (not just \texttt{exact le\_trans h1 h2}).
+
+\begin{verbatim}
+example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := calc
+  a ≤ b := h1
+  _ ≤ c := h2
+\end{verbatim}
+
+\textbf{9. \texttt{rcases}/\texttt{obtain}.} Prove \texttt{(h : ∃ n : Nat, n > 3 ∧ n < 6) : ∃ n : Nat, n > 0}.
+
+\begin{verbatim}
+example (h : ∃ n : Nat, n > 3 ∧ n < 6) : ∃ n : Nat, n > 0 := by
+  obtain ⟨n, hn1, hn2⟩ := h
+  exact ⟨n, by omega⟩
+\end{verbatim}
+
+\textbf{10. Set theory.} Prove \texttt{(A B C : Set α) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)} --- you saw this in \S10; write it here from a blank slate.
+
+\begin{verbatim}
+example (A B C : Set α) : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
+  ext x
+  simp only [Set.mem_inter_iff, Set.mem_union]
+  tauto
+\end{verbatim}
+
+\textbf{11. Set theory, subset chain.} Prove \texttt{(A B C D : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) (h3 : C ⊆ D) : A ⊆ D}.
+
+\begin{verbatim}
+example (A B C D : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) (h3 : C ⊆ D) : A ⊆ D := by
+  intro x hx
+  exact h3 (h2 (h1 hx))
+\end{verbatim}
+
+\textbf{12. Algebra.} Prove \texttt{\{G : Type*\} [Group G] (a b c : G) (h : a * b = a * c) : b = c} (left cancellation) using \texttt{mul\_left\_cancel} or by hand via \texttt{mul\_left\_cancel₀}-style reasoning --- try \texttt{exact?} first if the exact name isn't obvious.
+
+\begin{verbatim}
+example {G : Type*} [Group G] (a b c : G) (h : a * b = a * c) : b = c := by
+  exact mul_left_cancel h
+\end{verbatim}
+
+\textbf{13. Combinators.} Prove \texttt{(b1 b2 : Bool) : (b1 \&\& b2) = (b2 \&\& b1)} by casing on both booleans and closing every resulting goal with one combinator call.
+
+\begin{verbatim}
+example (b1 b2 : Bool) : (b1 && b2) = (b2 && b1) := by
+  cases b1 <;> cases b2 <;> rfl
+\end{verbatim}
+
+\textbf{14. Diagnose the error.} The following proof fails. Without running it, predict which error category from \S13 it hits, then fix it.
+
+\begin{verbatim}
+example (n : Nat) : n + 0 = n := by
+  exact Nat.add_zer n   -- typo: should be Nat.add_zero
+\end{verbatim}
+
+\emph{Diagnosis:} \texttt{unknown identifier} --- \texttt{Nat.add\_zer} doesn't exist (missing final \texttt{o}). This is exactly the ``plausible-sounding but nonexistent name'' hallucination flagged in \S13; the fix is either correcting the typo or reaching for \texttt{exact?}.
+
+\textbf{15. Cross-topic capstone.} Prove that for a continuous function \texttt{f : ℝ → ℝ} and a set \texttt{S} that's the preimage of an open set under \texttt{f}, \texttt{S} is open --- i.e., restate and prove \texttt{Continuous f → IsOpen U → IsOpen (f ⁻¹' U)} using the definitional unfolding from \S11.
+
+\begin{verbatim}
+example (f : ℝ → ℝ) (hf : Continuous f) (U : Set ℝ) (hU : IsOpen U) :
+    IsOpen (f ⁻¹' U) := by
+  exact hf.isOpen_preimage U hU
+\end{verbatim}
+
+\emph{(If the exact lemma name here doesn't resolve in your environment, this is a live example of the topology-specific ``lemma recall'' difficulty flagged in \S12 --- use \texttt{exact?} and cross-check against \texttt{Mathlib.Topology.Continuous} in \texttt{docs/resources.md}.)}
+
+\section{References}
+
+\begin{itemize}
+  \item \href{https://leanprover.github.io/theorem_proving_in_lean4/}{Theorem Proving in Lean 4} --- Lean FRO / Lean community
+  \item \href{https://lean4.dev/tactics}{Lean 4 Dev --- Tactics course} --- primary source for syntax and examples throughout this document
+  \item \href{https://leanprover-community.github.io/mathematics_in_lean/}{Mathematics in Lean} --- Jeremy Avigad, Patrick Massot
+  \item \href{https://leanprover-community.github.io/mathlib4_docs/tactics.html}{Mathlib4 tactic documentation}
+  \item \href{https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Continuous.html}{Mathlib.Topology.Continuous}, \href{https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html}{Mathlib.Topology.Defs.Basic}
+\end{itemize}
+
+Full annotated bibliography, including the LLM/hallucination and agent-Lean literature that motivates this project: \texttt{docs/resources.md}.

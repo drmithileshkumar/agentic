@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['$','$'], ['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Common gotchas</title>
+<link rel="next" href="ch-minimum_viable_tactics.html" title="Minimum Viable Tactic Set" />
+<link rel="prev" href="sect0041.html" title="Notation quick-typing (VS Code unicode input, backslash prefix)" />
+<link rel="up" href="ch-tactic_cheat_sheet.html" title="Lean 4 Tactic Cheat Sheet" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/showmore.css" />
+<link rel="stylesheet" href="styles/blueprint.css" />
+<link rel="stylesheet" href="styles/extra_styles.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">MyMathlibProject Blueprint</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref">1.1</span> <span class="toc_entry">What you’re installing</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref">1.2</span> <span class="toc_entry">Prerequisites</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref">1.3</span> <span class="toc_entry">Install elan</span></a>
+ </li>
+<li class="">
+  <a href="sect0004.html"><span class="toc_ref">1.4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
+ </li>
+<li class="">
+  <a href="sect0005.html"><span class="toc_ref">1.5</span> <span class="toc_entry">Create a project</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html#a0000000077"><span class="toc_ref">1.5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">1.6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">1.7</span> <span class="toc_entry">Leanblueprint set up</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0007.html#a0000000078"><span class="toc_ref">1.7.1</span> <span class="toc_entry">Installing it</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000079"><span class="toc_ref">1.7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000080"><span class="toc_ref">1.7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000081"><span class="toc_ref">1.7.4</span> <span class="toc_entry">Build commands</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">1.8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">1.9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
+ </li>
+<li class="">
+  <a href="sect0010.html"><span class="toc_ref">1.10</span> <span class="toc_entry">Keeping things updated</span></a>
+ </li>
+<li class="">
+  <a href="sect0011.html"><span class="toc_ref">1.11</span> <span class="toc_entry">Troubleshooting</span></a>
+ </li>
+<li class="">
+  <a href="sect0012.html"><span class="toc_ref">1.12</span> <span class="toc_entry">Next up</span></a>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">1.13</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0014.html"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
+ </li>
+<li class="">
+  <a href="sect0015.html"><span class="toc_ref">2.1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html"><span class="toc_ref">2.2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0016.html#a0000000082"><span class="toc_ref">2.2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000083"><span class="toc_ref">2.2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000084"><span class="toc_ref">2.2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000085"><span class="toc_ref">2.2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000086"><span class="toc_ref">2.2.5</span> <span class="toc_entry">Quick reference</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0017.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0017.html#a0000000087"><span class="toc_ref">2.3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
+ </li>
+<li class="">
+  <a href="sect0017.html#a0000000088"><span class="toc_ref">2.3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
+ </li>
+<li class="">
+  <a href="sect0017.html#a0000000089"><span class="toc_ref">2.3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0018.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0018.html#a0000000090"><span class="toc_ref">2.4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000091"><span class="toc_ref">2.4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000092"><span class="toc_ref">2.4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000093"><span class="toc_ref">2.4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0019.html"><span class="toc_ref">2.5</span> <span class="toc_entry">Case analysis and induction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0019.html#a0000000094"><span class="toc_ref">2.5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
+ </li>
+<li class="">
+  <a href="sect0019.html#a0000000095"><span class="toc_ref">2.5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
+ </li>
+<li class="">
+  <a href="sect0019.html#a0000000096"><span class="toc_ref">2.5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0020.html"><span class="toc_ref">2.6</span> <span class="toc_entry">Automation and decision procedures</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0020.html#a0000000097"><span class="toc_ref">2.6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000098"><span class="toc_ref">2.6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000099"><span class="toc_ref">2.6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000100"><span class="toc_ref">2.6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000101"><span class="toc_ref">2.6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000102"><span class="toc_ref">2.6.6</span> <span class="toc_entry">Choosing among them</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0021.html"><span class="toc_ref">2.7</span> <span class="toc_entry">Structuring proofs</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0021.html#a0000000103"><span class="toc_ref">2.7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000104"><span class="toc_ref">2.7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000105"><span class="toc_ref">2.7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000106"><span class="toc_ref">2.7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0022.html"><span class="toc_ref">2.8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0022.html#a0000000107"><span class="toc_ref">2.8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
+ </li>
+<li class="">
+  <a href="sect0022.html#a0000000108"><span class="toc_ref">2.8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
+ </li>
+<li class="">
+  <a href="sect0022.html#a0000000109"><span class="toc_ref">2.8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0023.html"><span class="toc_ref">2.9</span> <span class="toc_entry">Tactic combinators</span></a>
+ </li>
+<li class="">
+  <a href="sect0024.html"><span class="toc_ref">2.10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
+ </li>
+<li class="">
+  <a href="sect0025.html"><span class="toc_ref">2.11</span> <span class="toc_entry">Worked examples — Topology</span></a>
+ </li>
+<li class="">
+  <a href="sect0026.html"><span class="toc_ref">2.12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
+ </li>
+<li class="">
+  <a href="sect0027.html"><span class="toc_ref">2.13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
+ </li>
+<li class="">
+  <a href="sect0028.html"><span class="toc_ref">2.14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html"><span class="toc_ref">2.15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0029.html#a0000000110"><span class="toc_ref">2.15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000111"><span class="toc_ref">2.15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000112"><span class="toc_ref">2.15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000113"><span class="toc_ref">2.15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000114"><span class="toc_ref">2.15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000115"><span class="toc_ref">2.15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0030.html"><span class="toc_ref">2.16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
+ </li>
+<li class="">
+  <a href="sect0031.html"><span class="toc_ref">2.17</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sect0032.html"><span class="toc_ref">3.1</span> <span class="toc_entry">Reading a goal state</span></a>
+ </li>
+<li class="">
+  <a href="sect0033.html"><span class="toc_ref">3.2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
+ </li>
+<li class="">
+  <a href="sect0034.html"><span class="toc_ref">3.3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
+ </li>
+<li class="">
+  <a href="sect0035.html"><span class="toc_ref">3.4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
+ </li>
+<li class="">
+  <a href="sect0036.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Automation / decision procedures</span></a>
+ </li>
+<li class="">
+  <a href="sect0037.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
+ </li>
+<li class="">
+  <a href="sect0038.html"><span class="toc_ref">3.7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
+ </li>
+<li class="">
+  <a href="sect0039.html"><span class="toc_ref">3.8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
+ </li>
+<li class="">
+  <a href="sect0040.html"><span class="toc_ref">3.9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
+ </li>
+<li class="">
+  <a href="sect0041.html"><span class="toc_ref">3.10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
+ </li>
+<li class=" active current">
+  <a href="sect0042.html"><span class="toc_ref">3.11</span> <span class="toc_entry">Common gotchas</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0043.html"><span class="toc_ref">4.1</span> <span class="toc_entry">Why a restricted set at all</span></a>
+ </li>
+<li class="">
+  <a href="sect0044.html"><span class="toc_ref">4.2</span> <span class="toc_entry">The floor set</span></a>
+ </li>
+<li class="">
+  <a href="sect0045.html"><span class="toc_ref">4.3</span> <span class="toc_entry">Explicitly excluded</span></a>
+ </li>
+<li class="">
+  <a href="sect0046.html"><span class="toc_ref">4.4</span> <span class="toc_entry">Undecided</span></a>
+ </li>
+<li class="">
+  <a href="sect0047.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
+ </li>
+<li class="">
+  <a href="sect0048.html"><span class="toc_ref">4.6</span> <span class="toc_entry">Empirical tracking</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent \(\leftrightarrow \) Lean 4 Pipeline</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0049.html"><span class="toc_ref">5.1</span> <span class="toc_entry">The loop, restated precisely</span></a>
+ </li>
+<li class="">
+  <a href="sect0050.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0051.html#a0000000116"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000117"><span class="toc_ref">5.3.2</span> <span class="toc_entry">One tactic step</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000118"><span class="toc_ref">5.3.3</span> <span class="toc_entry">The error case</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000119"><span class="toc_ref">5.3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0052.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0053.html#a0000000120"><span class="toc_ref">5.5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html#a0000000121"><span class="toc_ref">5.5.2</span> <span class="toc_entry">Session/state switching</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html#a0000000122"><span class="toc_ref">5.5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0054.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
+ </li>
+<li class="">
+  <a href="sect0055.html"><span class="toc_ref">5.7</span> <span class="toc_entry">Open design decisions</span></a>
+ </li>
+<li class="">
+  <a href="sect0056.html"><span class="toc_ref">5.8</span> <span class="toc_entry">What this doc feeds</span></a>
+ </li>
+<li class="">
+  <a href="sect0057.html"><span class="toc_ref">5.9</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0058.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The landscape (2026)</span></a>
+ </li>
+<li class="">
+  <a href="sect0059.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0060.html"><span class="toc_ref">7.1</span> <span class="toc_entry">What the harness calls</span></a>
+ </li>
+<li class="">
+  <a href="sect0061.html"><span class="toc_ref">7.2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
+ </li>
+<li class="">
+  <a href="sect0062.html"><span class="toc_ref">7.3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0063.html"><span class="toc_ref">8</span> <span class="toc_entry">Benchmark problems</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0064.html"><span class="toc_ref">8.1</span> <span class="toc_entry">Set Theory</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0064.html#a0000000123"><span class="toc_ref">8.1.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0064.html#a0000000124"><span class="toc_ref">8.1.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0064.html#a0000000125"><span class="toc_ref">8.1.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0065.html"><span class="toc_ref">8.2</span> <span class="toc_entry">Topology</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0065.html#a0000000126"><span class="toc_ref">8.2.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0065.html#a0000000127"><span class="toc_ref">8.2.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0065.html#a0000000128"><span class="toc_ref">8.2.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0066.html"><span class="toc_ref">8.3</span> <span class="toc_entry">Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0066.html#a0000000129"><span class="toc_ref">8.3.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0066.html#a0000000130"><span class="toc_ref">8.3.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0066.html#a0000000131"><span class="toc_ref">8.3.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0067.html"><span class="toc_ref">8.4</span> <span class="toc_entry">Abstract Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0067.html#a0000000132"><span class="toc_ref">8.4.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0067.html#a0000000133"><span class="toc_ref">8.4.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0067.html#a0000000134"><span class="toc_ref">8.4.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0068.html"><span class="toc_ref">8.5</span> <span class="toc_entry">Linear Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0068.html#a0000000135"><span class="toc_ref">8.5.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0068.html#a0000000136"><span class="toc_ref">8.5.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0068.html#a0000000137"><span class="toc_ref">8.5.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0069.html"><span class="toc_ref">8.6</span> <span class="toc_entry">Number Theory</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0069.html#a0000000138"><span class="toc_ref">8.6.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0069.html#a0000000139"><span class="toc_ref">8.6.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0069.html#a0000000140"><span class="toc_ref">8.6.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0070.html"><span class="toc_ref">8.7</span> <span class="toc_entry">Real Analysis</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0070.html#a0000000141"><span class="toc_ref">8.7.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0070.html#a0000000142"><span class="toc_ref">8.7.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0070.html#a0000000143"><span class="toc_ref">8.7.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0071.html"><span class="toc_ref">8.8</span> <span class="toc_entry">Complex Analysis</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0071.html#a0000000144"><span class="toc_ref">8.8.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0071.html#a0000000145"><span class="toc_ref">8.8.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0071.html#a0000000146"><span class="toc_ref">8.8.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0072.html"><span class="toc_ref">8.9</span> <span class="toc_entry">Combinatorics</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0072.html#a0000000147"><span class="toc_ref">8.9.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0072.html#a0000000148"><span class="toc_ref">8.9.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0072.html#a0000000149"><span class="toc_ref">8.9.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0073.html"><span class="toc_ref">8.10</span> <span class="toc_entry">Geometry</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0073.html#a0000000150"><span class="toc_ref">8.10.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0073.html#a0000000151"><span class="toc_ref">8.10.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0073.html#a0000000152"><span class="toc_ref">8.10.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0074.html"><span class="toc_ref">8.11</span> <span class="toc_entry">Probability</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0074.html#a0000000153"><span class="toc_ref">8.11.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0074.html#a0000000154"><span class="toc_ref">8.11.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0074.html#a0000000155"><span class="toc_ref">8.11.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0075.html"><span class="toc_ref">8.12</span> <span class="toc_entry">Unclassified</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0075.html#a0000000156"><span class="toc_ref">8.12.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0075.html#a0000000157"><span class="toc_ref">8.12.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0075.html#a0000000158"><span class="toc_ref">8.12.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li ><a href="dep_graph_document.html">Dependency graph</a></li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="a0000000043">3.11 Common gotchas</h1>
+<ul class="itemize">
+  <li><p><b class="bfseries"><span class="ttfamily">rw</span> fails silently-ish</b> if the LHS pattern isn’t syntactically present in the goal — check with <span class="ttfamily">#check</span> on the lemma first. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">simp</span> can over-simplify</b> and leave a goal in an unexpected shape mid-proof; prefer <span class="ttfamily">simp only</span> in anything meant to be stable. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">omega</span>/<span class="ttfamily">ring</span> are decision procedures for <em>specific</em> fragments</b> — <span class="ttfamily">omega</span> fails on any variable×variable term; <span class="ttfamily">ring</span> fails on inequalities or division. Route to the right tool (see the automation table above). </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">Nat</span> subtraction truncates</b> at 0 (<span class="ttfamily">a - b = 0</span> when <span class="ttfamily">a &lt; b</span>) — <span class="ttfamily">omega</span> knows this, manual reasoning often doesn’t. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">have</span> is opaque, <span class="ttfamily">let</span> is transparent</b> — swapping them can silently break a proof that relied on unfolding. </p>
+</li>
+  <li><p><b class="bfseries"><span class="ttfamily">sorry</span>/<span class="ttfamily">admit</span> compile successfully</b> — always grep a file for <span class="ttfamily">sorry</span> before treating it as done. (This is exactly the kind of silent failure the agent-hallucination logging in this project needs to catch — see <span class="ttfamily">docs/resources.md</span> §5–6.) </p>
+</li>
+</ul>
+<p>Full worked examples and explanations: the Lean 4 Tutorial chapter. Tactic-by-tactic deep dives: <a href ="https://lean4.dev/tactics">lean4.dev/tactics</a>.  </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <svg  id="showmore-minus" class="icon icon-eye-minus showmore"><use xlink:href="symbol-defs.svg#icon-eye-minus"></use></svg>
+
+  <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
+
+  <a href="sect0041.html" title="Notation quick-typing (VS Code unicode input, backslash prefix)"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-tactic_cheat_sheet.html" title="Lean 4 Tactic Cheat Sheet"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="ch-minimum_viable_tactics.html" title="Minimum Viable Tactic Set"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+<script type="text/javascript" src="js/js.cookie.min.js"></script>
+<script type="text/javascript" src="js/showmore.js"></script>
+</body>
+</html>

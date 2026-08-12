@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['$','$'], ['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Set Theory</title>
+<link rel="next" href="sect0065.html" title="Topology" />
+<link rel="prev" href="sect0063.html" title="Benchmark problems" />
+<link rel="up" href="sect0063.html" title="Benchmark problems" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/showmore.css" />
+<link rel="stylesheet" href="styles/blueprint.css" />
+<link rel="stylesheet" href="styles/extra_styles.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">MyMathlibProject Blueprint</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref">1.1</span> <span class="toc_entry">What you’re installing</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref">1.2</span> <span class="toc_entry">Prerequisites</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref">1.3</span> <span class="toc_entry">Install elan</span></a>
+ </li>
+<li class="">
+  <a href="sect0004.html"><span class="toc_ref">1.4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
+ </li>
+<li class="">
+  <a href="sect0005.html"><span class="toc_ref">1.5</span> <span class="toc_entry">Create a project</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html#a0000000077"><span class="toc_ref">1.5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">1.6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">1.7</span> <span class="toc_entry">Leanblueprint set up</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0007.html#a0000000078"><span class="toc_ref">1.7.1</span> <span class="toc_entry">Installing it</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000079"><span class="toc_ref">1.7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000080"><span class="toc_ref">1.7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000081"><span class="toc_ref">1.7.4</span> <span class="toc_entry">Build commands</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">1.8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">1.9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
+ </li>
+<li class="">
+  <a href="sect0010.html"><span class="toc_ref">1.10</span> <span class="toc_entry">Keeping things updated</span></a>
+ </li>
+<li class="">
+  <a href="sect0011.html"><span class="toc_ref">1.11</span> <span class="toc_entry">Troubleshooting</span></a>
+ </li>
+<li class="">
+  <a href="sect0012.html"><span class="toc_ref">1.12</span> <span class="toc_entry">Next up</span></a>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">1.13</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0014.html"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
+ </li>
+<li class="">
+  <a href="sect0015.html"><span class="toc_ref">2.1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html"><span class="toc_ref">2.2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0016.html#a0000000082"><span class="toc_ref">2.2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000083"><span class="toc_ref">2.2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000084"><span class="toc_ref">2.2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000085"><span class="toc_ref">2.2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000086"><span class="toc_ref">2.2.5</span> <span class="toc_entry">Quick reference</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0017.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0017.html#a0000000087"><span class="toc_ref">2.3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
+ </li>
+<li class="">
+  <a href="sect0017.html#a0000000088"><span class="toc_ref">2.3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
+ </li>
+<li class="">
+  <a href="sect0017.html#a0000000089"><span class="toc_ref">2.3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0018.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0018.html#a0000000090"><span class="toc_ref">2.4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000091"><span class="toc_ref">2.4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000092"><span class="toc_ref">2.4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000093"><span class="toc_ref">2.4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0019.html"><span class="toc_ref">2.5</span> <span class="toc_entry">Case analysis and induction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0019.html#a0000000094"><span class="toc_ref">2.5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
+ </li>
+<li class="">
+  <a href="sect0019.html#a0000000095"><span class="toc_ref">2.5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
+ </li>
+<li class="">
+  <a href="sect0019.html#a0000000096"><span class="toc_ref">2.5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0020.html"><span class="toc_ref">2.6</span> <span class="toc_entry">Automation and decision procedures</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0020.html#a0000000097"><span class="toc_ref">2.6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000098"><span class="toc_ref">2.6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000099"><span class="toc_ref">2.6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000100"><span class="toc_ref">2.6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000101"><span class="toc_ref">2.6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000102"><span class="toc_ref">2.6.6</span> <span class="toc_entry">Choosing among them</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0021.html"><span class="toc_ref">2.7</span> <span class="toc_entry">Structuring proofs</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0021.html#a0000000103"><span class="toc_ref">2.7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000104"><span class="toc_ref">2.7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000105"><span class="toc_ref">2.7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000106"><span class="toc_ref">2.7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0022.html"><span class="toc_ref">2.8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0022.html#a0000000107"><span class="toc_ref">2.8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
+ </li>
+<li class="">
+  <a href="sect0022.html#a0000000108"><span class="toc_ref">2.8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
+ </li>
+<li class="">
+  <a href="sect0022.html#a0000000109"><span class="toc_ref">2.8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0023.html"><span class="toc_ref">2.9</span> <span class="toc_entry">Tactic combinators</span></a>
+ </li>
+<li class="">
+  <a href="sect0024.html"><span class="toc_ref">2.10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
+ </li>
+<li class="">
+  <a href="sect0025.html"><span class="toc_ref">2.11</span> <span class="toc_entry">Worked examples — Topology</span></a>
+ </li>
+<li class="">
+  <a href="sect0026.html"><span class="toc_ref">2.12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
+ </li>
+<li class="">
+  <a href="sect0027.html"><span class="toc_ref">2.13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
+ </li>
+<li class="">
+  <a href="sect0028.html"><span class="toc_ref">2.14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html"><span class="toc_ref">2.15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0029.html#a0000000110"><span class="toc_ref">2.15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000111"><span class="toc_ref">2.15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000112"><span class="toc_ref">2.15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000113"><span class="toc_ref">2.15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000114"><span class="toc_ref">2.15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000115"><span class="toc_ref">2.15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0030.html"><span class="toc_ref">2.16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
+ </li>
+<li class="">
+  <a href="sect0031.html"><span class="toc_ref">2.17</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0032.html"><span class="toc_ref">3.1</span> <span class="toc_entry">Reading a goal state</span></a>
+ </li>
+<li class="">
+  <a href="sect0033.html"><span class="toc_ref">3.2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
+ </li>
+<li class="">
+  <a href="sect0034.html"><span class="toc_ref">3.3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
+ </li>
+<li class="">
+  <a href="sect0035.html"><span class="toc_ref">3.4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
+ </li>
+<li class="">
+  <a href="sect0036.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Automation / decision procedures</span></a>
+ </li>
+<li class="">
+  <a href="sect0037.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
+ </li>
+<li class="">
+  <a href="sect0038.html"><span class="toc_ref">3.7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
+ </li>
+<li class="">
+  <a href="sect0039.html"><span class="toc_ref">3.8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
+ </li>
+<li class="">
+  <a href="sect0040.html"><span class="toc_ref">3.9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
+ </li>
+<li class="">
+  <a href="sect0041.html"><span class="toc_ref">3.10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
+ </li>
+<li class="">
+  <a href="sect0042.html"><span class="toc_ref">3.11</span> <span class="toc_entry">Common gotchas</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0043.html"><span class="toc_ref">4.1</span> <span class="toc_entry">Why a restricted set at all</span></a>
+ </li>
+<li class="">
+  <a href="sect0044.html"><span class="toc_ref">4.2</span> <span class="toc_entry">The floor set</span></a>
+ </li>
+<li class="">
+  <a href="sect0045.html"><span class="toc_ref">4.3</span> <span class="toc_entry">Explicitly excluded</span></a>
+ </li>
+<li class="">
+  <a href="sect0046.html"><span class="toc_ref">4.4</span> <span class="toc_entry">Undecided</span></a>
+ </li>
+<li class="">
+  <a href="sect0047.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
+ </li>
+<li class="">
+  <a href="sect0048.html"><span class="toc_ref">4.6</span> <span class="toc_entry">Empirical tracking</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent \(\leftrightarrow \) Lean 4 Pipeline</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0049.html"><span class="toc_ref">5.1</span> <span class="toc_entry">The loop, restated precisely</span></a>
+ </li>
+<li class="">
+  <a href="sect0050.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0051.html#a0000000116"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000117"><span class="toc_ref">5.3.2</span> <span class="toc_entry">One tactic step</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000118"><span class="toc_ref">5.3.3</span> <span class="toc_entry">The error case</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000119"><span class="toc_ref">5.3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0052.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0053.html#a0000000120"><span class="toc_ref">5.5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html#a0000000121"><span class="toc_ref">5.5.2</span> <span class="toc_entry">Session/state switching</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html#a0000000122"><span class="toc_ref">5.5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0054.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
+ </li>
+<li class="">
+  <a href="sect0055.html"><span class="toc_ref">5.7</span> <span class="toc_entry">Open design decisions</span></a>
+ </li>
+<li class="">
+  <a href="sect0056.html"><span class="toc_ref">5.8</span> <span class="toc_entry">What this doc feeds</span></a>
+ </li>
+<li class="">
+  <a href="sect0057.html"><span class="toc_ref">5.9</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0058.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The landscape (2026)</span></a>
+ </li>
+<li class="">
+  <a href="sect0059.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0060.html"><span class="toc_ref">7.1</span> <span class="toc_entry">What the harness calls</span></a>
+ </li>
+<li class="">
+  <a href="sect0061.html"><span class="toc_ref">7.2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
+ </li>
+<li class="">
+  <a href="sect0062.html"><span class="toc_ref">7.3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="sect0063.html"><span class="toc_ref">8</span> <span class="toc_entry">Benchmark problems</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class=" active current">
+  <a href="sect0064.html"><span class="toc_ref">8.1</span> <span class="toc_entry">Set Theory</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-2 active">
+     <li class="">
+  <a href="sect0064.html#a0000000123"><span class="toc_ref">8.1.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0064.html#a0000000124"><span class="toc_ref">8.1.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0064.html#a0000000125"><span class="toc_ref">8.1.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0065.html"><span class="toc_ref">8.2</span> <span class="toc_entry">Topology</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0065.html#a0000000126"><span class="toc_ref">8.2.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0065.html#a0000000127"><span class="toc_ref">8.2.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0065.html#a0000000128"><span class="toc_ref">8.2.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0066.html"><span class="toc_ref">8.3</span> <span class="toc_entry">Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0066.html#a0000000129"><span class="toc_ref">8.3.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0066.html#a0000000130"><span class="toc_ref">8.3.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0066.html#a0000000131"><span class="toc_ref">8.3.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0067.html"><span class="toc_ref">8.4</span> <span class="toc_entry">Abstract Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0067.html#a0000000132"><span class="toc_ref">8.4.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0067.html#a0000000133"><span class="toc_ref">8.4.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0067.html#a0000000134"><span class="toc_ref">8.4.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0068.html"><span class="toc_ref">8.5</span> <span class="toc_entry">Linear Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0068.html#a0000000135"><span class="toc_ref">8.5.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0068.html#a0000000136"><span class="toc_ref">8.5.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0068.html#a0000000137"><span class="toc_ref">8.5.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0069.html"><span class="toc_ref">8.6</span> <span class="toc_entry">Number Theory</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0069.html#a0000000138"><span class="toc_ref">8.6.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0069.html#a0000000139"><span class="toc_ref">8.6.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0069.html#a0000000140"><span class="toc_ref">8.6.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0070.html"><span class="toc_ref">8.7</span> <span class="toc_entry">Real Analysis</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0070.html#a0000000141"><span class="toc_ref">8.7.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0070.html#a0000000142"><span class="toc_ref">8.7.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0070.html#a0000000143"><span class="toc_ref">8.7.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0071.html"><span class="toc_ref">8.8</span> <span class="toc_entry">Complex Analysis</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0071.html#a0000000144"><span class="toc_ref">8.8.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0071.html#a0000000145"><span class="toc_ref">8.8.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0071.html#a0000000146"><span class="toc_ref">8.8.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0072.html"><span class="toc_ref">8.9</span> <span class="toc_entry">Combinatorics</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0072.html#a0000000147"><span class="toc_ref">8.9.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0072.html#a0000000148"><span class="toc_ref">8.9.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0072.html#a0000000149"><span class="toc_ref">8.9.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0073.html"><span class="toc_ref">8.10</span> <span class="toc_entry">Geometry</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0073.html#a0000000150"><span class="toc_ref">8.10.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0073.html#a0000000151"><span class="toc_ref">8.10.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0073.html#a0000000152"><span class="toc_ref">8.10.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0074.html"><span class="toc_ref">8.11</span> <span class="toc_entry">Probability</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0074.html#a0000000153"><span class="toc_ref">8.11.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0074.html#a0000000154"><span class="toc_ref">8.11.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0074.html#a0000000155"><span class="toc_ref">8.11.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0075.html"><span class="toc_ref">8.12</span> <span class="toc_entry">Unclassified</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0075.html#a0000000156"><span class="toc_ref">8.12.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0075.html#a0000000157"><span class="toc_ref">8.12.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0075.html#a0000000158"><span class="toc_ref">8.12.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li ><a href="dep_graph_document.html">Dependency graph</a></li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="a0000000065">8.1 Set Theory</h1>
+<p>38 entries, 4 verified. </p>
+<h2 id="a0000000123">8.1.1 Easy</h2>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:089448958c3c">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1</span>
+    <span class="theorem_thmtitle"><span class="ttfamily">SET_E_01</span></span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:089448958c3c">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://anshika.github.io/MyMathlibProject/docs/find/#doc/SET_E_01" class="lean_decl">SET_E_01</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>   For any sets \(A\) and \(B\), \(A \cap B = B \cap A\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:1dbd20ebb031">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">2</span>
+    <span class="theorem_thmtitle"><span class="ttfamily">SET_E_02</span></span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:1dbd20ebb031">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://anshika.github.io/MyMathlibProject/docs/find/#doc/SET_E_02" class="lean_decl">SET_E_02</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>   For any sets \(A\), \(B\), \(C\): \(A \cap (B \cup C) = (A \cap B) \cup (A \cap C)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:ad3de261dc9a">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">3</span>
+    <span class="theorem_thmtitle"><span class="ttfamily">SET_E_03</span></span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:ad3de261dc9a">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://anshika.github.io/MyMathlibProject/docs/find/#doc/SET_E_03" class="lean_decl">SET_E_03</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>   Subset transitivity: if \(A \subseteq B\) and \(B \subseteq C\) then \(A \subseteq C\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:cb5b7c8835f0">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">4</span>
+    <span class="theorem_thmtitle"><span class="ttfamily">SET_E_04</span></span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:cb5b7c8835f0">#</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="sect0064.html#thm:ad3de261dc9a">Theorem 3</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://anshika.github.io/MyMathlibProject/docs/find/#doc/SET_E_04" class="lean_decl">SET_E_04</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>    Three-step subset chain: if \(A \subseteq B \subseteq C \subseteq D\) then \(A \subseteq D\). </p>
+
+  </div>
+</div>
+<h2 id="a0000000124">8.1.2 Medium</h2>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:841c23f43918">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">5</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_3_5_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:841c23f43918">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_5_6</span>. Let \(V\) be a vector space which is spanned by a countably infinite set. Prove that every linearly independent subset of \(V\) is finite or countably infinite. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:dcda5917b0f9">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">6</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_3_7_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:dcda5917b0f9">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_7_2</span>. Let \(V\) be a vector space over an infinite field \(F\). Prove that \(V\) is not the union of finitely many proper subspaces. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:235282cdf687">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">7</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Axler|exercise_6_13</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:235282cdf687">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_6_13</span>. Suppose \(\left(e_{1}, \ldots , e_{m}\right)\) is an orthonormal list of vectors in \(V\). Let \(v \in V\). Prove that \(\| v\| ^{2}=\left|\left\langle v, e_{1}\right\rangle \right|^{2}+\cdots +\left|\left\langle v, e_{m}\right\rangle \right|^{2}\) if and only if \(v \in \operatorname {span}\left(e_{1}, \ldots , e_{m}\right)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b652ff7a4b69">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">8</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_7_3_16</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:b652ff7a4b69">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_7_3_16</span>. Let \(\varphi : R \rightarrow S\) be a surjective homomorphism of rings. Prove that the image of the center of \(R\) is contained in the center of \(S\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:1d67bd72c55e">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">9</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_5_2_20</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:1d67bd72c55e">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_5_2_20</span>. Let \(V\) be a vector space over an infinite field \(F\). Show that \(V\) cannot be the set-theoretic union of a finite number of proper subspaces of \(V\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:06b38422d8d6">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">10</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_3b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:06b38422d8d6">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_3b</span>. Show that the collection </p>
+<div class="displaymath" id="a0000000166">
+  \[ \mathcal{T}\_ \infty = \{ U | X - U \text{ is infinite or empty or all of X}\}  \]
+</div>
+<p> does not need to be a topology on the set \(X\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:5d8ed68057a5">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">11</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_4a1</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:5d8ed68057a5">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_4a1</span>. If \(\mathcal{T}_\alpha \) is a family of topologies on \(X\), show that \(\bigcap \mathcal{T}_\alpha \) is a topology on \(X\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:453ced6029b0">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">12</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_4a2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:453ced6029b0">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_4a2</span>. If \(\mathcal{T}_\alpha \) is a family of topologies on \(X\), show that \(\bigcup \mathcal{T}_\alpha \) does not need to be a topology on \(X\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:1e90727a2439">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">13</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_4b1</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:1e90727a2439">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_4b1</span>. Let \(\mathcal{T}_\alpha \) be a family of topologies on \(X\). Show that there is a unique smallest topology on \(X\) containing all the collections \(\mathcal{T}_\alpha \). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e818f3d723c6">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">14</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_4b2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:e818f3d723c6">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_4b2</span>. Let \(\mathcal{T}_\alpha \) be a family of topologies on \(X\). Show that there is a unique largest topology on \(X\) contained in all the collections \(\mathcal{T}_\alpha \). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:0c1f2a8beaa0">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">15</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_5a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:0c1f2a8beaa0">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_5a</span>. Show that if \(\mathcal{A}\) is a basis for a topology on \(X\), then the topology generated by \(\mathcal{A}\) equals the intersection of all topologies on \(X\) that contain \(\mathcal{A}\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:7e78bfe655b2">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">16</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_13_5b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:7e78bfe655b2">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_13_5b</span>. Show that if \(\mathcal{A}\) is a subbasis for a topology on \(X\), then the topology generated by \(\mathcal{A}\) equals the intersection of all topologies on \(X\) that contain \(\mathcal{A}\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b7ca3410b5bf">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">17</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_23_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:b7ca3410b5bf">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_23_2</span>. Let \(\left\{ A_{n}\right\} \) be a sequence of connected subspaces of \(X\), such that \(A_{n} \cap A_{n+1} \neq \varnothing \) for all \(n\). Show that \(\bigcup A_{n}\) is connected. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:80bc9b778392">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">18</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_23_3</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:80bc9b778392">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_23_3</span>. Let \(\left\{ A_{\alpha }\right\} \) be a collection of connected subspaces of \(X\); let \(A\) be a connected subset of \(X\). Show that if \(A \cap A_{\alpha } \neq \varnothing \) for all \(\alpha \), then \(A \cup \left(\bigcup A_{\alpha }\right)\) is connected. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:90e7a5d52b89">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">19</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_23_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:90e7a5d52b89">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_23_4</span>. Show that if \(X\) is an infinite set, it is connected in the finite complement topology. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:6f3eeabf16c8">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">20</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_23_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:6f3eeabf16c8">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_23_6</span>. Let \(A \subset X\). Show that if \(C\) is a connected subspace of \(X\) that intersects both \(A\) and \(X-A\), then \(C\) intersects \(\operatorname {Bd} A\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:3466f2758e4a">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">21</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_26_11</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:3466f2758e4a">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_26_11</span>. Let \(X\) be a compact Hausdorff space. Let \(\mathcal{A}\) be a collection of closed connected subsets of \(X\) that is simply ordered by proper inclusion. Then \(Y=\bigcap _{A \in \mathcal{A}} A\) is connected. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:58559951472f">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">22</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_27_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:58559951472f">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_27_4</span>. Show that a connected metric space having more than one point is uncountable. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:87a2873082da">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">23</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_38_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:87a2873082da">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_38_6</span>. Let \(X\) be completely regular. Show that \(X\) is connected if and only if the Stone-Čech compactification of \(X\) is connected. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:24748b3d8846">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">24</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Pugh|exercise_2_126</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:24748b3d8846">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_126</span>. Suppose that \(E\) is an uncountable subset of \(\mathbb {R}\). Prove that there exists a point \(p \in \mathbb {R}\) at which \(E\) condenses. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:80371ee5394b">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">25</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Pugh|exercise_2_32a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:80371ee5394b">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_32a</span>. Show that every subset of \(\mathbb {N}\) is clopen. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:ee892cb43fd8">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">26</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_1_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:ee892cb43fd8">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_4</span>. Let \(E\) be a nonempty subset of an ordered set; suppose \(\alpha \) is a lower bound of \(E\) and \(\beta \) is an upper bound of \(E\). Prove that \(\alpha \leq \beta \). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:5c71ba99aaaa">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">27</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_1_5</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:5c71ba99aaaa">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_5</span>. Let \(A\) be a nonempty set of real numbers which is bounded below. Let \(-A\) be the set of all numbers \(-x\), where \(x \in A\). Prove that \(\inf A=-\sup (-A)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:f3ebc0a13dea">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">28</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_2_24</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:f3ebc0a13dea">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_24</span>. Let \(X\) be a metric space in which every infinite subset has a limit point. Prove that \(X\) is separable. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:cf79a0bd1c06">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">29</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_2_25</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:cf79a0bd1c06">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_25</span>. Prove that every compact metric space \(K\) has a countable base. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:55ca630cff7a">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">30</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_2_27a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:55ca630cff7a">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_27a</span>. Suppose \(E\subset \mathbb {R}^k\) is uncountable, and let \(P\) be the set of condensation points of \(E\). Prove that \(P\) is perfect. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:03b644a705d2">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">31</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_2_27b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:03b644a705d2">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_27b</span>. Suppose \(E\subset \mathbb {R}^k\) is uncountable, and let \(P\) be the set of condensation points of \(E\). Prove that at most countably many points of \(E\) are not in \(P\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:1ca3385008bd">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">32</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_2_28</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:1ca3385008bd">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_28</span>. Prove that every closed set in a separable metric space is the union of a (possibly empty) perfect set and a set which is at most countable. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:67b61ddbc62d">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">33</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_2_29</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:67b61ddbc62d">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_29</span>. Prove that every open set in \(\mathbb {R}\) is the union of an at most countable collection of disjoint segments. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:519d35d3942e">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">34</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_4_2a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:519d35d3942e">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_2a</span>. If \(f\) is a continuous mapping of a metric space \(X\) into a metric space \(Y\), prove that \(f(\overline{E}) \subset \overline{f(E)}\) for every set \(E \subset X\). (\(\overline{E}\) denotes the closure of \(E\)). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e13150b79e94">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">35</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_4_4a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:e13150b79e94">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_4a</span>. Let \(f\) and \(g\) be continuous mappings of a metric space \(X\) into a metric space \(Y\), and let \(E\) be a dense subset of \(X\). Prove that \(f(E)\) is dense in \(f(X)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:be23c3b79b55">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">36</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_4_8a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:be23c3b79b55">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_8a</span>. Let \(f\) be a real uniformly continuous function on the bounded set \(E\) in \(R^{1}\). Prove that \(f\) is bounded on \(E\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:f3ff8e9d7692">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">37</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_4_8b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:f3ff8e9d7692">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_8b</span>. Let \(E\) be a bounded set in \(R^{1}\). Prove that there exists a real function \(f\) such that \(f\) is uniformly continuous and is not bounded on \(E\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:17ea18d2a5f0">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">38</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Rudin|exercise_5_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0064.html#thm:17ea18d2a5f0">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_5_4</span>. If \(C_{0}+\frac{C_{1}}{2}+\cdots +\frac{C_{n-1}}{n}+\frac{C_{n}}{n+1}=0,\) where \(C_{0}, \ldots , C_{n}\) are real constants, prove that the equation \(C_{0}+C_{1} x+\cdots +C_{n-1} x^{n-1}+C_{n} x^{n}=0\) has at least one real root between 0 and 1. </p>
+
+  </div>
+</div>
+<h2 id="a0000000125">8.1.3 Hard</h2>
+<p>No entries yet. </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <svg  id="showmore-minus" class="icon icon-eye-minus showmore"><use xlink:href="symbol-defs.svg#icon-eye-minus"></use></svg>
+
+  <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
+
+  <a href="sect0063.html" title="Benchmark problems"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="sect0063.html" title="Benchmark problems"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sect0065.html" title="Topology"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+<script type="text/javascript" src="js/js.cookie.min.js"></script>
+<script type="text/javascript" src="js/showmore.js"></script>
+</body>
+</html>

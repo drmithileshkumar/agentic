@@ -1,0 +1,229 @@
+\chapter{Lean 4 Tactic Cheat Sheet}
+\label{ch:tactic_cheat_sheet}
+
+\emph{Agentic Hallucinations --- Independent Study --- Quick Reference (4 pp.).}
+
+Sources: \href{https://lean4.dev/tactics}{lean4.dev/tactics}, \href{https://leanprover.github.io/theorem_proving_in_lean4/}{Theorem Proving in Lean 4}, \href{https://leanprover-community.github.io/mathlib4_docs/tactics.html}{Mathlib tactic docs}. Full bibliography: \texttt{docs/resources.md}.
+
+\section{Reading a goal state}
+
+\begin{verbatim}
+case succ
+n : Nat
+ih : n + 0 = n
+⊢ n + 1 + 0 = n + 1
+\end{verbatim}
+
+Everything above \texttt{⊢} is the \textbf{context} (hypotheses/variables in scope). What's after \texttt{⊢} is the \textbf{goal} --- what you still need to prove. Multiple goals are numbered/separated; \texttt{·} (a centered dot) focuses on the first one.
+
+\textbf{Term mode vs.\ tactic mode:} \texttt{theorem foo : P := proof\_term} is term mode (you write the proof object directly). \texttt{theorem foo : P := by tac1; tac2} enters tactic mode --- each tactic transforms the goal state until none remain. This project works almost entirely in tactic mode, since that's what the agent proposes one step at a time.
+
+\section{Core / structural --- closing and opening goals}
+
+\begin{center}
+\begin{tabular}{@{}p{0.26\linewidth}p{0.40\linewidth}p{0.28\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Does} & \textbf{Example} \\
+\hline
+\texttt{intro x} & Introduces a hypothesis/variable from \texttt{→} or \texttt{∀} & \texttt{intro n hn} \\
+\texttt{intro ⟨a, b⟩} & Introduces + destructures (∧, ∃) in one step & \texttt{intro ⟨hp, hq⟩} \\
+\texttt{intros} & Introduces everything possible, auto-named (avoid in final proofs --- unreadable names) & \texttt{intros} \\
+\texttt{exact e} & Closes the goal with an exact proof term \texttt{e} & \texttt{exact Nat.add\_comm a b} \\
+\texttt{exact?} & Searches the library for a term that closes the goal & \texttt{exact?} \\
+\texttt{apply e} & Unifies \texttt{e}'s conclusion with the goal; leaves premises as new goals & \texttt{apply Eq.trans} \\
+\texttt{apply?} & Searches the library for a lemma to \texttt{apply} & \texttt{apply?} \\
+\texttt{assumption} & Closes the goal if some hypothesis matches exactly & \texttt{assumption} \\
+\texttt{rfl} & Closes goals true by computation/definitional equality & \texttt{rfl} \\
+\texttt{have h : T := proof} & States + proves an intermediate fact \texttt{h : T} & \texttt{have hq : Q := hpq hp} \\
+\texttt{have h : T := by tac} & Same, proved with tactics & \texttt{have : a ≤ a + b := by omega} \\
+\texttt{let x := val} & Local \textbf{transparent} definition (unfolds automatically) & \texttt{let m := n + n} \\
+\texttt{suffices h : T by tac} & Replaces goal with \texttt{T}, using \texttt{tac} to show \texttt{T → original goal} & \texttt{suffices h : n ≤ n+n by omega} \\
+\texttt{show T} & Restates the goal as a definitionally-equal \texttt{T} (for clarity) & \texttt{show x > 10} \\
+\texttt{constructor} & Applies the goal type's constructor (splits ∧, builds structures) & \texttt{constructor} \\
+\texttt{use e} / \texttt{exists e} & Provides a witness for ∃ & \texttt{use 5} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{\texttt{have} vs \texttt{let}:} \texttt{have} produces an opaque proof (only its \emph{type} matters downstream); \texttt{let} produces a transparent value (its \emph{definition} is visible to \texttt{rfl}/unification). Use \texttt{have} for propositions, \texttt{let} for reusable computed values.
+
+\section{Rewriting \& simplification}
+
+\begin{center}
+\begin{tabular}{@{}p{0.26\linewidth}p{0.42\linewidth}p{0.26\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Does} & \textbf{Example} \\
+\hline
+\texttt{rw [h]} & Replaces LHS of \texttt{h : a = b} with RHS, \textbf{first match only per pass}, all matches per rewrite pass & \texttt{rw [Nat.add\_zero]} \\
+\texttt{rw [← h]} & Rewrites right-to-left & \texttt{rw [← h]} \\
+\texttt{rw [h1, h2]} & Chains rewrites left to right & \texttt{rw [h1, h2]} \\
+\texttt{rw [h] at h2} & Rewrites inside hypothesis \texttt{h2} instead of the goal & \texttt{rw [h1] at h2} \\
+\texttt{nth\_rewrite 1 [h]} & Rewrites only the \emph{n}-th matching occurrence & \texttt{nth\_rewrite 1 [Nat.add\_comm]} \\
+\texttt{simp} & Repeatedly applies the \texttt{@[simp]} lemma database until fixed point; often closes the goal outright & \texttt{simp} \\
+\texttt{simp [h1, h2]} & \texttt{simp} + extra lemmas/hypotheses & \texttt{simp [Nat.add\_comm]} \\
+\texttt{simp only [l1, l2]} & Uses \textbf{only} the listed lemmas --- reproducible, preferred in libraries & \texttt{simp only [Nat.add\_zero]} \\
+\texttt{simp\_all} & Simplifies goal \textbf{and} every hypothesis, using hypotheses as rewrite rules too & \texttt{simp\_all} \\
+\texttt{simp?} & Runs \texttt{simp}, suggests the minimal \texttt{simp only [...]} that achieves the same & \texttt{simp?} \\
+\texttt{simp at h} & Simplifies a hypothesis instead of the goal & \texttt{simp at h} \\
+\texttt{dsimp} & Definitional-only simplification (unfolds, no lemma rewriting; never fails oddly) & \texttt{dsimp [myDef]} \\
+\texttt{norm\_num} & Proves/simplifies goals with concrete numerals & \texttt{norm\_num} \\
+\texttt{norm\_cast} / \texttt{push\_cast} & Normalizes / pushes numeric-type coercions (ℕ→ℤ→ℚ, etc.) & \texttt{norm\_cast} \\
+\texttt{unfold f} & Unfolds a definition \texttt{f} by name & \texttt{unfold triple} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{\texttt{rw} vs \texttt{simp}:} \texttt{rw} = precise, one rule at a time, you name every step. \texttt{simp} = automatic, applies many rules, less predictable. Reach for \texttt{rw} when you know the exact steps; \texttt{simp} when the goal is ``obviously'' simplifiable and you don't care about the trace.
+
+\section{Case analysis, induction, destructuring}
+
+\begin{center}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.36\linewidth}p{0.28\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Does} & \textbf{Example} \\
+\hline
+\texttt{cases x with | c1 => ... | c2 => ...} & Splits on constructors of \texttt{x}'s type & \texttt{cases n with | zero => rfl | succ m => omega} \\
+\texttt{induction x with | c1 => ... | c2 ih => ...} & Proof by induction; each non-base case gets an induction hypothesis \texttt{ih} & \texttt{induction n with | zero => rfl | succ m ih => simp [ih]} \\
+\texttt{rcases h with ⟨pat⟩} & Recursive destructuring of ∧, ∃, nested pairs (Mathlib) & \texttt{rcases h with ⟨n, hn⟩} \\
+\texttt{obtain ⟨pat⟩ := h} & Same as \texttt{rcases}, ``goal-first'' phrasing; also works to introduce a fresh existence proof & \texttt{obtain ⟨n, hn⟩ := h} \\
+\texttt{rintro (pat)} & \texttt{intro} + \texttt{rcases} pattern in one step & \texttt{rintro ⟨a, b⟩ ⟨c, d⟩} \\
+\texttt{left} / \texttt{right} & Picks a disjunct of an ∨ goal & \texttt{left} \\
+\texttt{match x with | pat => ...} & Pattern-match in tactic mode (alternative to \texttt{cases}) & \texttt{match n with | 0 => rfl | n+1 => omega} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{rcases pattern syntax:} \texttt{⟨p1, p2⟩} destructs pairs/∃/∧ · \texttt{p1 | p2} splits ∨ · \texttt{rfl} substitutes an equality immediately · \texttt{\_} discards · \texttt{-} clears the hypothesis after use.
+
+\section{Automation / decision procedures}
+
+\begin{center}
+\begin{tabular}{@{}p{0.20\linewidth}p{0.44\linewidth}p{0.30\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Solves} & \textbf{Notes} \\
+\hline
+\texttt{ring} & Polynomial identities over (semi)rings --- \texttt{+ - * \textasciicircum{}} by constants, no division/inequalities & requires \texttt{import Mathlib.Tactic.Ring} \\
+\texttt{ring\_nf} & Normalizes a ring expression \textbf{without} requiring it close the goal & good mid-proof simplification step \\
+\texttt{field\_simp} & Clears denominators in field expressions (run before \texttt{ring} if division present) & \texttt{field\_simp; ring} \\
+\texttt{omega} & \textbf{Linear} arithmetic over ℕ/ℤ: \texttt{+ - < ≤ = ≠}, mult/div/mod by constants & fails on variable×variable (non-linear) \\
+\texttt{linarith} & Linear (in)equalities from hypotheses, ordered fields & \texttt{linarith [extra\_fact]} to feed in a fact \\
+\texttt{nlinarith} & \texttt{linarith} + limited nonlinear preprocessing (products, squares) & \texttt{nlinarith [sq\_nonneg x]} \\
+\texttt{polyrith} & Finds polynomial proofs via Gröbner bases (calls an external service) & slower; last resort over \texttt{ring}/\texttt{nlinarith} \\
+\texttt{decide} & Evaluates a \texttt{Decidable} proposition to \texttt{true}/\texttt{false} & can be slow/blow up --- see \texttt{native\_decide} \\
+\texttt{native\_decide} & Like \texttt{decide}, compiled native code --- much faster, less trusted & use for large finite checks \\
+\texttt{tauto} & Closes propositional-logic tautologies & \texttt{tauto} \\
+\texttt{aesop} & General automated proof search over registered \texttt{@[aesop]} rules & \texttt{aesop}, or \texttt{aesop?} to see the found proof \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Decision table:} polynomial equality $\rightarrow$ \texttt{ring}. Division present $\rightarrow$ \texttt{field\_simp} then \texttt{ring}. Linear Nat/Int $\rightarrow$ \texttt{omega}. Linear inequalities generally $\rightarrow$ \texttt{linarith}. Nonlinear inequalities $\rightarrow$ \texttt{nlinarith}. Concrete numerals $\rightarrow$ \texttt{norm\_num}. Definitional/computed equality $\rightarrow$ \texttt{rfl}.
+
+\section{Logic, contradiction, structuring}
+
+\begin{center}
+\begin{tabular}{@{}p{0.26\linewidth}p{0.44\linewidth}p{0.24\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Does} & \textbf{Example} \\
+\hline
+\texttt{by\_contra h} & Goal \texttt{P} $\rightarrow$ assume \texttt{h : ¬P}, prove \texttt{False} & \texttt{by\_contra h} \\
+\texttt{by\_cases h : P} & Splits into \texttt{h : P} and \texttt{h : ¬P} branches & \texttt{by\_cases h : n = 0} \\
+\texttt{contrapose} / \texttt{contrapose!} & Turns goal \texttt{P → Q} into \texttt{¬Q → ¬P} (the \texttt{!} variant also pushes negations) & \texttt{contrapose!} \\
+\texttt{push\_neg} & Pushes ¬ inward through quantifiers/connectives (De Morgan) & \texttt{push\_neg at h} \\
+\texttt{exfalso} & Changes any goal to \texttt{False} (use with a contradictory hypothesis) & \texttt{exfalso} \\
+\texttt{absurd h hn} & Given \texttt{h : P} and \texttt{hn : ¬P}, closes any goal & \texttt{exact absurd h hn} \\
+\texttt{and\_intros} & Splits a conjunction goal into all conjuncts & \texttt{and\_intros} \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Equality, extensionality, congruence}
+
+\begin{center}
+\begin{tabular}{@{}p{0.16\linewidth}p{0.54\linewidth}p{0.24\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Does} & \textbf{Example} \\
+\hline
+\texttt{calc} & Step-by-step chain of equalities/inequalities, each justified separately & see below \\
+\texttt{ext x} & Proves equality (functions, sets, structures) by showing components/behavior match --- needs Mathlib & \texttt{ext x} \\
+\texttt{funext x} & Function extensionality only, core Lean & \texttt{funext x} \\
+\texttt{congr} & Reduces \texttt{f a = f b} to \texttt{a = b} (breaks equality into congruence subgoals) & \texttt{congr; exact h} \\
+\texttt{symm} & Flips \texttt{a = b} to \texttt{b = a} in the goal & \texttt{symm} \\
+\texttt{trans y} & Splits \texttt{a = c} (or \texttt{a ≤ c} etc.) into \texttt{a = y} and \texttt{y = c} & \texttt{trans b} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{verbatim}
+example (a b c d : Nat) (h1 : a = b) (h2 : b < c) (h3 : c ≤ d) : a < d := calc
+  a = b := h1
+  _ < c := h2
+  _ ≤ d := h3
+\end{verbatim}
+
+\texttt{calc} chains transitively across mixed relations (\texttt{=}, \texttt{<}, \texttt{≤}) as long as they compose.
+
+\section{Combinators (gluing tactics together)}
+
+\begin{center}
+\begin{tabular}{@{}p{0.24\linewidth}p{0.70\linewidth}@{}}
+\hline
+\textbf{Combinator} & \textbf{Does} \\
+\hline
+\texttt{t1 <;> t2} & Runs \texttt{t2} on \textbf{every} goal produced by \texttt{t1} \\
+\texttt{· tac} & Focuses the first goal, closes it with \texttt{tac} or fails \\
+\texttt{first | t1 | t2} & Tries \texttt{t1}; if it fails, tries \texttt{t2} \\
+\texttt{repeat tac} & Repeats \texttt{tac} until it fails \\
+\texttt{all\_goals tac} & Runs \texttt{tac} on every goal; fails if \texttt{tac} fails on any \\
+\texttt{any\_goals tac} & Like \texttt{all\_goals try tac}, but fails only if \texttt{tac} succeeds nowhere \\
+\texttt{(tac1; tac2)} & Sequences tactics without requiring the goal close by the end (unlike \texttt{·}) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Debugging \& discovery}
+
+\begin{center}
+\begin{tabular}{@{}p{0.32\linewidth}p{0.62\linewidth}@{}}
+\hline
+\textbf{Tool} & \textbf{Use} \\
+\hline
+\texttt{sorry} & Placeholder --- admits the goal unproved (compiles, but marks the proof incomplete). \textbf{Never in a final proof; critical signal in agent logs.} \\
+\texttt{\#check e} & Shows the type of \texttt{e} --- e.g.\ \texttt{\#check Nat.add\_comm} \\
+\texttt{\#eval e} & Evaluates \texttt{e} and prints the result --- e.g.\ \texttt{\#eval 1 + 1} \\
+\texttt{exact?} / \texttt{apply?} & Search the library for a closing/applicable lemma \\
+\texttt{simp?} & Suggests the minimal \texttt{simp only [...]} \\
+\texttt{\#loogle}, \texttt{\#leansearch}, \texttt{\#statesearch} & In-editor search of Mathlib by type/name/goal shape --- e.g.\ \texttt{\#loogle \_ * (\_ \textasciicircum{} \_)} \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Notation quick-typing (VS Code unicode input, backslash prefix)}
+
+\begin{center}
+\begin{tabular}{@{}llllll@{}}
+\hline
+\textbf{Symbol} & \textbf{Type} & \textbf{Symbol} & \textbf{Type} & \textbf{Symbol} & \textbf{Type} \\
+\hline
+∀ & \texttt{\textbackslash{}forall} & ∃ & \texttt{\textbackslash{}exists} & ¬ & \texttt{\textbackslash{}not} \\
+∧ & \texttt{\textbackslash{}and} & ∨ & \texttt{\textbackslash{}or} & → & \texttt{\textbackslash{}to} or \texttt{\textbackslash{}r} \\
+↔ & \texttt{\textbackslash{}iff} & ∈ & \texttt{\textbackslash{}in} & ∉ & \texttt{\textbackslash{}notin} \\
+⊆ & \texttt{\textbackslash{}subseteq} & ∩ & \texttt{\textbackslash{}cap} & ∪ & \texttt{\textbackslash{}cup} \\
+ℕ ℤ ℚ ℝ ℂ & \texttt{\textbackslash{}N \textbackslash{}Z \textbackslash{}Q \textbackslash{}R \textbackslash{}C} & ∅ & \texttt{\textbackslash{}emptyset} & ⟨⟩ & \texttt{\textbackslash{}<} \texttt{\textbackslash{}>} \\
+≤ ≥ ≠ & \texttt{\textbackslash{}le \textbackslash{}ge \textbackslash{}ne} & ∘ & \texttt{\textbackslash{}comp} & ⊢ & (goal turnstile, not typed) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Common gotchas}
+
+\begin{itemize}
+  \item \textbf{\texttt{rw} fails silently-ish} if the LHS pattern isn't syntactically present in the goal --- check with \texttt{\#check} on the lemma first.
+  \item \textbf{\texttt{simp} can over-simplify} and leave a goal in an unexpected shape mid-proof; prefer \texttt{simp only} in anything meant to be stable.
+  \item \textbf{\texttt{omega}/\texttt{ring} are decision procedures for \emph{specific} fragments} --- \texttt{omega} fails on any variable×variable term; \texttt{ring} fails on inequalities or division. Route to the right tool (see the automation table above).
+  \item \textbf{\texttt{Nat} subtraction truncates} at 0 (\texttt{a - b = 0} when \texttt{a < b}) --- \texttt{omega} knows this, manual reasoning often doesn't.
+  \item \textbf{\texttt{have} is opaque, \texttt{let} is transparent} --- swapping them can silently break a proof that relied on unfolding.
+  \item \textbf{\texttt{sorry}/\texttt{admit} compile successfully} --- always grep a file for \texttt{sorry} before treating it as done. (This is exactly the kind of silent failure the agent-hallucination logging in this project needs to catch --- see \texttt{docs/resources.md} \S5--6.)
+\end{itemize}
+
+Full worked examples and explanations: the Lean 4 Tutorial chapter. Tactic-by-tactic deep dives: \href{https://lean4.dev/tactics}{lean4.dev/tactics}.

@@ -1,0 +1,39 @@
+\chapter{The LLM We're Using}
+\label{ch:llm_in_use}
+
+\emph{Agentic Hallucinations --- Independent Study.} A record of which model actually drives the agent harness, and where that choice lives in the code.
+
+\section{What the harness calls}
+
+The end-to-end harness script, \texttt{agents/first\_e2e\_test.py}, hardcodes the model as a module-level constant:
+
+\begin{verbatim}
+MODEL = "claude-sonnet-5"
+\end{verbatim}
+
+It is called through the official \texttt{anthropic} Python SDK, using the Messages API:
+
+\begin{verbatim}
+import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
+
+resp = client.messages.create(
+    model=MODEL,
+    max_tokens=100,
+    system=SYSTEM_PROMPT,
+    messages=[{"role": "user", "content": user_msg}],
+)
+\end{verbatim}
+
+The client is constructed with no arguments, so it resolves credentials from the environment --- specifically \texttt{ANTHROPIC\_API\_KEY}, which the script's own docstring instructs you to set before running.
+
+\section{It is a constant, not configuration}
+
+\texttt{MODEL} is a plain module-level constant. It is not read from a config file, an environment variable, or a command-line argument, and nothing else in the repository overrides it. Changing which model the harness uses therefore means editing that line in \texttt{agents/first\_e2e\_test.py} directly.
+
+% TODO: why Claude Sonnet 5 specifically (cost/capability/context length/availability) -- not yet documented, fill in once decided or confirmed.
+
+\section{Status: current state, not a final choice}
+
+The script's own docstring describes it as a \emph{first draft} smoke test rather than production harness code, and flags at least one branch inside it as unverified pending a real run. What this chapter records is therefore the model in use as of the current state of the repository --- not a settled decision about which model the study will ultimately run against.

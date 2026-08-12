@@ -1,0 +1,67 @@
+\chapter{Minimum Viable Tactic Set}
+\label{ch:minimum_viable_tactics}
+
+\section{Why a restricted set at all}
+
+The harness (\texttt{agents/first\_e2e\_test.py}) already makes a real design decision on this: its system prompt explicitly bans \texttt{ring}, \texttt{omega}, \texttt{simp}, \texttt{aesop}, \texttt{tauto}, and \texttt{decide}, instructing the model to ``prove this step by step using intro/rw/exact/apply/calc instead, so the proof trace is actually informative for the study.''
+
+The reason is specific to what this project studies. A decision procedure like \texttt{ring} or \texttt{omega} either closes a goal outright or fails --- it gives no partial signal about \emph{which} reasoning step was wrong. Since this project's subject is hallucinations in the agent's step-by-step reasoning, a tactic that swallows several reasoning steps into one opaque call is close to useless as data: a failure only says ``the decision procedure didn't apply here,'' not anything about the agent's own reasoning. This chapter makes that already-made decision explicit and generalizes it into a usable reference, rather than inventing a new policy.
+
+\section{The floor set}
+
+The following tactics, all drawn from the Tactic Cheat Sheet chapter (\hyperref[ch:tactic_cheat_sheet]{\S\ref*{ch:tactic_cheat_sheet}}), are the ones needed to make progress on a goal one legible reasoning step at a time. Nothing here is a decision procedure; each one corresponds to a single, inspectable move.
+
+\begin{center}
+\begin{tabular}{@{}p{0.22\linewidth}p{0.30\linewidth}p{0.40\linewidth}@{}}
+\hline
+\textbf{Category} & \textbf{Tactics} & \textbf{Role} \\
+\hline
+Structural & \texttt{intro}, \texttt{exact}, \texttt{apply}, \texttt{have}, \texttt{rfl}, \texttt{constructor}, \texttt{use} & Open and close goals directly; no search or automation \\
+Rewriting & \texttt{rw [h]}, \texttt{rw [← h]}, \texttt{nth\_rewrite} & Replace one term with another, named explicitly by the agent \\
+Case analysis / induction & \texttt{cases}, \texttt{induction}, \texttt{rcases}, \texttt{obtain} & Split a goal on structure; every branch stays visible \\
+Equality \& structuring & \texttt{calc}, \texttt{symm}, \texttt{trans}, \texttt{congr} & Chain justified steps explicitly \\
+Logic / contradiction & \texttt{by\_contra}, \texttt{by\_cases}, \texttt{exfalso}, \texttt{push\_neg}, \texttt{left}, \texttt{right} & Restructure the goal without deciding it \\
+Goal management & \texttt{·} (focus), \texttt{<;>} & Sequence and scope tactics across multiple goals \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Explicitly excluded}
+
+Banned by the harness today: \texttt{ring}, \texttt{omega}, \texttt{simp} (all variants: \texttt{simp\_all}, \texttt{simp only}, \texttt{simp?}, \texttt{simp at}), \texttt{aesop}, \texttt{tauto}, \texttt{decide}.
+
+Not currently referenced by the harness's ban list, but the same family of decision procedure for the same reason --- excluded here too, pending explicit reconsideration: \texttt{ring\_nf}, \texttt{field\_simp}, \texttt{linarith}, \texttt{nlinarith}, \texttt{polyrith}, \texttt{native\_decide}.
+
+\section{Undecided}
+
+\begin{itemize}
+  \item \texttt{norm\_num}, \texttt{norm\_cast}, \texttt{push\_cast} --- narrower than \texttt{simp}, but still automated lemma search rather than a single named step. Not yet run against a real goal in this project, so not yet placed on either list.
+  \item \texttt{dsimp} --- unfolds definitions only, no lemma database; arguably closer to the floor set than to \texttt{simp} despite the name. Same status: undecided until it's actually needed.
+\end{itemize}
+
+% TODO: move the two items above once a real proof in this project actually
+% needs (or explicitly avoids) one of them --- decide from evidence, not
+% in the abstract.
+
+\section{Discovery and debugging tools --- not proof steps}
+
+\texttt{sorry}, \texttt{\#check}, \texttt{\#eval}, \texttt{exact?}, \texttt{apply?}, \texttt{simp?}, \texttt{\#loogle}/\texttt{\#leansearch}/\texttt{\#statesearch} are all tools a human uses while writing or debugging a proof. None of them are tactics an agent should ever propose as a logged step: \texttt{sorry} admits the goal without proving it (exactly the kind of silent failure this study needs to catch, per the Tactic Cheat Sheet's gotchas section), and the \texttt{?}-suffixed tools search the library rather than performing an inspectable reasoning step themselves.
+
+\section{Empirical tracking}
+
+The floor set above is derived from the harness's existing design and the cheat sheet, not yet from a completed proof run --- \texttt{agents/first\_e2e\_test.py} has not been executed yet (see \texttt{agents/README.md}, which flags an unverified exception-handling branch). The table below is the place to record, tactic by tactic, which of the above were actually exercised by a real proof and which turned out to be unnecessary.
+
+\begin{center}
+\begin{tabular}{@{}p{0.20\linewidth}p{0.45\linewidth}p{0.15\linewidth}@{}}
+\hline
+\textbf{Tactic} & \textbf{Needed for} & \textbf{Confirmed?} \\
+\hline
+ & & \\
+ & & \\
+\hline
+\end{tabular}
+\end{center}
+
+% TODO: fill in this table once first_e2e_test.py (or any later harness
+% version) has actually completed a proof, replacing the empty rows with
+% real evidence instead of leaving it aspirational.

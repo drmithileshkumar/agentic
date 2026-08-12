@@ -90,6 +90,62 @@ DOMAIN_KEYWORDS: dict[str, list[tuple[str, int]]] = {
 HARD_DATASET_HINTS = ("putnam", "imo", "olympiad")
 MEDIUM_DATASET_HINTS = ("proofnet", "formalmath")
 
+# ---------------------------------------------------------------------------
+# Hugging Face dataset sources (--sources)
+#
+# Each entry says which HF dataset to pull and which columns hold the Lean
+# statement, the preamble, and the natural-language statement. Requires the
+# `datasets` package; nothing here is vendored into the repo.
+#
+# To add a source: check its column names first, then add an entry. Putnam and
+# FormalMATH are deliberately absent — add them once their columns are checked.
+# ---------------------------------------------------------------------------
+
+DATASET_SOURCES: dict[str, dict] = {
+    "proofnet": {
+        "hf_id": "PAug/ProofNetSharp",
+        "label": "ProofNetSharp",
+        "statement_field": "lean4_formalization",
+        "header_field": "lean4_src_header",
+        "informal_field": "nl_statement",
+        "id_field": "id",
+        "default_tier": "M",          # README maps all of ProofNet to tier M
+    },
+    "minif2f": {
+        "hf_id": "cat-searcher/minif2f-lean4",
+        "label": "miniF2F",
+        "statement_field": "formal_statement",
+        "header_field": "header",
+        "informal_field": "informal_stmt",
+        "id_field": "id",
+        "default_tier": None,         # per-problem, see MINIF2F_TIER_HINTS
+    },
+}
+
+# miniF2F bundles several competitions at very different difficulties, so its
+# tier comes from the problem id rather than one blanket mapping.
+MINIF2F_TIER_HINTS = (
+    ("imo", "H"),
+    ("aime", "H"),
+    ("amc", "M"),
+    ("mathd", "E"),
+    ("induction", "E"),
+    ("algebra", "E"),
+    ("numbertheory", "E"),
+)
+
+# miniF2F ids carry their topic (mathd_algebra_*, numbertheory_*), which beats
+# keyword scoring on the Lean source.
+MINIF2F_DOMAIN_HINTS = (
+    ("numbertheory", "NUM"),
+    ("number_theory", "NUM"),
+    ("algebra", "ALG"),
+    ("induction", "NUM"),
+    ("amc", "ALG"),
+    ("aime", "ALG"),
+    ("imo", "ALG"),
+)
+
 DECL_RE = re.compile(
     r"^(?:@\[[^\]]*\]\s*)?"                      # optional attribute
     r"(?:private\s+|protected\s+|nonrec\s+)*"    # optional modifiers
@@ -287,6 +343,8 @@ def make_record(
     verified: bool,
     problem_path: str = "",
     notes: str = "",
+    informal: str = "",
+    source_id: str = "",
 ) -> dict:
     return {
         "id": make_id(statement),
@@ -298,6 +356,8 @@ def make_record(
         "imports": imports or ["Mathlib"],
         "source_dataset": dataset,
         "source_file": source_file,
+        "source_id": source_id,
+        "informal": informal,
         "verified": verified,
         "problem_path": problem_path,
         "notes": notes,
@@ -410,6 +470,151 @@ def run_extract(args: argparse.Namespace, out_path: Path) -> int:
     return 0
 
 
+def parse_lean_statement(text: str) -> tuple[str, str, str]:
+    """Parse one dataset row's Lean source into (name, statement, proof)."""
+    cleaned = strip_comments(text or "").strip()
+    match = DECL_RE.search(cleaned)
+    if not match:
+        return "", "", ""
+    block = cleaned[match.start():].strip()
+    statement, proof = split_at_assign(block)
+    # A `sorry` placeholder is the absence of a proof, not a proof.
+    if re.fullmatch(r"(by\s+)?sorry", proof.strip()):
+        proof = ""
+    return match.group(2), statement, proof
+
+
+def hint_lookup(text: str, hints: tuple[tuple[str, str], ...]) -> str | None:
+    lowered = (text or "").lower()
+    for needle, value in hints:
+        if needle in lowered:
+            return value
+    return None
+
+
+def run_datasets(args, out_path: Path) -> int:
+    """Pull candidates from the Hugging Face datasets named in --sources."""
+    try:
+        from datasets import load_dataset  # noqa: PLC0415
+    except ImportError:
+        print("error: the `datasets` package is required for --sources.\n"
+              "       pip install datasets", file=sys.stderr)
+        return 1
+
+    wanted = [s.strip().lower() for s in args.sources.split(",") if s.strip()]
+    unknown = [s for s in wanted if s not in DATASET_SOURCES]
+    if unknown:
+        print(f"error: unknown source(s): {', '.join(unknown)}\n"
+              f"       known: {', '.join(DATASET_SOURCES)}", file=sys.stderr)
+        return 1
+
+    existing = load_jsonl(out_path) if args.append else []
+    known_ids = {r.get("id") for r in existing}
+    already_solved = existing_statements(PROBLEMS_DIR)
+
+    new_records: list[dict] = []
+    per_source: dict[str, int] = {}
+    skipped_dupe = skipped_unparsed = 0
+
+    for source in wanted:
+        spec = DATASET_SOURCES[source]
+        print(f"Pulling {spec['hf_id']} ...")
+        try:
+            dataset = load_dataset(spec["hf_id"])
+        except Exception as exc:  # network, auth, renamed repo, ...
+            print(f"  ! could not load {spec['hf_id']}: {exc}", file=sys.stderr)
+            continue
+
+        count = 0
+        for split_name, split in dataset.items():
+            for row in split:
+                raw = row.get(spec["statement_field"]) or ""
+                decl_name, statement, proof = parse_lean_statement(raw)
+                if not statement:
+                    skipped_unparsed += 1
+                    continue
+
+                if statement_key(statement) in already_solved:
+                    skipped_dupe += 1
+                    continue
+
+                source_id = str(row.get(spec["id_field"], "") or "")
+                informal = (row.get(spec["informal_field"]) or "").strip()
+                header = row.get(spec["header_field"]) or ""
+                imports = IMPORT_RE.findall(header) or ["Mathlib"]
+
+                # Domain: id hints first for miniF2F, else keyword scoring.
+                domain = None
+                if source == "minif2f":
+                    domain = hint_lookup(source_id, MINIF2F_DOMAIN_HINTS)
+                if args.domain:
+                    domain = args.domain
+                if not domain:
+                    domain, score = guess_domain(f"{statement}\n{informal}")
+                    if not score:
+                        domain = UNKNOWN_DOMAIN
+
+                # Tier: explicit override, then per-source rule, then heuristic.
+                tier = args.tier or spec.get("default_tier")
+                if not tier and source == "minif2f":
+                    tier = hint_lookup(source_id, MINIF2F_TIER_HINTS)
+                if not tier:
+                    tier = guess_tier(statement, proof, spec["label"])
+
+                if args.only_domain and domain != args.only_domain:
+                    continue
+                if args.only_tier and tier != args.only_tier:
+                    continue
+
+                record = make_record(
+                    name=decl_name,
+                    statement=statement,
+                    proof="" if args.strip_proofs else proof,
+                    imports=imports,
+                    dataset=spec["label"],
+                    source_file=f"{spec['hf_id']}#{split_name}",
+                    source_id=source_id,
+                    informal=informal,
+                    domain=domain,
+                    tier=tier,
+                    verified=False,
+                    notes="" if domain != UNKNOWN_DOMAIN
+                          else "domain unclassified - set it before promoting",
+                )
+                if record["id"] in known_ids:
+                    skipped_dupe += 1
+                    continue
+                known_ids.add(record["id"])
+                new_records.append(record)
+                count += 1
+                if args.limit and len(new_records) >= args.limit:
+                    break
+            if args.limit and len(new_records) >= args.limit:
+                break
+
+        per_source[spec["label"]] = count
+        print(f"  {spec['label']}: {count} new")
+        if args.limit and len(new_records) >= args.limit:
+            print(f"  (stopped at --limit {args.limit})")
+            break
+
+    print()
+    for label, count in per_source.items():
+        print(f"{label:<16} {count}")
+    print(f"{'New total':<16} {len(new_records)}")
+    print(f"{'Duplicates':<16} {skipped_dupe}")
+    if skipped_unparsed:
+        print(f"{'Unparsed rows':<16} {skipped_unparsed}")
+
+    if args.dry_run:
+        print("(dry run - nothing written)")
+        return 0
+
+    write_jsonl(out_path, existing + new_records)
+    print(f"\nWrote {out_path} ({len(existing) + len(new_records)} entries total)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Extract Lean theorem candidates into candidates.jsonl.",
@@ -423,6 +628,9 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument("--source", help="directory of .lean files to scan")
+    parser.add_argument("--sources",
+                        help="comma-separated Hugging Face sources to pull: "
+                             + ", ".join(DATASET_SOURCES) + " (needs `pip install datasets`)")
     parser.add_argument("--seed", action="store_true",
                         help="rebuild candidates.jsonl from the verified problems/ tree")
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="output JSONL (default: problems/candidates.jsonl)")
@@ -441,8 +649,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.seed:
         return run_seed(out_path)
+    if args.sources:
+        return run_datasets(args, out_path)
     if not args.source:
-        parser.error("one of --seed or --source is required")
+        parser.error("one of --seed, --source or --sources is required")
     return run_extract(args, out_path)
 
 

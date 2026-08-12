@@ -1,0 +1,2904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['$','$'], ['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Abstract Algebra</title>
+<link rel="next" href="sect0068.html" title="Linear Algebra" />
+<link rel="prev" href="sect0066.html" title="Algebra" />
+<link rel="up" href="sect0063.html" title="Benchmark problems" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/showmore.css" />
+<link rel="stylesheet" href="styles/blueprint.css" />
+<link rel="stylesheet" href="styles/extra_styles.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">MyMathlibProject Blueprint</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="ch-environment.html"><span class="toc_ref">1</span> <span class="toc_entry">Lean 4 Environment Setup</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref">1.1</span> <span class="toc_entry">What you’re installing</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref">1.2</span> <span class="toc_entry">Prerequisites</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref">1.3</span> <span class="toc_entry">Install elan</span></a>
+ </li>
+<li class="">
+  <a href="sect0004.html"><span class="toc_ref">1.4</span> <span class="toc_entry">Install the Lean 4 VS Code extension</span></a>
+ </li>
+<li class="">
+  <a href="sect0005.html"><span class="toc_ref">1.5</span> <span class="toc_entry">Create a project</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html#a0000000077"><span class="toc_ref">1.5.1</span> <span class="toc_entry">Working in an already-cloned repository</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">1.6</span> <span class="toc_entry">Verify Mathlib is wired up</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">1.7</span> <span class="toc_entry">Leanblueprint set up</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0007.html#a0000000078"><span class="toc_ref">1.7.1</span> <span class="toc_entry">Installing it</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000079"><span class="toc_ref">1.7.2</span> <span class="toc_entry">Two dependencies for a full local build</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000080"><span class="toc_ref">1.7.3</span> <span class="toc_entry">How blueprint/src is organized</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html#a0000000081"><span class="toc_ref">1.7.4</span> <span class="toc_entry">Build commands</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">1.8</span> <span class="toc_entry">Project anatomy (what’s actually on disk)</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">1.9</span> <span class="toc_entry">Command line vs. VS Code — two ways to talk to Lean</span></a>
+ </li>
+<li class="">
+  <a href="sect0010.html"><span class="toc_ref">1.10</span> <span class="toc_entry">Keeping things updated</span></a>
+ </li>
+<li class="">
+  <a href="sect0011.html"><span class="toc_ref">1.11</span> <span class="toc_entry">Troubleshooting</span></a>
+ </li>
+<li class="">
+  <a href="sect0012.html"><span class="toc_ref">1.12</span> <span class="toc_entry">Next up</span></a>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">1.13</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tutorial.html"><span class="toc_ref">2</span> <span class="toc_entry">Lean 4 Tutorial</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0014.html"><span class="toc_ref"></span> <span class="toc_entry">Table of contents</span></a>
+ </li>
+<li class="">
+  <a href="sect0015.html"><span class="toc_ref">2.1</span> <span class="toc_entry">How Lean thinks: goals, context, term vs. tactic mode</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html"><span class="toc_ref">2.2</span> <span class="toc_entry">Core tactics I — closing goals</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0016.html#a0000000082"><span class="toc_ref">2.2.1</span> <span class="toc_entry"><span class="ttfamily">rfl</span> — reflexivity</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000083"><span class="toc_ref">2.2.2</span> <span class="toc_entry"><span class="ttfamily">exact</span> — direct proof</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000084"><span class="toc_ref">2.2.3</span> <span class="toc_entry"><span class="ttfamily">apply</span> — working backwards</span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000085"><span class="toc_ref">2.2.4</span> <span class="toc_entry"><span class="ttfamily">assumption</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0016.html#a0000000086"><span class="toc_ref">2.2.5</span> <span class="toc_entry">Quick reference</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0017.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Core tactics II — rewriting</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0017.html#a0000000087"><span class="toc_ref">2.3.1</span> <span class="toc_entry"><span class="ttfamily">rw</span> — precise, one substitution at a time</span></a>
+ </li>
+<li class="">
+  <a href="sect0017.html#a0000000088"><span class="toc_ref">2.3.2</span> <span class="toc_entry"><span class="ttfamily">simp</span> — automated simplification</span></a>
+ </li>
+<li class="">
+  <a href="sect0017.html#a0000000089"><span class="toc_ref">2.3.3</span> <span class="toc_entry"><span class="ttfamily">norm_num</span>, <span class="ttfamily">norm_cast</span>, <span class="ttfamily">push_cast</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0018.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Core tactics III — introducing and structuring</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0018.html#a0000000090"><span class="toc_ref">2.4.1</span> <span class="toc_entry"><span class="ttfamily">intro</span> — assuming hypotheses</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000091"><span class="toc_ref">2.4.2</span> <span class="toc_entry"><span class="ttfamily">have</span> and <span class="ttfamily">let</span> — intermediate steps</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000092"><span class="toc_ref">2.4.3</span> <span class="toc_entry"><span class="ttfamily">suffices</span> — working backwards from a stronger claim</span></a>
+ </li>
+<li class="">
+  <a href="sect0018.html#a0000000093"><span class="toc_ref">2.4.4</span> <span class="toc_entry"><span class="ttfamily">show</span> — restating the goal</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0019.html"><span class="toc_ref">2.5</span> <span class="toc_entry">Case analysis and induction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0019.html#a0000000094"><span class="toc_ref">2.5.1</span> <span class="toc_entry"><span class="ttfamily">cases</span> — splitting on constructors</span></a>
+ </li>
+<li class="">
+  <a href="sect0019.html#a0000000095"><span class="toc_ref">2.5.2</span> <span class="toc_entry"><span class="ttfamily">induction</span> — proof by mathematical induction</span></a>
+ </li>
+<li class="">
+  <a href="sect0019.html#a0000000096"><span class="toc_ref">2.5.3</span> <span class="toc_entry"><span class="ttfamily">rcases</span> / <span class="ttfamily">obtain</span> — recursive destructuring (Mathlib)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0020.html"><span class="toc_ref">2.6</span> <span class="toc_entry">Automation and decision procedures</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0020.html#a0000000097"><span class="toc_ref">2.6.1</span> <span class="toc_entry"><span class="ttfamily">omega</span> — linear arithmetic over ℕ/ℤ</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000098"><span class="toc_ref">2.6.2</span> <span class="toc_entry"><span class="ttfamily">ring</span> / <span class="ttfamily">ring_nf</span> — polynomial identities</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000099"><span class="toc_ref">2.6.3</span> <span class="toc_entry"><span class="ttfamily">linarith</span> / <span class="ttfamily">nlinarith</span> — linear / mildly-nonlinear inequalities</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000100"><span class="toc_ref">2.6.4</span> <span class="toc_entry"><span class="ttfamily">decide</span> / <span class="ttfamily">native_decide</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000101"><span class="toc_ref">2.6.5</span> <span class="toc_entry"><span class="ttfamily">aesop</span> — general automated search</span></a>
+ </li>
+<li class="">
+  <a href="sect0020.html#a0000000102"><span class="toc_ref">2.6.6</span> <span class="toc_entry">Choosing among them</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0021.html"><span class="toc_ref">2.7</span> <span class="toc_entry">Structuring proofs</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0021.html#a0000000103"><span class="toc_ref">2.7.1</span> <span class="toc_entry"><span class="ttfamily">by_contra</span> — proof by contradiction</span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000104"><span class="toc_ref">2.7.2</span> <span class="toc_entry"><span class="ttfamily">by_cases</span> — splitting on a proposition</span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000105"><span class="toc_ref">2.7.3</span> <span class="toc_entry"><span class="ttfamily">contrapose</span> / <span class="ttfamily">push_neg</span></span></a>
+ </li>
+<li class="">
+  <a href="sect0021.html#a0000000106"><span class="toc_ref">2.7.4</span> <span class="toc_entry"><span class="ttfamily">calc</span> — calculational proofs</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0022.html"><span class="toc_ref">2.8</span> <span class="toc_entry">Equality machinery: <span class="ttfamily">ext</span>, <span class="ttfamily">funext</span>, <span class="ttfamily">congr</span>, <span class="ttfamily">symm</span>, <span class="ttfamily">trans</span></span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0022.html#a0000000107"><span class="toc_ref">2.8.1</span> <span class="toc_entry"><span class="ttfamily">funext</span> and <span class="ttfamily">ext</span> — extensionality</span></a>
+ </li>
+<li class="">
+  <a href="sect0022.html#a0000000108"><span class="toc_ref">2.8.2</span> <span class="toc_entry"><span class="ttfamily">congr</span> — from function equality to argument equality</span></a>
+ </li>
+<li class="">
+  <a href="sect0022.html#a0000000109"><span class="toc_ref">2.8.3</span> <span class="toc_entry"><span class="ttfamily">symm</span> / <span class="ttfamily">trans</span></span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0023.html"><span class="toc_ref">2.9</span> <span class="toc_entry">Tactic combinators</span></a>
+ </li>
+<li class="">
+  <a href="sect0024.html"><span class="toc_ref">2.10</span> <span class="toc_entry">Worked examples — Set theory</span></a>
+ </li>
+<li class="">
+  <a href="sect0025.html"><span class="toc_ref">2.11</span> <span class="toc_entry">Worked examples — Topology</span></a>
+ </li>
+<li class="">
+  <a href="sect0026.html"><span class="toc_ref">2.12</span> <span class="toc_entry">Worked examples — Algebra</span></a>
+ </li>
+<li class="">
+  <a href="sect0027.html"><span class="toc_ref">2.13</span> <span class="toc_entry">Reading errors and diagnosing failed proofs</span></a>
+ </li>
+<li class="">
+  <a href="sect0028.html"><span class="toc_ref">2.14</span> <span class="toc_entry">From tactics to the agent pipeline</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html"><span class="toc_ref">2.15</span> <span class="toc_entry">Mathlib conventions: naming, dot notation, anonymous constructors</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0029.html#a0000000110"><span class="toc_ref">2.15.1</span> <span class="toc_entry">Capitalization signals the kind of thing</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000111"><span class="toc_ref">2.15.2</span> <span class="toc_entry">The symbol to word dictionary</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000112"><span class="toc_ref">2.15.3</span> <span class="toc_entry">Hypothesis ordering: “of”</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000113"><span class="toc_ref">2.15.4</span> <span class="toc_entry">≤ / &lt; vs ≥ / &gt;</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000114"><span class="toc_ref">2.15.5</span> <span class="toc_entry">Dot notation and the anonymous constructor</span></a>
+ </li>
+<li class="">
+  <a href="sect0029.html#a0000000115"><span class="toc_ref">2.15.6</span> <span class="toc_entry">Structural suffixes worth recognizing</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0030.html"><span class="toc_ref">2.16</span> <span class="toc_entry">Exercises (with worked solutions)</span></a>
+ </li>
+<li class="">
+  <a href="sect0031.html"><span class="toc_ref">2.17</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-tactic_cheat_sheet.html"><span class="toc_ref">3</span> <span class="toc_entry">Lean 4 Tactic Cheat Sheet</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0032.html"><span class="toc_ref">3.1</span> <span class="toc_entry">Reading a goal state</span></a>
+ </li>
+<li class="">
+  <a href="sect0033.html"><span class="toc_ref">3.2</span> <span class="toc_entry">Core / structural — closing and opening goals</span></a>
+ </li>
+<li class="">
+  <a href="sect0034.html"><span class="toc_ref">3.3</span> <span class="toc_entry">Rewriting &amp; simplification</span></a>
+ </li>
+<li class="">
+  <a href="sect0035.html"><span class="toc_ref">3.4</span> <span class="toc_entry">Case analysis, induction, destructuring</span></a>
+ </li>
+<li class="">
+  <a href="sect0036.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Automation / decision procedures</span></a>
+ </li>
+<li class="">
+  <a href="sect0037.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Logic, contradiction, structuring</span></a>
+ </li>
+<li class="">
+  <a href="sect0038.html"><span class="toc_ref">3.7</span> <span class="toc_entry">Equality, extensionality, congruence</span></a>
+ </li>
+<li class="">
+  <a href="sect0039.html"><span class="toc_ref">3.8</span> <span class="toc_entry">Combinators (gluing tactics together)</span></a>
+ </li>
+<li class="">
+  <a href="sect0040.html"><span class="toc_ref">3.9</span> <span class="toc_entry">Debugging &amp; discovery</span></a>
+ </li>
+<li class="">
+  <a href="sect0041.html"><span class="toc_ref">3.10</span> <span class="toc_entry">Notation quick-typing (VS Code unicode input, backslash prefix)</span></a>
+ </li>
+<li class="">
+  <a href="sect0042.html"><span class="toc_ref">3.11</span> <span class="toc_entry">Common gotchas</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-minimum_viable_tactics.html"><span class="toc_ref">4</span> <span class="toc_entry">Minimum Viable Tactic Set</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0043.html"><span class="toc_ref">4.1</span> <span class="toc_entry">Why a restricted set at all</span></a>
+ </li>
+<li class="">
+  <a href="sect0044.html"><span class="toc_ref">4.2</span> <span class="toc_entry">The floor set</span></a>
+ </li>
+<li class="">
+  <a href="sect0045.html"><span class="toc_ref">4.3</span> <span class="toc_entry">Explicitly excluded</span></a>
+ </li>
+<li class="">
+  <a href="sect0046.html"><span class="toc_ref">4.4</span> <span class="toc_entry">Undecided</span></a>
+ </li>
+<li class="">
+  <a href="sect0047.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Discovery and debugging tools — not proof steps</span></a>
+ </li>
+<li class="">
+  <a href="sect0048.html"><span class="toc_ref">4.6</span> <span class="toc_entry">Empirical tracking</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pipeline.html"><span class="toc_ref">5</span> <span class="toc_entry">Agent \(\leftrightarrow \) Lean 4 Pipeline</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0049.html"><span class="toc_ref">5.1</span> <span class="toc_entry">The loop, restated precisely</span></a>
+ </li>
+<li class="">
+  <a href="sect0050.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Candidate interfaces, surveyed</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The REPL protocol, concretely</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0051.html#a0000000116"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Starting a theorem (command mode to tactic mode)</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000117"><span class="toc_ref">5.3.2</span> <span class="toc_entry">One tactic step</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000118"><span class="toc_ref">5.3.3</span> <span class="toc_entry">The error case</span></a>
+ </li>
+<li class="">
+  <a href="sect0051.html#a0000000119"><span class="toc_ref">5.3.4</span> <span class="toc_entry">Backtracking and persistence</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0052.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Data model: what gets exchanged per step</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Environment switching — three distinct senses</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0053.html#a0000000120"><span class="toc_ref">5.5.1</span> <span class="toc_entry">Toolchain/project switching</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html#a0000000121"><span class="toc_ref">5.5.2</span> <span class="toc_entry">Session/state switching</span></a>
+ </li>
+<li class="">
+  <a href="sect0053.html#a0000000122"><span class="toc_ref">5.5.3</span> <span class="toc_entry">Interface switching (human vs. machine)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0054.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Failure modes at the plumbing level</span></a>
+ </li>
+<li class="">
+  <a href="sect0055.html"><span class="toc_ref">5.7</span> <span class="toc_entry">Open design decisions</span></a>
+ </li>
+<li class="">
+  <a href="sect0056.html"><span class="toc_ref">5.8</span> <span class="toc_entry">What this doc feeds</span></a>
+ </li>
+<li class="">
+  <a href="sect0057.html"><span class="toc_ref">5.9</span> <span class="toc_entry">References</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-mobile_llms.html"><span class="toc_ref">6</span> <span class="toc_entry">Mobile-Capable LLMs for Mathematical Reasoning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0058.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The landscape (2026)</span></a>
+ </li>
+<li class="">
+  <a href="sect0059.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Model choice: Qwen2.5-Math-1.5B-Instruct</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-llm_in_use.html"><span class="toc_ref">7</span> <span class="toc_entry">The LLM We’re Using</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0060.html"><span class="toc_ref">7.1</span> <span class="toc_entry">What the harness calls</span></a>
+ </li>
+<li class="">
+  <a href="sect0061.html"><span class="toc_ref">7.2</span> <span class="toc_entry">It is a constant, not configuration</span></a>
+ </li>
+<li class="">
+  <a href="sect0062.html"><span class="toc_ref">7.3</span> <span class="toc_entry">Status: current state, not a final choice</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="sect0063.html"><span class="toc_ref">8</span> <span class="toc_entry">Benchmark problems</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sect0064.html"><span class="toc_ref">8.1</span> <span class="toc_entry">Set Theory</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0064.html#a0000000123"><span class="toc_ref">8.1.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0064.html#a0000000124"><span class="toc_ref">8.1.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0064.html#a0000000125"><span class="toc_ref">8.1.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0065.html"><span class="toc_ref">8.2</span> <span class="toc_entry">Topology</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0065.html#a0000000126"><span class="toc_ref">8.2.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0065.html#a0000000127"><span class="toc_ref">8.2.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0065.html#a0000000128"><span class="toc_ref">8.2.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0066.html"><span class="toc_ref">8.3</span> <span class="toc_entry">Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0066.html#a0000000129"><span class="toc_ref">8.3.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0066.html#a0000000130"><span class="toc_ref">8.3.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0066.html#a0000000131"><span class="toc_ref">8.3.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active current">
+  <a href="sect0067.html"><span class="toc_ref">8.4</span> <span class="toc_entry">Abstract Algebra</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-2 active">
+     <li class="">
+  <a href="sect0067.html#a0000000132"><span class="toc_ref">8.4.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0067.html#a0000000133"><span class="toc_ref">8.4.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0067.html#a0000000134"><span class="toc_ref">8.4.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0068.html"><span class="toc_ref">8.5</span> <span class="toc_entry">Linear Algebra</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0068.html#a0000000135"><span class="toc_ref">8.5.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0068.html#a0000000136"><span class="toc_ref">8.5.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0068.html#a0000000137"><span class="toc_ref">8.5.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0069.html"><span class="toc_ref">8.6</span> <span class="toc_entry">Number Theory</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0069.html#a0000000138"><span class="toc_ref">8.6.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0069.html#a0000000139"><span class="toc_ref">8.6.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0069.html#a0000000140"><span class="toc_ref">8.6.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0070.html"><span class="toc_ref">8.7</span> <span class="toc_entry">Real Analysis</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0070.html#a0000000141"><span class="toc_ref">8.7.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0070.html#a0000000142"><span class="toc_ref">8.7.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0070.html#a0000000143"><span class="toc_ref">8.7.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0071.html"><span class="toc_ref">8.8</span> <span class="toc_entry">Complex Analysis</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0071.html#a0000000144"><span class="toc_ref">8.8.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0071.html#a0000000145"><span class="toc_ref">8.8.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0071.html#a0000000146"><span class="toc_ref">8.8.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0072.html"><span class="toc_ref">8.9</span> <span class="toc_entry">Combinatorics</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0072.html#a0000000147"><span class="toc_ref">8.9.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0072.html#a0000000148"><span class="toc_ref">8.9.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0072.html#a0000000149"><span class="toc_ref">8.9.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0073.html"><span class="toc_ref">8.10</span> <span class="toc_entry">Geometry</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0073.html#a0000000150"><span class="toc_ref">8.10.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0073.html#a0000000151"><span class="toc_ref">8.10.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0073.html#a0000000152"><span class="toc_ref">8.10.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0074.html"><span class="toc_ref">8.11</span> <span class="toc_entry">Probability</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0074.html#a0000000153"><span class="toc_ref">8.11.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0074.html#a0000000154"><span class="toc_ref">8.11.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0074.html#a0000000155"><span class="toc_ref">8.11.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0075.html"><span class="toc_ref">8.12</span> <span class="toc_entry">Unclassified</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0075.html#a0000000156"><span class="toc_ref">8.12.1</span> <span class="toc_entry">Easy</span></a>
+ </li>
+<li class="">
+  <a href="sect0075.html#a0000000157"><span class="toc_ref">8.12.2</span> <span class="toc_entry">Medium</span></a>
+ </li>
+<li class="">
+  <a href="sect0075.html#a0000000158"><span class="toc_ref">8.12.3</span> <span class="toc_entry">Hard</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li ><a href="dep_graph_document.html">Dependency graph</a></li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="a0000000068">8.4 Abstract Algebra</h1>
+<p>96 entries, 0 verified. </p>
+<h2 id="a0000000132">8.4.1 Easy</h2>
+<p>No entries yet. </p>
+<h2 id="a0000000133">8.4.2 Medium</h2>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:cd50bbd1e055">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">448</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_10_4_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:cd50bbd1e055">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_10_4_6</span>. Let \(I, J\) be ideals in a ring \(R\). Prove that the residue of any element of \(I \cap J\) in \(R / I J\) is nilpotent. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:8e01661f45ac">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">449</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_10_4_7a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:8e01661f45ac">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_10_4_7a</span>. Let \(I, J\) be ideals of a ring \(R\) such that \(I+J=R\). Prove that \(I J=I \cap J\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:228578c0769a">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">450</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_10_6_7</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:228578c0769a">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_10_6_7</span>. Prove that every nonzero ideal in the ring of Gauss integers contains a nonzero integer. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:88eb2a954cb4">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">451</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_10_7_10</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:88eb2a954cb4">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_10_7_10</span>. Let \(R\) be a ring, with \(M\) an ideal of \(R\). Suppose that every element of \(R\) which is not in \(M\) is a unit of \(R\). Prove that \(M\) is a maximal ideal and that moreover it is the only maximal ideal of \(R\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:70eaed172fe8">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">452</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_2_11_3</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:70eaed172fe8">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_11_3</span>. Prove that a group of even order contains an element of order \(2 .\) </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e0bce56efb8a">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">453</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_2_2_9</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e0bce56efb8a">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_2_9</span>. Let \(H\) be the subgroup generated by two elements \(a, b\) of a group \(G\). Prove that if \(a b=b a\), then \(H\) is an abelian group. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:cf3da92c6220">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">454</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_2_3_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:cf3da92c6220">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_3_2</span>. Prove that the products \(a b\) and \(b a\) are conjugate elements in a group. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b22799373a6f">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">455</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_2_4_19</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b22799373a6f">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_4_19</span>. Prove that if a group contains exactly one element of order 2 , then that element is in the center of the group. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:34e412663b53">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">456</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_2_8_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:34e412663b53">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_8_6</span>. Prove that the center of the product of two groups is the product of their centers. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:1544b958e1f4">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">457</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_6_1_14</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:1544b958e1f4">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_6_1_14</span>. Let \(Z\) be the center of a group \(G\). Prove that if \(G / Z\) is a cyclic group, then \(G\) is abelian and hence \(G=Z\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b5a34a589cac">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">458</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_6_4_12</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b5a34a589cac">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_6_4_12</span>. Prove that no group of order 224 is simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:0f0879dd6d78">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">459</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_6_4_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:0f0879dd6d78">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_6_4_2</span>. Prove that no group of order \(p q\), where \(p\) and \(q\) are prime, is simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:58754eb219ee">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">460</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_6_4_3</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:58754eb219ee">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_6_4_3</span>. Prove that no group of order \(p^2 q\), where \(p\) and \(q\) are prime, is simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:825f003dd88c">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">461</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Artin|exercise_6_8_1</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:825f003dd88c">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_6_8_1</span>. Prove that two elements \(a, b\) of a group generate the same subgroup as \(b a b^2, b a b^3\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:ea3f467664a3">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">462</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Axler|exercise_7_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:ea3f467664a3">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_7_6</span>. Prove that if \(T \in \mathcal{L}(V)\) is normal, then \(\operatorname {range} T=\operatorname {range} T^{*}.\) </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b052e8c5181f">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">463</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_15</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b052e8c5181f">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_15</span>. Prove that \((a_1a_2\dots a_n)^{-1} = a_n^{-1}a_{n-1}^{-1}\dots a_1^{-1}\) for all \(a_1, a_2, \dots , a_n\in G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:bccaaecc19c1">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">464</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_16</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:bccaaecc19c1">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_16</span>. Let \(x\) be an element of \(G\). Prove that \(x^2=1\) if and only if \(|x|\) is either \(1\) or \(2\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:20762d4d9f2b">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">465</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_17</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:20762d4d9f2b">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_17</span>. Let \(x\) be an element of \(G\). Prove that if \(|x|=n\) for some positive integer \(n\) then \(x^{-1}=x^{n-1}\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e800fbc238dc">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">466</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_18</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e800fbc238dc">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_18</span>. Let \(x\) and \(y\) be elements of \(G\). Prove that \(xy=yx\) if and only if \(y^{-1}xy=x\) if and only if \(x^{-1}y^{-1}xy=1\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:0b20b6cd6760">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">467</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_20</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:0b20b6cd6760">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_20</span>. For \(x\) an element in \(G\) show that \(x\) and \(x^{-1}\) have the same order. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e5f8dd825f95">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">468</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_22a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e5f8dd825f95">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_22a</span>. If \(x\) and \(g\) are elements of the group \(G\), prove that \(|x|=\left|g^{-1} x g\right|\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e1968a518650">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">469</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_22b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e1968a518650">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_22b</span>. Deduce that \(|a b|=|b a|\) for all \(a, b \in G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:a5193f52e61e">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">470</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_25</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:a5193f52e61e">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_25</span>. Prove that if \(x^{2}=1\) for all \(x \in G\) then \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:6d15680f9346">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">471</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_29</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:6d15680f9346">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_29</span>. Prove that \(A \times B\) is an abelian group if and only if both \(A\) and \(B\) are abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:99dbce188fbe">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">472</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_1_34</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:99dbce188fbe">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_1_34</span>. If \(x\) is an element of infinite order in \(G\), prove that the elements \(x^{n}, n \in \mathbb {Z}\) are all distinct. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:0f88fee49228">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">473</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_6_11</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:0f88fee49228">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_6_11</span>. Let \(A\) and \(B\) be groups. Prove that \(A \times B \cong B \times A\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:56ee452cd3d6">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">474</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_6_17</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:56ee452cd3d6">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_6_17</span>. Let \(G\) be any group. Prove that the map from \(G\) to itself defined by \(g \mapsto g^{-1}\) is a homomorphism if and only if \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:d84b3cf1cc86">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">475</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_1_6_23</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:d84b3cf1cc86">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_1_6_23</span>. Let \(G\) be a finite group which possesses an automorphism \(\sigma \) such that \(\sigma (g)=g\) if and only if \(g=1\). If \(\sigma ^{2}\) is the identity map from \(G\) to \(G\), prove that \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:4e3728d72152">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">476</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_2_1_13</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:4e3728d72152">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_1_13</span>. Let \(H\) be a subgroup of the additive group of rational numbers with the property that \(1 / x \in H\) for every nonzero element \(x\) of \(H\). Prove that \(H=0\) or \(\mathbb {Q}\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:0f620eb0b076">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">477</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_2_1_5</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:0f620eb0b076">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_1_5</span>. Prove that \(G\) cannot have a subgroup \(H\) with \(|H|=n-1\), where \(n=|G|{\gt}2\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:141970f19da4">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">478</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_2_4_16a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:141970f19da4">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_4_16a</span>. A subgroup \(M\) of a group \(G\) is called a maximal subgroup if \(M \neq G\) and the only subgroups of \(G\) which contain \(M\) are \(M\) and \(G\). Prove that if \(H\) is a proper subgroup of the finite group \(G\) then there is a maximal subgroup of \(G\) containing \(H\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:35ea824fbbd3">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">479</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_2_4_16b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:35ea824fbbd3">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_4_16b</span>. Show that the subgroup of all rotations in a dihedral group is a maximal subgroup. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:6810e2efef6e">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">480</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_2_4_16c</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:6810e2efef6e">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_4_16c</span>. Show that if \(G=\langle x\rangle \) is a cyclic group of order \(n \geq 1\) then a subgroup \(H\) is maximal if and only \(H=\left\langle x^{p}\right\rangle \) for some prime \(p\) dividing \(n\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:5fc868261dc8">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">481</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_2_4_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:5fc868261dc8">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_4_4</span>. Prove that if \(H\) is a subgroup of \(G\) then \(H\) is generated by the set \(H-\{ 1\} \). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:f7dbfbdc7701">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">482</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_1_22a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:f7dbfbdc7701">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_1_22a</span>. Prove that if \(H\) and \(K\) are normal subgroups of a group \(G\) then their intersection \(H \cap K\) is also a normal subgroup of \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:c16c8fbbcb58">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">483</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_1_22b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:c16c8fbbcb58">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_1_22b</span>. Prove that the intersection of an arbitrary nonempty collection of normal subgroups of a group is a normal subgroup (do not assume the collection is countable). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:551d98b54777">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">484</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_1_3a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:551d98b54777">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_1_3a</span>. Let \(A\) be an abelian group and let \(B\) be a subgroup of \(A\). Prove that \(A / B\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:994558568624">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">485</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_2_11</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:994558568624">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_2_11</span>. Let \(H \leq K \leq G\). Prove that \(|G: H|=|G: K| \cdot |K: H|\) (do not assume \(G\) is finite). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e89fece038ec">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">486</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_2_21a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e89fece038ec">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_2_21a</span>. Prove that \(\mathbb {Q}\) has no proper subgroups of finite index. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:dda230fb0fb1">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">487</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_2_8</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:dda230fb0fb1">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_2_8</span>. Prove that if \(H\) and \(K\) are finite subgroups of \(G\) whose orders are relatively prime then \(H \cap K=1\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:864db3f1d1fd">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">488</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_3_3</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:864db3f1d1fd">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_3_3</span>. Prove that if \(H\) is a normal subgroup of \(G\) of prime index \(p\) then for all \(K \leq G\) either \(K \leq H\), or \(G=H K\) and \(|K: K \cap H|=p\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:427f83f7c6d7">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">489</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_4_1</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:427f83f7c6d7">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_4_1</span>. Prove that if \(G\) is an abelian simple group then \(G \cong Z_{p}\) for some prime \(p\) (do not assume \(G\) is a finite group). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:77565bb31f86">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">490</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_4_11</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:77565bb31f86">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_4_11</span>. Prove that if \(H\) is a nontrivial normal subgroup of the solvable group \(G\) then there is a nontrivial subgroup \(A\) of \(H\) with \(A \unlhd G\) and \(A\) abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:abbd1681916e">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">491</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_4_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:abbd1681916e">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_4_4</span>. Use Cauchy’s Theorem and induction to show that a finite abelian group has a subgroup of order \(n\) for each positive divisor \(n\) of its order. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:99a12ca3e404">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">492</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_4_5a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:99a12ca3e404">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_4_5a</span>. Prove that subgroups of a solvable group are solvable. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:ebe1bd7b9fe1">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">493</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_3_4_5b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:ebe1bd7b9fe1">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_3_4_5b</span>. Prove that quotient groups of a solvable group are solvable. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:cb611745eb62">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">494</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_2_14</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:cb611745eb62">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_2_14</span>. Let \(G\) be a finite group of composite order \(n\) with the property that \(G\) has a subgroup of order \(k\) for each positive integer \(k\) dividing \(n\). Prove that \(G\) is not simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:2168b23b85c8">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">495</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_2_8</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:2168b23b85c8">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_2_8</span>. Prove that if \(H\) has finite index \(n\) then there is a normal subgroup \(K\) of \(G\) with \(K \leq H\) and \(|G: K| \leq n!\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:82a1c4823c4f">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">496</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_2_9a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:82a1c4823c4f">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_2_9a</span>. Prove that if \(p\) is a prime and \(G\) is a group of order \(p^{\alpha }\) for some \(\alpha \in \mathbb {Z}^{+}\), then every subgroup of index \(p\) is normal in \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:bc54892901fb">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">497</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_4_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:bc54892901fb">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_4_2</span>. Prove that if \(G\) is an abelian group of order \(p q\), where \(p\) and \(q\) are distinct primes, then \(G\) is cyclic. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b6f9e9714fdf">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">498</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_4_6a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b6f9e9714fdf">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_4_6a</span>. Prove that characteristic subgroups are normal. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:d66f52a2f3b5">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">499</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_4_6b</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:d66f52a2f3b5">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_4_6b</span>. Prove that there exists a normal subgroup that is not characteristic. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:4e9902d58b79">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">500</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_4_7</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:4e9902d58b79">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_4_7</span>. If \(H\) is the unique subgroup of a given order in a group \(G\) prove \(H\) is characteristic in \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:a5a483f5a9a8">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">501</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_4_8a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:a5a483f5a9a8">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_4_8a</span>. Let \(G\) be a group with subgroups \(H\) and \(K\) with \(H \leq K\). Prove that if \(H\) is characteristic in \(K\) and \(K\) is normal in \(G\) then \(H\) is normal in \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:26df48254a97">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">502</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_13</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:26df48254a97">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_13</span>. Prove that a group of order 56 has a normal Sylow \(p\)-subgroup for some prime \(p\) dividing its order. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:437771923c58">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">503</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_14</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:437771923c58">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_14</span>. Prove that a group of order 312 has a normal Sylow \(p\)-subgroup for some prime \(p\) dividing its order. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:60ee53e867f9">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">504</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_15</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:60ee53e867f9">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_15</span>. Prove that a group of order 351 has a normal Sylow \(p\)-subgroup for some prime \(p\) dividing its order. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:4056b44a0072">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">505</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_16</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:4056b44a0072">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_16</span>. Let \(|G|=p q r\), where \(p, q\) and \(r\) are primes with \(p{\lt}q{\lt}r\). Prove that \(G\) has a normal Sylow subgroup for either \(p, q\) or \(r\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:bc040624c0a3">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">506</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_17</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:bc040624c0a3">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_17</span>. Prove that if \(|G|=105\) then \(G\) has a normal Sylow 5 -subgroup and a normal Sylow 7-subgroup. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e92b1042c168">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">507</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_18</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e92b1042c168">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_18</span>. Prove that a group of order 200 has a normal Sylow 5-subgroup. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:ce9e5c118bb1">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">508</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_19</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:ce9e5c118bb1">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_19</span>. Prove that if \(|G|=6545\) then \(G\) is not simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e3828917a529">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">509</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_1a</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e3828917a529">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_1a</span>. Prove that if \(P \in \operatorname {Syl}_{p}(G)\) and \(H\) is a subgroup of \(G\) containing \(P\) then \(P \in \operatorname {Syl}_{p}(H)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:223e56a4c25c">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">510</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_20</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:223e56a4c25c">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_20</span>. Prove that if \(|G|=1365\) then \(G\) is not simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:5db87604abfe">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">511</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_21</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:5db87604abfe">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_21</span>. Prove that if \(|G|=2907\) then \(G\) is not simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:84676de43d4c">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">512</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_22</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:84676de43d4c">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_22</span>. Prove that if \(|G|=132\) then \(G\) is not simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:099ecc069279">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">513</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_23</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:099ecc069279">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_23</span>. Prove that if \(|G|=462\) then \(G\) is not simple. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:0e3941171302">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">514</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_28</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:0e3941171302">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_28</span>. Let \(G\) be a group of order 105. Prove that if a Sylow 3-subgroup of \(G\) is normal then \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:c99658f4667d">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">515</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_4_5_33</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:c99658f4667d">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_5_33</span>. Let \(P\) be a normal Sylow \(p\)-subgroup of \(G\) and let \(H\) be any subgroup of \(G\). Prove that \(P \cap H\) is the unique Sylow \(p\)-subgroup of \(H\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:ac8ec60be56d">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">516</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_5_4_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:ac8ec60be56d">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_5_4_2</span>. Prove that a subgroup \(H\) of \(G\) is normal if and only if \([G, H] \leq H\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:d046fbf0aea9">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">517</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_7_4_27</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:d046fbf0aea9">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_7_4_27</span>. Let \(R\) be a commutative ring with \(1 \neq 0\). Prove that if \(a\) is a nilpotent element of \(R\) then \(1-a b\) is a unit for all \(b \in R\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:e685381fac27">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">518</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Dummit-Foote|exercise_8_2_4</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:e685381fac27">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_8_2_4</span>. Let \(R\) be an integral domain. Prove that if the following two conditions hold then \(R\) is a Principal Ideal Domain: (i) any two nonzero elements \(a\) and \(b\) in \(R\) have a greatest common divisor which can be written in the form \(r a+s b\) for some \(r, s \in R\), and (ii) if \(a_{1}, a_{2}, a_{3}, \ldots \) are nonzero elements of \(R\) such that \(a_{i+1} \mid a_{i}\) for all \(i\), then there is a positive integer \(N\) such that \(a_{n}\) is a unit times \(a_{N}\) for all \(n \geq N\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:266e09ca22dd">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">519</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_10_1</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:266e09ca22dd">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_10_1</span>. Let \(A\) be a normal subgroup of a group \(G\), and suppose that \(b \in G\) is an element of prime order \(p\), and that \(b \not\in A\). Show that \(A \cap (b) = (e)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:11b8cca6a4d7">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">520</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_11_22</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:11b8cca6a4d7">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_11_22</span>. Show that any subgroup of order \(p^{n-1}\) in a group \(G\) of order \(p^n\) is normal in \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b900b9f60baf">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">521</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_11_6</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b900b9f60baf">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_11_6</span>. If \(P\) is a \(p\)-Sylow subgroup of \(G\) and \(P \triangleleft G\), prove that \(P\) is the only \(p\)-Sylow subgroup of \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b40eda85e95d">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">522</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_11_7</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b40eda85e95d">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_11_7</span>. If \(P \triangleleft G\), \(P\) a \(p\)-Sylow subgroup of \(G\), prove that \(\varphi (P) = P\) for every automorphism \(\varphi \) of \(G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:3856c1b8fdee">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">523</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_1_18</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:3856c1b8fdee">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_1_18</span>. If \(G\) is a finite group of even order, show that there must be an element \(a \neq e\) such that \(a=a^{-1}\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:5b939b8c15b1">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">524</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_1_21</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:5b939b8c15b1">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_1_21</span>. Show that a group of order 5 must be abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:6a122cf81ff4">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">525</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_1_26</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:6a122cf81ff4">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_1_26</span>. If \(G\) is a finite group, prove that, given \(a \in G\), there is a positive integer \(n\), depending on \(a\), such that \(a^n = e\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:97d4e9645d90">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">526</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_1_27</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:97d4e9645d90">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_1_27</span>. If \(G\) is a finite group, prove that there is an integer \(m {\gt} 0\) such that \(a^m = e\) for all \(a \in G\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:fdd685a9132f">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">527</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_2_3</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:fdd685a9132f">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_2_3</span>. If \(G\) is a group in which \((a b)^{i}=a^{i} b^{i}\) for three consecutive integers \(i\), prove that \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:11491166e0ef">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">528</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_2_5</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:11491166e0ef">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_2_5</span>. Let \(G\) be a group in which \((a b)^{3}=a^{3} b^{3}\) and \((a b)^{5}=a^{5} b^{5}\) for all \(a, b \in G\). Show that \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:b2dadc6aff74">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">529</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_2_6c</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:b2dadc6aff74">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_2_6c</span>. Let \(G\) be a group in which \((a b)^{n}=a^{n} b^{n}\) for some fixed integer \(n{\gt}1\) for all \(a, b \in G\). For all \(a, b \in G\), prove that \(\left(a b a^{-1} b^{-1}\right)^{n(n-1)}=e\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:24f0394a0891">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">530</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_3_16</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:24f0394a0891">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_3_16</span>. If a group \(G\) has no proper subgroups, prove that \(G\) is cyclic of order \(p\), where \(p\) is a prime number. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:8580f6af006a">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">531</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_3_17</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:8580f6af006a">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_3_17</span>. If \(G\) is a group and \(a, x \in G\), prove that \(C\left(x^{-1} a x\right)=x^{-1} C(a) x\) </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:db111cdb3b26">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">532</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_5_23</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:db111cdb3b26">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_5_23</span>. Let \(G\) be a group such that all subgroups of \(G\) are normal in \(G\). If \(a, b \in G\), prove that \(ba = a^jb\) for some \(j\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:a1e27d764f84">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">533</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_5_30</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:a1e27d764f84">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_5_30</span>. Suppose that \(|G| = pm\), where \(p \nmid m\) and \(p\) is a prime. If \(H\) is a normal subgroup of order \(p\) in \(G\), prove that \(H\) is characteristic. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:72f444d1ac40">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">534</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_5_43</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:72f444d1ac40">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_5_43</span>. Prove that a group of order 9 must be abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:257f3a5dcc7d">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">535</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_5_44</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:257f3a5dcc7d">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_5_44</span>. Prove that a group of order \(p^2\), \(p\) a prime, has a normal subgroup of order \(p\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:09711d22b342">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">536</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_5_52</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:09711d22b342">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_5_52</span>. Let \(G\) be a finite group and \(\varphi \) an automorphism of \(G\) such that \(\varphi (x) = x^{-1}\) for more than three-fourths of the elements of \(G\). Prove that \(\varphi (y) = y^{-1}\) for all \(y \in G\), and so \(G\) is abelian. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:922b50e623c7">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">537</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_6_15</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:922b50e623c7">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_6_15</span>. If \(G\) is an abelian group and if \(G\) has an element of order \(m\) and one of order \(n\), where \(m\) and \(n\) are relatively prime, prove that \(G\) has an element of order \(mn\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:32df45f84fe4">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">538</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_7_7</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:32df45f84fe4">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_7_7</span>. If \(\varphi \) is a homomorphism of \(G\) onto \(G'\) and \(N \triangleleft G\), show that \(\varphi (N) \triangleleft G'\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:804b2cda51fc">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">539</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_8_12</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:804b2cda51fc">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_8_12</span>. Prove that any two nonabelian groups of order 21 are isomorphic. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:a7af5dd967f3">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">540</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_2_9_2</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:a7af5dd967f3">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_2_9_2</span>. If \(G_1\) and \(G_2\) are cyclic groups of orders \(m\) and \(n\), respectively, prove that \(G_1 \times G_2\) is cyclic if and only if \(m\) and \(n\) are relatively prime. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:a45b293ed243">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">541</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_4_2_5</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:a45b293ed243">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_2_5</span>. Let \(R\) be a ring in which \(x^3 = x\) for every \(x \in R\). Prove that \(R\) is commutative. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:d3ada9ea5e14">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">542</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Herstein|exercise_4_3_1</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:d3ada9ea5e14">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_4_3_1</span>. If \(R\) is a commutative ring and \(a \in R\), let \(L(a) = \{ x \in R \mid xa = 0\} \). Prove that \(L(a)\) is an ideal of \(R\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:3a0da886eca6">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">543</span>
+    <span class="theorem_thmtitle">ProofNetSharp <span class="ttfamily">Munkres|exercise_25_9</span></span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="sect0067.html#thm:3a0da886eca6">#</a>
+    
+    
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  Lean declaration: <span class="ttfamily">exercise_25_9</span>. Let \(G\) be a topological group; let \(C\) be the component of \(G\) containing the identity element \(e\). Show that \(C\) is a normal subgroup of \(G\). </p>
+
+  </div>
+</div>
+<h2 id="a0000000134">8.4.3 Hard</h2>
+<p>No entries yet. </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <svg  id="showmore-minus" class="icon icon-eye-minus showmore"><use xlink:href="symbol-defs.svg#icon-eye-minus"></use></svg>
+
+  <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
+
+  <a href="sect0066.html" title="Algebra"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="sect0063.html" title="Benchmark problems"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sect0068.html" title="Linear Algebra"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+<script type="text/javascript" src="js/js.cookie.min.js"></script>
+<script type="text/javascript" src="js/showmore.js"></script>
+</body>
+</html>

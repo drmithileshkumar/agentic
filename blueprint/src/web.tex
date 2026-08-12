@@ -1,0 +1,44 @@
+% Web version of the MyMathlibProject blueprint.
+% Compile with:  leanblueprint web   (runs plastex -c plastex.cfg web.tex)
+
+\documentclass{report}
+
+\usepackage{amssymb, amsthm, amsmath}
+\usepackage{hyperref}
+% `nonreducedgraph` skips the transitive-reduction step, which is the only part
+% of the build that shells out to the Graphviz `tred` binary — not installed
+% here. The graph itself is rendered in the browser, so it still works. With
+% Graphviz installed you can drop this option to get a reduced graph.
+\usepackage[showmore, dep_graph, nonreducedgraph]{blueprint}
+
+\input{macros/common}
+\input{macros/web}
+
+\home{https://github.com/anshika/MyMathlibProject}
+\github{https://github.com/anshika/MyMathlibProject}
+\dochome{https://anshika.github.io/MyMathlibProject/docs}
+
+\title{MyMathlibProject Blueprint}
+\author{Anshika Jain}
+
+\begin{document}
+\maketitle
+
+% ── Independent study chapters ───────────────────────────────────────────────
+% These come from blueprint/src/chapters/ and precede the benchmark.
+\input{chapters/environment}
+\input{chapters/tutorial}
+\input{chapters/tactic_cheat_sheet}
+\input{chapters/minimum_viable_tactics}
+\input{chapters/pipeline}
+\input{chapters/mobile_llms}
+\input{chapters/llm_in_use}
+
+% ── Benchmark (auto-generated) ────────────────────────────────────────────────
+% Body is generated from problems/candidates.jsonl by
+% problems/gen_blueprint.py. Regenerate it with:
+%   python problems/gen_blueprint.py
+% Do not put content directly in this file — it would be lost on the next run.
+\input{content}
+
+\end{document}
