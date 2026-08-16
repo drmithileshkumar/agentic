@@ -1,7 +1,11 @@
 name = "MyMathlibProject"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["MyMathlibProject"]
+# `Problems` is in the default targets on purpose: the benchmark's verified
+# problems are only "verified" if `lake build` actually elaborates them. Left
+# out of the build, a Mathlib bump could break every one of them and CI would
+# still be green.
+defaultTargets = ["MyMathlibProject", "Problems"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -16,3 +20,27 @@ rev = "v4.33.0-rc1"
 
 [[lean_lib]]
 name = "MyMathlibProject"
+
+# The benchmark's verified problems. One module per problem, laid out as
+# problems/{DOMAIN}/{TIER}/{DOMAIN}_{TIER}_{NN}.lean, so the module name is
+# e.g. `SET.E.SET_E_01`. problems/Problems.lean is the index that imports them
+# all; an explicit list beats a glob here, because it is the thing
+# `manifest.py check` compares the manifest's verified entries against.
+#
+# `globs` has to list the problem directories as well as the index: the index
+# names the modules, but a module Lake does not consider part of the library is
+# a module Lake will not build.
+#
+# Note `.+`, not `.*`. In Lake, `SET.*` is `andSubmodules` — SET *and* its
+# submodules — so it emits a module `SET` that has no `problems/SET.lean`
+# behind it, and the library fails with "some modules have bad imports". `.+`
+# is `submodules`, which is what is meant here. Domains with no verified
+# problems yet match nothing, which is fine.
+[[lean_lib]]
+name = "Problems"
+srcDir = "problems"
+globs = [
+  "Problems",
+  "SET.+", "TOP.+", "ALG.+", "ABA.+", "LIN.+", "NUM.+",
+  "RAN.+", "CAN.+", "CMB.+", "GEO.+", "PRB.+",
+]

@@ -1,0 +1,20 @@
+# Blueprint toolchain. Pinned to what this project is known to build with —
+# plasTeX has broken blueprint builds across minor versions before.
+#
+#     pip install -r requirements.txt
+#
+# Nothing under problems/ needs any of this. The manifest tooling and the tests
+# are stdlib-only; only `leanblueprint web` depends on what is listed here.
+#
+# Harvesting new problems from Hugging Face
+# (extract_candidates.py --sources) additionally needs:
+#
+#     pip install "datasets>=2.19"
+#
+# It is deliberately not pinned here: it is a large dependency, it is not needed
+# to build the blueprint, and CI never harvests.
+leanblueprint==0.0.20
+plastex==3.1
+plastexdepgraph==0.0.5
+plastexshowmore==0.0.2
+invoke==3.0.3

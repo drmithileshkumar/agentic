@@ -18,11 +18,10 @@ each command in this file was run before it was written down.
 | 5 | Rewrote the "Adding new problems" section of `problems/README.md` | It referenced tools that did not exist yet; it now lists the real commands |
 | 6 | Confirmed no build output is tracked | `.lake/` is ignored; `git status` shows only intended files |
 
-**Not touched, flagged for your call:** `MyMathlibProject/Test.lean` is leftover
-scaffolding (`import Mathlib.Topology.Basic` + a bare `#check`). Nothing imports
-it — `MyMathlibProject.lean` imports only `Basic.lean`. It is harmless but dead.
-Left in place rather than deleted, since removing files outside `problems/` was
-outside the scope I could confirm.
+**Since resolved:** `MyMathlibProject/Test.lean` was leftover scaffolding
+(`import Mathlib.Topology.Basic` + a bare `#check`) that nothing imported —
+`MyMathlibProject.lean` imports only `Basic.lean`. It was flagged here rather
+than deleted at the time, and has since been removed.
 
 ---
 
@@ -34,9 +33,13 @@ outside the scope I could confirm.
 problems/
 ├── README.md                  domain/tier reference tables
 ├── SETUP_COMPLETE.md          this file
-├── candidates.jsonl           the manifest (9 verified entries)
+├── candidates.jsonl           the manifest (837 entries, 9 verified)
+├── Problems.lean              index module — what `lake build` follows
 ├── extract_candidates.py      dataset → candidates.jsonl
 ├── manifest.py                browse / verify / promote
+├── gen_blueprint.py           manifest → blueprint/src/content.tex
+├── test_classify.py           classification regression tests
+├── test_blueprint.py          LaTeX sanitizer tests
 │
 ├── ABA/{E,M,H}/               .gitkeep
 ├── ALG/
@@ -60,17 +63,29 @@ problems/
     └── H/  .gitkeep
 ```
 
+The `.lean` files above are only the *verified* problems. The other 828 entries
+are candidates that live in `candidates.jsonl` and nowhere else until they are
+promoted.
+
 Coverage as reported by `python problems/manifest.py stats`:
 
 ```
-+--------+-----+-----+-----+-------+
-| domain |   E |   M |   H | total |
-+--------+-----+-----+-----+-------+
-| SET    | 4/4 |   - |   - |   4/4 |
-| TOP    | 2/2 |   - |   - |   2/2 |
-| ALG    | 3/3 |   - |   - |   3/3 |
-| ALL    | 9/9 | 0/0 | 0/0 |   9/9 |
-+--------+-----+-----+-----+-------+
++--------+-------+-------+-------+-------+
+| domain |     E |     M |     H | total |
++--------+-------+-------+-------+-------+
+| SET    |   4/9 |  0/13 |   0/9 |  4/31 |
+| TOP    |  2/17 |  0/32 |  0/22 |  2/71 |
+| ALG    |  3/86 | 0/103 |  0/13 | 3/202 |
+| ABA    |  0/59 |  0/50 |   0/7 | 0/116 |
+| LIN    |   0/6 |  0/19 |   0/3 |  0/28 |
+| NUM    | 0/111 |  0/87 |  0/38 | 0/236 |
+| RAN    |  0/14 |  0/56 |  0/45 | 0/115 |
+| CAN    |   0/7 |  0/12 |   0/9 |  0/28 |
+| CMB    |   0/1 |   0/4 |   0/1 |   0/6 |
+| GEO    |     - |   0/1 |   0/2 |   0/3 |
+| PRB    |     - |   0/1 |     - |   0/1 |
+| ALL    | 9/310 | 0/378 | 0/149 | 9/837 |
++--------+-------+-------+-------+-------+
 cells are verified/total
 ```
 
@@ -97,11 +112,15 @@ carries a `Status: verified ✅` header.
 every file on disk has a manifest entry, and every manifest entry points at a
 file that exists.
 
-⚠️ **Scope of "confirmed":** these files were confirmed to exist, to parse, and
-to match their manifest entries. They were **not** re-elaborated against Mathlib
-in this pass — that needs `lake build` (Mathlib `v4.33.0-rc1`, toolchain
-`leanprover/lean4:v4.33.0-rc1`). The `verified ✅` headers are inherited from the
-original hand-verification.
+✅ **Scope of "confirmed":** all nine files were elaborated against Mathlib
+`v4.33.0-rc1` (toolchain `leanprover/lean4:v4.33.0-rc1`) and all nine are clean.
+
+They are no longer verified only by assertion. `problems/` is the `Problems`
+Lean library in `lakefile.toml` and is in `defaultTargets`, so a plain
+`lake build` elaborates every one of them and CI fails if a Mathlib bump breaks
+one. Before this, the nine files sat outside the build entirely: `lake build`
+and the CI workflow never touched them, and `verified ✅` in a file header was a
+claim nothing checked.
 
 ---
 
@@ -111,27 +130,58 @@ Pulls `theorem` / `lemma` declarations out of Lean files, guesses a domain and a
 difficulty tier, drops anything already solved in `problems/`, and writes JSONL.
 **Python 3.9+, stdlib only.**
 
-### Bootstrap the manifest from the existing tree
+> **Every mode merges.** `candidates.jsonl` is the only record of which
+> problems have been promoted and verified, so no mode discards it unless you
+> pass `--replace`. This was not always true: `--sources` and `--source` used to
+> truncate the manifest unless given `--append`, and because the extractor also
+> skips statements it finds on disk, a single run could delete the nine verified
+> entries *and* refuse to re-add them.
+
+### Refresh the seed entries from the tree
 
 ```bash
 python problems/extract_candidates.py --seed
 ```
 
-Rebuilds `candidates.jsonl` from the 9 verified problems, every entry marked
-`verified: true`. Safe to re-run; it replaces the file. Run this after
-hand-editing files in the tree so the manifest catches up.
+Re-reads the verified problems in `problems/` and marks them `verified: true`.
+Harvested candidates already in the manifest are carried over untouched. Run
+this after hand-editing files in the tree so the manifest catches up.
 
-### Harvest a dataset
+### Harvest from Hugging Face
 
 ```bash
-python problems/extract_candidates.py --source ../datasets/ProofNetSharp --append
+python problems/extract_candidates.py --sources proofnet,minif2f
 ```
+
+Needs `pip install datasets`. Known sources are in `DATASET_SOURCES`:
+`proofnet` (`PAug/ProofNetSharp`) and `minif2f`
+(`cat-searcher/minif2f-lean4`). Re-running adds only what is genuinely new —
+statements already in the manifest or on disk are recognised and skipped.
+
+### Harvest from a local checkout
+
+```bash
+python problems/extract_candidates.py --source ../datasets/ProofNetSharp
+```
+
+### Reclassify what is already there
+
+```bash
+python problems/extract_candidates.py --reclassify
+python problems/extract_candidates.py --reclassify --dry-run   # report only
+```
+
+Re-runs domain and tier assignment over the manifest in place and prints a
+summary of what moved. Verified entries are left alone: their domain and tier
+name a directory on disk, so changing them would orphan the `.lean` file.
 
 | Flag | Effect |
 |------|--------|
+| `--sources NAMES` | Comma-separated Hugging Face sources to pull |
 | `--source DIR` | Directory to walk recursively for `.lean` files |
-| `--seed` | Rebuild from `problems/` instead of a dataset |
-| `--append` | Add to `candidates.jsonl` instead of replacing it |
+| `--seed` | Refresh seed entries from `problems/` |
+| `--reclassify` | Re-run classification over the existing manifest |
+| `--replace` | **Destructive.** Discard the manifest instead of merging |
 | `--out PATH` | Write somewhere other than `problems/candidates.jsonl` |
 | `--domain X` | Force a domain on everything extracted (skip the guesser) |
 | `--tier E\|M\|H` | Force a tier on everything extracted |
@@ -149,7 +199,7 @@ python problems/extract_candidates.py --source ../datasets/PutnamBench --dry-run
 
 # 2. take a bounded slice
 python problems/extract_candidates.py --source ../datasets/PutnamBench \
-    --append --only-domain NUM --limit 50
+    --only-domain NUM --limit 50
 ```
 
 ### What it writes
@@ -160,9 +210,14 @@ One JSON object per line:
 {"id": "3d51e7c6023f", "name": "prime_two", "domain": "NUM", "tier": "M",
  "statement": "theorem prime_two : Nat.Prime 2", "proof": "by\n  norm_num",
  "imports": ["Mathlib"], "source_dataset": "ProofNetSharp",
- "source_file": "ProofNetSharp/a.lean", "verified": false,
+ "source_file": "PAug/ProofNetSharp#valid", "source_id": "Rudin|exercise_1_2",
+ "informal": "Prove that 2 is prime.", "verified": false,
  "problem_path": "", "notes": ""}
 ```
+
+`source_id` is the dataset's own identifier for the problem and `informal` is
+its natural-language statement; both come from the `--sources` path and are what
+the blueprint renders for unverified candidates.
 
 - `id` — 12 hex chars, SHA-1 of the statement **with the declaration name
   stripped**, so the same theorem harvested from two datasets under two names
@@ -173,16 +228,22 @@ One JSON object per line:
 
 ### Classification heuristics
 
-- **Domain** — weighted keyword scoring (`Matrix`/`LinearMap` → LIN,
-  `IsOpen`/`nhds` → TOP, `Nat.Prime`/`ZMod` → NUM, …). Highest score wins;
-  a score of 0 yields `UNK` plus a note. `UNK` entries cannot be promoted until
-  you assign a domain — `manifest.py check` flags them.
-- **Tier** — a recognised dataset in the path wins first (`putnam`/`imo`/
-  `olympiad` → H, `proofnet`/`formalmath` → M), matching the README's source
-  mapping. Otherwise: ≤4 tactics and a statement ≤200 chars → E, else M.
+Both live in `classify()`, so `--source`, `--sources` and `--reclassify` cannot
+drift apart. See `problems/README.md` for the full rules; the short version:
+
+- **Domain** — weighted keyword scoring over the Lean statement and the prose,
+  with the statement weighted higher. Identifiers match on token boundaries
+  (`Basis` must not fire inside `IsTopologicalBasis`), the source textbook adds
+  a prior, and unscored entries fall back to the ambient number type before
+  `UNK`. `UNK` entries cannot be promoted — `manifest.py check` fails on them.
+- **Tier** — competition sources (IMO, Putnam, AIME, USAMO) are `H` outright.
+  Otherwise a short source proof means `E`, and everything else is scored on the
+  structure of the statement: hypotheses and quantifiers count double,
+  connectives single, plus a point per 60 characters. ≤ 6 is `E`, ≥ 16 is `H`.
 
 Both are guesses meant to be corrected. Override with `--domain` / `--tier` at
-extraction time, or per-entry at promote time.
+extraction time, or per-entry at promote time. `problems/test_classify.py`
+pins the cases that have been got wrong before.
 
 ---
 
@@ -330,21 +391,61 @@ Recorded here because nothing was escalated for a ruling.
 8. **`.gitkeep` over an empty-directory workaround.** Plain empty files, no
    content, so the 33-cell grid survives a clone.
 
+9. **Merging is the default; destroying takes a flag.** Reversed from the
+   original `--append` opt-in. The manifest holds the `verified` flags, which
+   are the project's state and cannot be recomputed from anything else, so the
+   safe behaviour has to be the one you get by accident.
+
+10. **Competition problems are classified by content, not by filename.** The
+    `imo_*` prefix used to force Algebra, which put 39 olympiad problems there
+    regardless of subject. The prefix now only decides *tier* — a competition
+    floor — while the domain is scored from the statement like everything else.
+
+11. **`UNK` is a bug, not a bucket.** With the source prior and the number-type
+    fallback in place, nothing is unclassifiable in practice, so `manifest.py
+    check` treats any `UNK` as a failure rather than a to-do.
+
+12. **The generated blueprint is not committed.** `blueprint/web/` is ~7 MB of
+    HTML regenerated wholesale on every build; it is now ignored and produced by
+    `.github/workflows/blueprint.yml`. `blueprint/src/content.tex` *is*
+    committed — it is small, reviewable, and CI checks it against what
+    `gen_blueprint.py` currently produces.
+
+13. **Unbalanced source LaTeX is closed, not discarded.** Some dataset
+    statements are truncated mid-formula. Dropping the whole statement lost more
+    than emitting it with the delimiter closed.
+
 ---
 
 ## 7. Verified in this session
 
 ```
+$ lake build
+Build completed successfully (8672 jobs).   # includes all 9 seed problems
+
 $ python problems/extract_candidates.py --seed
 Seeded 9 verified entries -> C:\lean\MyMathlibProject\problems\candidates.jsonl
+Carried over 828 harvested candidates (837 total)
 
 $ python problems/manifest.py check
-OK — 9 entries, no issues found.
+OK — 837 entries, no issues found.
+
+$ python problems/test_classify.py
+23/23 checks passed
+
+$ python problems/test_blueprint.py
+12/12 checks passed
+
+$ python problems/gen_blueprint.py
+  837 theorem blocks across 11 domains (9 verified)
+
+$ cd blueprint && leanblueprint web
+  134 pages built
 ```
 
-Also exercised against a synthetic dataset directory: extraction with domain
-classification (TOP/NUM/LIN/UNK all correct), tier assignment from the dataset
-name, duplicate rejection against the seed set, `--only-domain` filtering,
-`--dry-run`, `promote` (fresh and re-promote), `show`, `list --pending`, `stats`,
-`add` duplicate rejection, and `check` correctly failing on an `UNK` domain.
-All test artifacts were deleted afterwards.
+Earlier passes also exercised, against a synthetic dataset directory: extraction
+with domain classification, tier assignment, duplicate rejection against the
+seed set, `--only-domain` filtering, `--dry-run`, `promote` (fresh and
+re-promote), `show`, `list --pending`, `stats`, `add` duplicate rejection, and
+`check` correctly failing on an `UNK` domain. All test artifacts were deleted
+afterwards.

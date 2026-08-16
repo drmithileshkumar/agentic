@@ -1,0 +1,5 @@
+#!/bin/sh
+# POSIX counterpart of kpsewhich.bat. See kpsewhich_shim.py for why this exists.
+# plastex.cfg names one or the other depending on the platform you build on;
+# CI switches it with the sed in .github/workflows/blueprint.yml.
+exec python3 "$(dirname "$0")/kpsewhich_shim.py" "$@"

@@ -3,3 +3,11 @@
 # Python tooling under problems/
 __pycache__/
 *.pyc
+
+# Blueprint build output. `blueprint/web` is ~7 MB of generated HTML that
+# changes wholesale on every rebuild; it is produced by
+# `.github/workflows/blueprint.yml` and published from there, not committed.
+# `web.paux` is plasTeX's cross-reference cache.
+/blueprint/web/
+/blueprint/src/web.paux
+/blueprint/print/

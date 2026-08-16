@@ -9,14 +9,20 @@
 % of the build that shells out to the Graphviz `tred` binary — not installed
 % here. The graph itself is rendered in the browser, so it still works. With
 % Graphviz installed you can drop this option to get a reduced graph.
-\usepackage[showmore, dep_graph, nonreducedgraph]{blueprint}
+% `dep_by=chapter` draws one dependency graph per chapter instead of a single
+% graph of the whole document. With 800+ benchmark statements the document-wide
+% graph was an 878 KB page of disconnected dots; per chapter it is legible.
+\usepackage[showmore, dep_graph, dep_by=chapter, nonreducedgraph]{blueprint}
 
 \input{macros/common}
 \input{macros/web}
 
-\home{https://github.com/anshika/MyMathlibProject}
-\github{https://github.com/anshika/MyMathlibProject}
-\dochome{https://anshika.github.io/MyMathlibProject/docs}
+% These must point at the repository this blueprint is actually published from:
+% \github is what every "source" link on the site resolves against, and
+% \dochome is where \lean{...} declaration links go.
+\home{https://github.com/drmithileshkumar/agentic}
+\github{https://github.com/drmithileshkumar/agentic}
+\dochome{https://drmithileshkumar.github.io/agentic/docs}
 
 \title{MyMathlibProject Blueprint}
 \author{Anshika Jain}

@@ -1,0 +1,58 @@
+name: Blueprint
+
+on:
+  push:
+    paths:
+      - 'blueprint/**'
+      - 'problems/candidates.jsonl'
+      - 'problems/gen_blueprint.py'
+      - '.github/workflows/blueprint.yml'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build the blueprint site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the blueprint toolchain
+        run: pip install -r requirements.txt
+
+      # plastex.cfg points at the Windows shim by default, because that is
+      # where this project is developed. Both shims call the same Python; only
+      # the wrapper differs. See blueprint/src/kpsewhich_shim.py.
+      - name: Use the POSIX kpsewhich shim
+        working-directory: blueprint/src
+        run: |
+          chmod +x kpsewhich
+          sed -i 's#^kpsewhich=.*#kpsewhich=./kpsewhich#' plastex.cfg
+          grep '^kpsewhich=' plastex.cfg
+
+      - name: Build
+        working-directory: blueprint
+        run: leanblueprint web
+
+      # A build that silently produces nothing still exits 0, so check that the
+      # pages we expect are actually there.
+      - name: Check the output
+        working-directory: blueprint
+        run: |
+          test -f web/index.html || { echo "::error::no index.html"; exit 1; }
+          pages=$(ls web/*.html | wc -l)
+          echo "built $pages pages"
+          test "$pages" -gt 50 || { echo "::error::only $pages pages built"; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blueprint-web
+          path: blueprint/web
+          retention-days: 14

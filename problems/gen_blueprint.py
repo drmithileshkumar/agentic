@@ -80,7 +80,29 @@ SEED_USES = {
     "ALG_E_02": ["ALG_E_01"],
 }
 
-MATH_SPLIT_RE = re.compile(r"(?<!\\)(\$)")
+# Environments whose bodies are math and must pass through unescaped. Dataset
+# prose reaches for these constantly — piecewise definitions arrive as
+# `\begin{cases}`, simultaneous equations as `\begin{align*}` — and escaping the
+# `&` and `_` inside them is what used to render as `x\_ {1}\& =211`.
+MATH_ENVIRONMENTS = frozenset({
+    "align", "alignat", "aligned", "array", "bmatrix", "cases", "eqnarray",
+    "equation", "gather", "gathered", "matrix", "pmatrix", "smallmatrix",
+    "split", "vmatrix", "Bmatrix", "Vmatrix", "subequations",
+})
+
+# Ordered alternation: `$$` must be tried before `$`, and an escaped `\$` before
+# either, or a display-math opener reads as two empty inline runs.
+TOKEN_RE = re.compile(
+    r"(?P<escaped>\\[\\$&%#_{}~^])"
+    r"|(?P<display>\$\$)"
+    r"|(?P<inline>\$)"
+    r"|(?P<open>\\\[|\\\()"
+    r"|(?P<close>\\\]|\\\))"
+    r"|(?P<begin>\\begin\{(?P<benv>[A-Za-z]+\*?)\})"
+    r"|(?P<end>\\end\{(?P<eenv>[A-Za-z]+\*?)\})"
+)
+
+HTML_TAG_RE = re.compile(r"</?[A-Za-z][A-Za-z0-9]*\s*/?>")
 
 
 def escape_text(segment: str) -> str:
@@ -94,26 +116,67 @@ def escape_text(segment: str) -> str:
 
 
 def sanitize(text: str) -> str | None:
-    """Make dataset prose safe to drop into LaTeX, or None if it cannot be.
+    """Make dataset prose safe to drop into LaTeX. None only if there is none.
 
-    Dataset statements are arbitrary LaTeX written by many hands. Math inside
-    `$...$` is passed through untouched; the prose between is escaped. Text with
-    an odd number of `$` is unbalanced and would swallow the rest of the
-    document, so it is rejected outright rather than guessed at.
+    Dataset statements are arbitrary LaTeX written by many hands. Everything in
+    math mode passes through untouched and the prose between it is escaped —
+    where "math mode" means `$...$`, `$$...$$`, `\\[...\\]`, `\\(...\\)` and the
+    environments in MATH_ENVIRONMENTS, not `$` alone.
+
+    Unbalanced input is closed rather than discarded. Some source statements are
+    simply truncated mid-formula; dropping the whole statement loses more than
+    closing the delimiter does.
     """
-    text = (text or "").strip()
+    text = HTML_TAG_RE.sub(" ", text or "").strip()
     if not text:
         return None
-    if len(MATH_SPLIT_RE.findall(text)) % 2 != 0:
-        return None
 
-    out, in_math = [], False
-    for part in MATH_SPLIT_RE.split(text):
-        if part == "$":
-            out.append("$")
-            in_math = not in_math
-        else:
-            out.append(part if in_math else escape_text(part))
+    out: list[str] = []
+    stack: list[str] = []          # what it takes to close each open math run
+    pos = 0
+
+    for match in TOKEN_RE.finditer(text):
+        run = text[pos:match.start()]
+        out.append(run if stack else escape_text(run))
+        pos = match.end()
+        token = match.group(0)
+
+        if match.group("escaped"):
+            out.append(token)
+            continue
+
+        if match.group("display") or match.group("inline"):
+            closer = "$$" if match.group("display") else "$"
+            if stack and stack[-1] == closer:
+                stack.pop()
+            else:
+                stack.append(closer)
+            out.append(token)
+        elif match.group("open"):
+            stack.append("\\]" if token == "\\[" else "\\)")
+            out.append(token)
+        elif match.group("close"):
+            if stack and stack[-1] == token:
+                stack.pop()
+            out.append(token)
+        elif match.group("begin"):
+            environment = match.group("benv")
+            # MATH_ENVIRONMENTS lists base names; `align*` is still align.
+            if environment.rstrip("*") in MATH_ENVIRONMENTS:
+                stack.append(rf"\end{{{environment}}}")
+            out.append(token)
+        else:  # \end{...}
+            if stack and stack[-1] == token:
+                stack.pop()
+            out.append(token)
+
+    tail = text[pos:]
+    out.append(tail if stack else escape_text(tail))
+
+    # Close whatever the source left hanging, innermost first.
+    while stack:
+        out.append(stack.pop())
+
     result = " ".join("".join(out).split())
     # A stray \\ at the end of a theorem body upsets plasTeX.
     return result.rstrip("\\") or None
@@ -178,6 +241,39 @@ def theorem_block(record: dict, label_for_name: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
+def coverage_table(buckets: dict[str, dict[str, list[dict]]],
+                   domains: list[tuple[str, str]]) -> str:
+    """A domain x tier table of counts, so the gaps are legible at a glance."""
+    header = " & ".join(["\\textbf{Domain}"]
+                        + [rf"\textbf{{{t}}}" for _c, t in TIER_NAMES]
+                        + [r"\textbf{Total}", r"\textbf{Verified}"])
+    rows = [r"\begin{tabular}{lrrrrr}", r"\hline", header + r" \\", r"\hline"]
+
+    column_totals = {code: 0 for code, _t in TIER_NAMES}
+    grand = grand_verified = 0
+    for code, title in domains:
+        tiers = buckets.get(code, {})
+        counts = [len(tiers.get(tier_code, [])) for tier_code, _t in TIER_NAMES]
+        for (tier_code, _t), value in zip(TIER_NAMES, counts):
+            column_totals[tier_code] += value
+        row_total = sum(counts)
+        row_verified = sum(1 for entries in tiers.values()
+                           for r in entries if r.get("verified"))
+        grand += row_total
+        grand_verified += row_verified
+        rows.append(" & ".join([title] + [str(c) for c in counts]
+                               + [str(row_total), str(row_verified)]) + r" \\")
+
+    rows.append(r"\hline")
+    rows.append(" & ".join([r"\textbf{All}"]
+                           + [str(column_totals[c]) for c, _t in TIER_NAMES]
+                           + [rf"\textbf{{{grand}}}", rf"\textbf{{{grand_verified}}}"])
+                + r" \\")
+    rows.append(r"\hline")
+    rows.append(r"\end{tabular}")
+    return "\n".join(rows)
+
+
 def main() -> int:
     records = load_records()
     label_for_name = {r["name"]: r["id"] for r in records if r.get("name")}
@@ -191,42 +287,54 @@ def main() -> int:
     total = len(records)
     verified = sum(1 for r in records if r.get("verified"))
 
+    domains = DOMAIN_NAMES + (
+        [(UNKNOWN_DOMAIN, "Unclassified")] if UNKNOWN_DOMAIN in buckets else []
+    )
+
     out = [
         "% AUTO-GENERATED by problems/gen_blueprint.py — do not edit by hand.",
         "% Regenerate with:  python problems/gen_blueprint.py",
         "%",
         f"% {total} entries from problems/candidates.jsonl, {verified} verified.",
         "",
-        r"\chapter{Benchmark problems}",
+        r"\chapter{The benchmark}",
         "",
-        f"This blueprint is generated from \\texttt{{problems/candidates.jsonl}}, "
-        f"which currently holds {total} entries, of which {verified} are "
-        r"verified in Lean. Verified results carry a Lean declaration link and a "
-        r"checkmark; the rest are candidate statements awaiting formalization "
-        r"and proof.",
+        f"This part of the blueprint is generated from "
+        f"\\texttt{{problems/candidates.jsonl}}, which currently holds {total} "
+        f"entries, of which {verified} are verified in Lean. Verified results "
+        r"carry a Lean declaration link and a checkmark; the rest are candidate "
+        r"statements awaiting formalization and proof.",
+        "",
+        r"Problems are filed by subject and by difficulty tier. The tier is "
+        r"assigned by the rubric in \texttt{problems/extract\_candidates.py}: "
+        r"anything drawn from a competition (IMO, Putnam, AIME) is Hard by "
+        r"construction, and everything else is scored on the structure of its "
+        r"Lean statement --- how much context it hands you, how deeply it is "
+        r"quantified, how long it is. It is a proxy, and it is computed from the "
+        r"problem rather than from the name of the file it arrived in.",
+        "",
+        coverage_table(buckets, domains),
         "",
     ]
 
-    domains = DOMAIN_NAMES + (
-        [(UNKNOWN_DOMAIN, "Unclassified")] if UNKNOWN_DOMAIN in buckets else []
-    )
-
+    # One chapter per domain, one section per tier. This is what splits the site
+    # into pages of a readable size: as one chapter it was a single 312 KB page
+    # for Algebra. It also gives the per-chapter dependency graphs something
+    # smaller than the whole benchmark to draw.
     for code, title in domains:
         tiers = buckets.get(code, {})
         count = sum(len(v) for v in tiers.values())
         done = sum(1 for v in tiers.values() for r in v if r.get("verified"))
-        # Every domain gets a section and every section gets all three tier
-        # subsections, empty or not, so the shape of the benchmark and its gaps
-        # are visible at a glance.
-        out.append(rf"\section{{{title}}}")
+        out.append(rf"\chapter{{{title}}}")
         out.append("")
         out.append(f"{count} entries, {done} verified."
                    if count else "No candidates yet for this domain.")
         out.append("")
 
+        # Every tier gets a section, empty or not, so gaps stay visible.
         for tier_code, tier_title in TIER_NAMES:
             entries = tiers.get(tier_code, [])
-            out.append(rf"\subsection{{{tier_title}}}")
+            out.append(rf"\section{{{title} --- {tier_title}}}")
             out.append("")
             if not entries:
                 out.append("No entries yet.")

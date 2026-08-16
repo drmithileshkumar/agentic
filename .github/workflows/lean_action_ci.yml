@@ -12,10 +12,43 @@ permissions:
   id-token: write # Write access to ID tokens
 
 jobs:
-  build:
+  # The benchmark's tooling is pure stdlib Python, so this is seconds of work.
+  # It runs on its own so a classification regression is reported as such
+  # rather than buried in a 20-minute Lean build.
+  manifest:
+    name: Manifest and blueprint source
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Manifest consistency
+        run: python problems/manifest.py check
+
+      - name: Classification regression tests
+        run: python problems/test_classify.py
+
+      - name: Blueprint sanitizer tests
+        run: python problems/test_blueprint.py
+
+      # content.tex is generated. If it does not match what the generator
+      # produces from the current manifest, someone edited it by hand or forgot
+      # to regenerate, and the published blueprint no longer describes the
+      # benchmark it claims to describe.
+      - name: Blueprint content is up to date
+        run: |
+          python problems/gen_blueprint.py
+          git diff --exit-code --stat blueprint/src/content.tex \
+            || { echo "::error::blueprint/src/content.tex is stale. Run: python problems/gen_blueprint.py"; exit 1; }
+
+  build:
+    name: Lean build and docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Builds every default target, which includes the Problems library — so
+      # a seed problem that stops elaborating against Mathlib fails CI.
       - uses: leanprover/lean-action@v1
       - uses: leanprover-community/docgen-action@v1

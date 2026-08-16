@@ -367,6 +367,42 @@ def cmd_add(args, records: list[dict]) -> int:
     return 0
 
 
+INDEX_MODULE = PROBLEMS_DIR / "Problems.lean"
+
+
+def check_index(records: list[dict]) -> list[str]:
+    """Cross-check problems/Problems.lean against the manifest's verified set.
+
+    The index is what `lake build` follows, so a verified problem missing from
+    it is a problem nothing compiles — which is exactly the state this whole
+    arrangement exists to prevent.
+    """
+    if not INDEX_MODULE.exists():
+        return [f"{INDEX_MODULE.name} is missing; `lake build` will not "
+                f"compile any problem"]
+
+    imported = set(re.findall(r"^import\s+(\S+)", INDEX_MODULE.read_text(encoding="utf-8"),
+                              re.MULTILINE))
+    issues = []
+    expected = set()
+    for record in records:
+        if not record.get("verified"):
+            continue
+        path = record.get("problem_path") or ""
+        if not path.startswith("problems/") or not path.endswith(".lean"):
+            continue
+        module = path[len("problems/"):-len(".lean")].replace("/", ".")
+        expected.add(module)
+        if module not in imported:
+            issues.append(f"{record.get('id')}: verified but {module} is not "
+                          f"imported by {INDEX_MODULE.name}")
+
+    for module in sorted(imported - expected):
+        issues.append(f"{INDEX_MODULE.name} imports {module}, which is not a "
+                      f"verified entry in the manifest")
+    return issues
+
+
 def cmd_check(args, records: list[dict]) -> int:
     problems = []
     ids, dupes = set(), []
@@ -391,9 +427,13 @@ def cmd_check(args, records: list[dict]) -> int:
 
     tracked = {r.get("problem_path") for r in records if r.get("problem_path")}
     for lean_file in sorted(PROBLEMS_DIR.rglob("*.lean")):
+        if lean_file == INDEX_MODULE:
+            continue
         rel = lean_file.relative_to(PROBLEMS_DIR.parent).as_posix()
         if rel not in tracked:
             problems.append(f"on disk but not in manifest: {rel}")
+
+    problems.extend(check_index(records))
 
     if not problems:
         print(f"OK — {len(records)} entries, no issues found.")

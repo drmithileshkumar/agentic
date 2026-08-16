@@ -3,22 +3,29 @@
 
 Stdlib only. No third-party dependencies.
 
-Two modes:
+Three modes:
 
-  --seed              Bootstrap candidates.jsonl from the already-verified
-                      problems/ tree (marks every entry verified: true).
+  --seed              Re-read the verified problems/ tree into candidates.jsonl
+                      (marks every entry verified: true). Harvested candidates
+                      already in the manifest are carried over untouched.
+
+  --sources <names>   Pull from Hugging Face; see DATASET_SOURCES below.
+                      Needs `pip install datasets`.
 
   --source <dir>      Walk a directory of .lean files (a dataset checkout such
                       as PutnamBench / ProofNetSharp / miniF2F / FormalMATH),
-                      pull out every `theorem` / `lemma` declaration, guess a
-                      domain + difficulty tier, drop anything that duplicates a
-                      problem already in problems/, and append the rest to
-                      candidates.jsonl as unverified candidates.
+                      pull out every `theorem` / `lemma` declaration, classify
+                      it, and add whatever the manifest does not already hold.
+
+All three MERGE into candidates.jsonl. The manifest is the only record of which
+candidates have been promoted and verified, so nothing is dropped unless you
+ask for it with --replace.
 
 Every record is one JSON object per line:
 
   {"id", "name", "domain", "tier", "statement", "proof", "imports",
-   "source_dataset", "source_file", "verified", "problem_path", "notes"}
+   "source_dataset", "source_file", "source_id", "informal", "verified",
+   "problem_path", "notes"}
 
 See problems/SETUP_COMPLETE.md for the full workflow.
 """
@@ -49,41 +56,120 @@ UNKNOWN_DOMAIN = "UNK"
 # ---------------------------------------------------------------------------
 # Domain classification
 #
-# Ordered keyword scoring: each hit is worth its weight, highest total wins.
-# Ties break by the order of DOMAIN_KEYWORDS below. Anything scoring 0 is
-# tagged UNK and must be given a domain by hand before it can be promoted.
+# Weighted keyword scoring over the Lean statement and the natural-language
+# statement; highest total wins, ties break by the order of DOMAIN_KEYWORDS.
+#
+# Two rules earn their keep here:
+#
+#   * Identifiers match on token boundaries, not as substrings. `Basis` used to
+#     fire inside `IsTopologicalBasis` and drag Munkres' topology exercises into
+#     Linear Algebra. Unicode symbols (∩, ∣, ℝ) still match as substrings —
+#     they have no word boundaries to speak of.
+#   * The Lean statement outweighs the prose (see STATEMENT_WEIGHT). It names
+#     Mathlib types, so it says what the problem *is*; the prose says what it is
+#     about, which is softer evidence.
+#
+# Anything still scoring 0 falls back to the source prior (SOURCE_PRIORS) and
+# only then to UNK.
 # ---------------------------------------------------------------------------
 
 DOMAIN_KEYWORDS: dict[str, list[tuple[str, int]]] = {
-    "PRB": [("ProbabilityTheory", 4), ("MeasureTheory", 3), ("Measure ", 2),
-            ("volume", 2), ("PMF", 3), ("expectation", 3), ("indepFun", 3)],
-    "CAN": [("Complex", 3), ("ℂ", 3), ("AnalyticAt", 4), ("AnalyticOn", 4),
-            ("DifferentiableOn", 2), ("Holomorphic", 4)],
-    "GEO": [("EuclideanSpace", 4), ("EuclideanGeometry", 4), ("∠", 3),
-            ("Triangle", 3), ("Sphere", 2), ("Collinear", 3), ("Affine", 2)],
-    "LIN": [("Matrix", 4), ("LinearMap", 4), ("Basis", 3), ("det ", 3),
-            ("eigen", 3), ("Module", 2), ("span", 2), ("Submodule", 3)],
-    "TOP": [("TopologicalSpace", 4), ("IsOpen", 3), ("IsClosed", 3),
-            ("Continuous", 3), ("IsCompact", 3), ("nhds", 3), ("𝓝", 3),
-            ("Homeomorph", 4), ("MetricSpace", 2)],
-    "RAN": [("Real", 3), ("ℝ", 2), ("deriv", 3), ("HasDerivAt", 4),
-            ("integral", 3), ("Tendsto", 3), ("atTop", 2), ("iSup", 2),
-            ("Summable", 3), ("tsum", 3), ("MeanValue", 3)],
-    "NUM": [("Nat.Prime", 4), ("Nat.gcd", 3), ("Nat.Coprime", 4), ("ZMod", 4),
-            ("∣", 2), ("Int.", 2), ("Nat.factorial", 3), ("divisors", 3),
-            ("padic", 4), ("totient", 4)],
-    "CMB": [("Finset.card", 4), ("Fintype.card", 3), ("choose", 3),
-            ("Finset.sum", 2), ("Nat.choose", 4), ("SimpleGraph", 4),
-            ("Equiv.Perm", 3)],
-    "ABA": [("Subgroup", 4), ("Ideal", 4), ("QuotientGroup", 4), ("→*", 3),
-            ("MonoidHom", 3), ("RingHom", 3), ("IsCyclic", 4),
-            ("Sylow", 4), ("Normal", 2), ("Group ", 2), ("CommRing", 2)],
-    "SET": [("Set ", 3), ("Set.", 3), ("∩", 3), ("∪", 3), ("⊆", 3),
-            ("Set.univ", 3), ("compl", 2), ("⋃", 3), ("⋂", 3)],
-    "ALG": [("ring", 2), ("Polynomial", 3), ("field_simp", 2), ("^2", 1),
-            ("Field", 2), ("Monoid", 2), ("mul_inv", 2), ("linarith", 1),
-            ("nlinarith", 1)],
+    "PRB": [("ProbabilityTheory", 6), ("PMF", 5), ("MeasureTheory", 3),
+            ("Measure", 3), ("indepFun", 5), ("IndepFun", 5), ("volume", 2),
+            ("expectation", 4), ("probability", 4), ("random", 3)],
+    "CAN": [("AnalyticAt", 6), ("AnalyticOn", 6), ("HolomorphicOn", 6),
+            ("Complex", 5), ("ℂ", 5), ("holomorphic", 5), ("analytic", 4),
+            ("meromorphic", 5), ("residue", 4), ("Complex.abs", 5),
+            ("conformal", 4), ("DifferentiableOn", 2)],
+    "GEO": [("EuclideanGeometry", 6), ("∠", 5), ("Collinear", 5),
+            ("Triangle", 4), ("triangle", 4), ("Sphere", 4), ("Affine", 4),
+            ("circle", 4), ("angle", 3), ("perpendicular", 4),
+            ("hypotenuse", 5), ("quadrilateral", 5), ("polygon", 4),
+            ("area of", 3), ("congruent", 2)],
+    "LIN": [("Matrix", 6), ("LinearMap", 6), ("LinearIndependent", 6),
+            ("Submodule", 5), ("FiniteDimensional", 5), ("eigenvalue", 6),
+            ("eigenvector", 6), ("eigen", 4), ("determinant", 5),
+            ("Basis", 4), ("Module", 4), ("span", 3), ("vector space", 6),
+            ("linear transformation", 6), ("linearly independent", 6)],
+    "TOP": [("TopologicalSpace", 6), ("IsTopologicalBasis", 6),
+            ("LocallyCompactSpace", 6), ("Homeomorph", 6), ("CompactSpace", 5),
+            ("ConnectedSpace", 5), ("IsConnected", 5), ("IsCompact", 5),
+            ("IsOpen", 5), ("IsClosed", 5), ("T2Space", 5), ("nhds", 5),
+            ("𝓝", 5), ("Continuous", 4), ("ContinuousOn", 4),
+            ("topology", 5), ("topological", 5), ("homeomorphic", 5),
+            ("open set", 4), ("closed set", 4), ("compact", 3),
+            ("Hausdorff", 5), ("MetricSpace", 2), ("closure", 2),
+            ("interior", 2)],
+    "RAN": [("HasDerivAt", 6), ("intervalIntegral", 6), ("MeanValue", 5),
+            ("Summable", 5), ("tsum", 5), ("deriv", 5), ("integral", 5),
+            ("Tendsto", 5), ("atTop", 4), ("Cauchy", 4), ("converges", 4),
+            ("differentiable", 4), ("uniformly", 4), ("supremum", 4),
+            ("infimum", 4), ("series", 4), ("sequence", 3), ("iSup", 3),
+            ("Real", 2), ("ℝ", 1)],
+    "NUM": [("Nat.Prime", 6), ("Nat.Coprime", 6), ("ZMod", 6), ("padic", 6),
+            ("totient", 6), ("Nat.factorial", 5), ("Nat.gcd", 5),
+            ("divisors", 5), ("Irrational", 5), ("divisible", 5),
+            ("divides", 5), ("modulo", 5), ("pmod", 5), ("remainder", 4),
+            ("congruent to", 5), ("gcd", 4), ("prime", 4), ("∣", 4),
+            ("%", 2), ("Int", 2)],
+    "CMB": [("number of ways", 6), ("SimpleGraph", 6), ("Nat.choose", 6),
+            ("Finset.card", 5), ("Equiv.Perm", 5), ("Fintype.card", 4),
+            ("how many", 4), ("permutation", 4), ("binomial", 4),
+            ("choose", 3), ("combinatori", 5), ("Finset.sum", 1)],
+    "ABA": [("QuotientGroup", 6), ("IsCyclic", 6), ("Sylow", 6),
+            ("Subgroup", 6), ("Ideal", 6), ("MonoidHom", 5), ("RingHom", 5),
+            ("orderOf", 5), ("→*", 5), ("normal subgroup", 6),
+            ("abelian", 5), ("subgroup", 5), ("coset", 5), ("ideal", 5),
+            ("CommGroup", 4), ("CommRing", 4), ("Group", 3), ("Ring", 3),
+            ("homomorphism", 3), ("isomorphic", 2)],
+    "SET": [("Set.univ", 5), ("Function.Injective", 4),
+            ("Function.Surjective", 4), ("Function.Bijective", 4),
+            ("Countable", 4), ("∩", 5), ("∪", 5), ("⊆", 5), ("⋃", 5),
+            ("⋂", 5), ("cardinality", 4), ("countable", 4),
+            ("bijection", 4), ("surjective", 3), ("injective", 3),
+            ("Set", 3), ("compl", 2)],
+    "ALG": [("Polynomial", 5), ("inequality", 4), ("logarithm", 4),
+            ("field_simp", 3), ("nlinarith", 2), ("linarith", 2),
+            ("equation", 3), ("simplify", 3), ("evaluate", 2),
+            ("expression", 2), ("value of", 2), ("Field", 2), ("Monoid", 2),
+            # A bare product of numerals is an identity to be manipulated. Low
+            # weight: this only decides entries nothing else has an opinion on.
+            ("∏", 2)],
 }
+
+# The Lean statement is precise and the prose is only suggestive, so prose hits
+# score at a discount rather than on equal footing.
+STATEMENT_WEIGHT = 1.0
+INFORMAL_WEIGHT = 0.5
+
+# Where a problem came from is real evidence about its subject. Munkres is a
+# topology book; Axler is a linear algebra book. This prior is a tiebreaker
+# nudge when keywords already agree, and the fallback when they say nothing at
+# all — which is what used to leave 8 ProofNet entries in UNK.
+SOURCE_PRIORS: dict[str, str] = {
+    "munkres": "TOP",
+    "rudin": "RAN",
+    "pugh": "RAN",
+    "shakarchi": "CAN",
+    "axler": "LIN",
+    "artin": "ABA",
+    "herstein": "ABA",
+    "dummit-foote": "ABA",
+    "dummit": "ABA",
+    "ireland-rosen": "NUM",
+    "ireland": "NUM",
+}
+PRIOR_BONUS = 2.5
+
+# Absolute last resort, applied only when nothing else matched: the number type
+# a statement is phrased over. Ordered, first hit wins.
+TYPE_FALLBACKS = (
+    ("ℂ", "CAN"),
+    ("ℤ", "NUM"),
+    ("ℕ", "NUM"),
+    ("ℚ", "ALG"),
+    ("ℝ", "ALG"),
+)
 
 # Datasets whose problems are competition-hard by construction. Used by the
 # tier heuristic when the source path hints at a known dataset.
@@ -109,7 +195,10 @@ DATASET_SOURCES: dict[str, dict] = {
         "header_field": "lean4_src_header",
         "informal_field": "nl_statement",
         "id_field": "id",
-        "default_tier": "M",          # README maps all of ProofNet to tier M
+        # No blanket tier. ProofNet used to be mapped wholesale to M, which
+        # meant 371 of 837 entries carried no difficulty signal at all; they
+        # are scored like everything else now.
+        "default_tier": None,
     },
     "minif2f": {
         "hf_id": "cat-searcher/minif2f-lean4",
@@ -118,32 +207,19 @@ DATASET_SOURCES: dict[str, dict] = {
         "header_field": "header",
         "informal_field": "informal_stmt",
         "id_field": "id",
-        "default_tier": None,         # per-problem, see MINIF2F_TIER_HINTS
+        "default_tier": None,         # per-problem, see guess_tier
     },
 }
 
-# miniF2F bundles several competitions at very different difficulties, so its
-# tier comes from the problem id rather than one blanket mapping.
-MINIF2F_TIER_HINTS = (
-    ("imo", "H"),
-    ("aime", "H"),
-    ("amc", "M"),
-    ("mathd", "E"),
-    ("induction", "E"),
-    ("algebra", "E"),
-    ("numbertheory", "E"),
-)
-
-# miniF2F ids carry their topic (mathd_algebra_*, numbertheory_*), which beats
-# keyword scoring on the Lean source.
+# miniF2F ids sometimes name their topic (`mathd_algebra_*`, `numbertheory_*`).
+# Only the topic words are hints. The competition names are deliberately absent:
+# mapping every `imo_*` to ALG put 39 olympiad problems in Algebra, number
+# theory and geometry included, which is a statement about the filename rather
+# than the problem. Those are classified from their content like everything else.
 MINIF2F_DOMAIN_HINTS = (
     ("numbertheory", "NUM"),
     ("number_theory", "NUM"),
     ("algebra", "ALG"),
-    ("induction", "NUM"),
-    ("amc", "ALG"),
-    ("aime", "ALG"),
-    ("imo", "ALG"),
 )
 
 DECL_RE = re.compile(
@@ -219,14 +295,75 @@ def split_at_assign(body: str) -> tuple[str, str]:
     return body.rstrip(), ""
 
 
-def guess_domain(text: str) -> tuple[str, int]:
-    """Return (domain, score). Score 0 means 'no idea' -> UNK."""
-    best, best_score = UNKNOWN_DOMAIN, 0
-    for domain, keywords in DOMAIN_KEYWORDS.items():
-        score = sum(weight for kw, weight in keywords if kw in text)
-        if score > best_score:
-            best, best_score = domain, score
-    return best, best_score
+_IDENTIFIER_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_.' ]*$")
+
+
+def _compile_keyword(keyword: str) -> re.Pattern[str]:
+    """Token-boundary matcher for identifiers, plain substring for symbols.
+
+    `Basis` must not match inside `IsTopologicalBasis`, but `∩` has no word
+    boundary to anchor against, so symbols stay substring matches.
+    """
+    if _IDENTIFIER_RE.match(keyword):
+        # `.` is deliberately absent from the lookbehind: `divisors` has to keep
+        # matching inside `Nat.divisors`. The lookahead is what stops `Basis`
+        # from firing inside `IsTopologicalBasis`.
+        return re.compile(r"(?<![A-Za-z0-9_])" + re.escape(keyword)
+                          + r"(?![A-Za-z0-9_])", re.IGNORECASE)
+    return re.compile(re.escape(keyword))
+
+
+KEYWORD_PATTERNS: dict[str, list[tuple[re.Pattern[str], int]]] = {
+    domain: [(_compile_keyword(kw), weight) for kw, weight in keywords]
+    for domain, keywords in DOMAIN_KEYWORDS.items()
+}
+
+
+def source_prior(source_id: str) -> str | None:
+    """The domain a problem's textbook or collection suggests, if any."""
+    lowered = (source_id or "").lower()
+    for needle, domain in SOURCE_PRIORS.items():
+        if needle in lowered:
+            return domain
+    return None
+
+
+def guess_domain(statement: str, informal: str = "",
+                 source_id: str = "") -> tuple[str, float]:
+    """Return (domain, score). Score 0 means 'no idea' -> UNK.
+
+    Scores the Lean statement and the prose separately so the statement can
+    outweigh the prose, then nudges by the source prior.
+    """
+    prior = source_prior(source_id)
+    scores: dict[str, float] = {}
+    for domain, patterns in KEYWORD_PATTERNS.items():
+        score = 0.0
+        for pattern, weight in patterns:
+            if pattern.search(statement):
+                score += weight * STATEMENT_WEIGHT
+            if informal and pattern.search(informal):
+                score += weight * INFORMAL_WEIGHT
+        if domain == prior:
+            # Unconditional: a Herstein exercise on quaternions scores nothing
+            # for Abstract Algebra by keyword and a stray point for Real
+            # Analysis off the `ℝ`. The book it came from has to be able to win
+            # that from zero.
+            score += PRIOR_BONUS
+        scores[domain] = score
+
+    # Ties break by DOMAIN_KEYWORDS order, which max() preserves.
+    best = max(scores, key=lambda d: scores[d])
+    if scores[best] > 0:
+        return best, scores[best]
+
+    # Last resort. Bare arithmetic over a number type — most of miniF2F's AMC
+    # and AIME entries — matches no keyword at all, but the ambient type is
+    # still evidence, and a guess we can name beats a UNK bucket nobody triages.
+    for needle, domain in TYPE_FALLBACKS:
+        if needle in statement:
+            return domain, 0.5
+    return UNKNOWN_DOMAIN, 0.0
 
 
 def count_tactics(proof: str) -> int:
@@ -238,22 +375,74 @@ def count_tactics(proof: str) -> int:
     return len(steps)
 
 
+HYPOTHESIS_RE = re.compile(r"\([^():]*:[^()]*\)")
+QUANTIFIER_RE = re.compile(r"[∀∃]")
+CONNECTIVE_RE = re.compile(r"[↔→∧∨]")
+
+
+def statement_complexity(statement: str) -> int:
+    """A structural difficulty score for a Lean statement.
+
+    Counts the things that actually make a goal harder to discharge: how much
+    context you are handed, how deeply quantified the goal is, and how long it
+    is. This is a proxy, not a judgement about the mathematics — but it is a
+    proxy computed from the problem rather than from the filename, which is the
+    point. See TIER_THRESHOLDS for how the score maps onto E/M/H.
+    """
+    body = normalize(statement)
+    score = 0
+    score += 2 * len(HYPOTHESIS_RE.findall(body))
+    score += 2 * len(QUANTIFIER_RE.findall(body))
+    score += len(CONNECTIVE_RE.findall(body))
+    score += len(body) // 60
+    return score
+
+
+# Complexity below the first number is Easy, below the second is Medium, at or
+# above it is Hard. Tuned so the ProofNet corpus lands roughly 25/55/20.
+TIER_THRESHOLDS = (6, 16)
+
+# Some collections are hard by construction and no structural score should be
+# allowed to talk us out of it. A short IMO statement is still an IMO problem.
+COMPETITION_FLOORS = (
+    ("putnam", "H"),
+    ("imo", "H"),
+    ("aime", "H"),
+    ("usamo", "H"),
+    ("olympiad", "H"),
+    ("amc", "M"),
+)
+
+
 def guess_tier(statement: str, proof: str, source_path: str) -> str:
-    """E = 1-4 tactics / single concept, H = competition, M = everything else."""
-    # A known dataset is a stronger signal than proof length: the README maps
-    # PutnamBench -> H and ProofNetSharp/FormalMATH -> M wholesale.
-    lowered = source_path.lower()
-    if any(hint in lowered for hint in HARD_DATASET_HINTS):
+    """E = single concept, M = undergraduate multi-step, H = competition.
+
+    Order matters: a competition floor wins outright, then a short proof we can
+    actually measure, then the structural complexity of the statement.
+    """
+    floor = hint_lookup(source_path, COMPETITION_FLOORS)
+    if floor == "H":
         return "H"
-    if any(hint in lowered for hint in MEDIUM_DATASET_HINTS):
-        return "M"
+
+    # A proof we were handed is the best evidence available: if the source
+    # closed it in a few tactics, it is easy regardless of how it reads.
     tactics = count_tactics(proof)
-    if proof and tactics and tactics <= 4 and len(normalize(statement)) <= 200:
+    if proof and tactics and tactics <= 3 and len(normalize(statement)) <= 160:
         return "E"
-    if not proof:
-        # No proof to measure; judge on statement size alone.
-        return "E" if len(normalize(statement)) <= 120 else "M"
-    return "M"
+
+    easy_max, hard_min = TIER_THRESHOLDS
+    complexity = statement_complexity(statement)
+    if complexity >= hard_min:
+        tier = "H"
+    elif complexity <= easy_max:
+        tier = "E"
+    else:
+        tier = "M"
+
+    # An AMC problem is at least Medium even when it looks structurally simple.
+    if floor == "M" and tier == "E":
+        return "M"
+    return tier
 
 
 def guess_dataset(path: Path, source_root: Path) -> str:
@@ -305,6 +494,22 @@ def existing_statements(problems_dir: Path) -> set[str]:
     seen = set()
     for lean_file in sorted(problems_dir.rglob("*.lean")):
         for _name, statement, _proof, _imports in iter_declarations(lean_file):
+            seen.add(statement_key(statement))
+    return seen
+
+
+def solved_statements(existing: list[dict]) -> set[str]:
+    """Every statement we already hold, from the problems/ tree and the manifest.
+
+    Used to drop dataset rows that restate something the benchmark already has.
+    Reading the manifest matters as much as reading the tree: merging is the
+    default, so the manifest is the record of what we hold, and a candidate must
+    not come back under a fresh id just because a dataset spells it differently.
+    """
+    seen = existing_statements(PROBLEMS_DIR)
+    for record in existing:
+        statement = record.get("statement")
+        if statement:
             seen.add(statement_key(statement))
     return seen
 
@@ -368,8 +573,12 @@ def make_record(
 # Modes
 # ---------------------------------------------------------------------------
 
-def run_seed(out_path: Path) -> int:
-    """Rebuild candidates.jsonl from the verified problems/ tree."""
+def run_seed(out_path: Path, replace: bool) -> int:
+    """Refresh the seed entries in candidates.jsonl from the problems/ tree.
+
+    Seed entries are re-read from disk; everything harvested from a dataset is
+    carried over untouched. `--replace` throws the harvested candidates away.
+    """
     records = []
     for lean_file in sorted(PROBLEMS_DIR.rglob("*.lean")):
         rel = lean_file.relative_to(PROBLEMS_DIR).as_posix()
@@ -391,8 +600,19 @@ def run_seed(out_path: Path) -> int:
                 notes="hand-verified seed problem",
             ))
 
-    write_jsonl(out_path, records)
+    seeded_ids = {r["id"] for r in records}
+    carried = []
+    if not replace:
+        carried = [r for r in load_jsonl(out_path)
+                   if r.get("source_dataset") != "seed" and r.get("id") not in seeded_ids]
+
+    write_jsonl(out_path, records + carried)
     print(f"Seeded {len(records)} verified entries -> {out_path}")
+    if carried:
+        print(f"Carried over {len(carried)} harvested candidates "
+              f"({len(records) + len(carried)} total)")
+    elif not replace:
+        print("No harvested candidates to carry over")
     return 0
 
 
@@ -402,9 +622,9 @@ def run_extract(args: argparse.Namespace, out_path: Path) -> int:
         print(f"error: --source {source_root} is not a directory", file=sys.stderr)
         return 1
 
-    existing = load_jsonl(out_path) if args.append else []
+    existing = [] if args.replace else load_jsonl(out_path)
     known_ids = {r.get("id") for r in existing}
-    already_solved = existing_statements(PROBLEMS_DIR)
+    already_solved = solved_statements(existing)
 
     new_records, skipped_dupe, skipped_filter = [], 0, 0
     for lean_file in sorted(source_root.rglob("*.lean")):
@@ -415,11 +635,15 @@ def run_extract(args: argparse.Namespace, out_path: Path) -> int:
                 skipped_dupe += 1
                 continue
 
-            haystack = f"{statement}\n{proof}"
-            domain, score = guess_domain(haystack)
-            if args.domain:
-                domain, score = args.domain, max(score, 1)
-            tier = args.tier or guess_tier(statement, proof, f"{dataset}/{rel}")
+            domain, tier, score = classify(
+                statement=statement,
+                proof=proof,
+                informal="",
+                source_id=rel,
+                source_label=dataset,
+                forced_domain=args.domain,
+                forced_tier=args.tier,
+            )
 
             if args.only_domain and domain != args.only_domain:
                 skipped_filter += 1
@@ -470,6 +694,68 @@ def run_extract(args: argparse.Namespace, out_path: Path) -> int:
     return 0
 
 
+def run_reclassify(args, out_path: Path) -> int:
+    """Re-run domain/tier classification over the manifest, in place.
+
+    Verified entries keep the domain and tier they were promoted under: those
+    are hand-assigned and they name a directory on disk, so moving them would
+    orphan the .lean file. Everything else is reclassified.
+    """
+    records = load_jsonl(out_path)
+    if not records:
+        print(f"error: {out_path} is empty or missing", file=sys.stderr)
+        return 1
+
+    domain_moves: dict[tuple[str, str], int] = {}
+    tier_moves: dict[tuple[str, str], int] = {}
+    changed = 0
+
+    for record in records:
+        if record.get("verified"):
+            continue
+        source_id = record.get("source_id") or record.get("source_file") or ""
+        label = record.get("source_dataset") or ""
+        hints = MINIF2F_DOMAIN_HINTS if label == "miniF2F" else ()
+        domain, tier, score = classify(
+            statement=record.get("statement") or "",
+            proof=record.get("proof") or "",
+            informal=record.get("informal") or "",
+            source_id=source_id,
+            source_label=label,
+            forced_domain=args.domain,
+            forced_tier=args.tier,
+            topic_hints=hints,
+        )
+        old_domain, old_tier = record.get("domain"), record.get("tier")
+        if domain != old_domain:
+            domain_moves[(old_domain, domain)] = domain_moves.get((old_domain, domain), 0) + 1
+        if tier != old_tier:
+            tier_moves[(old_tier, tier)] = tier_moves.get((old_tier, tier), 0) + 1
+        if domain != old_domain or tier != old_tier:
+            changed += 1
+        record["domain"] = domain
+        record["tier"] = tier
+        record["notes"] = ("" if score else
+                           "domain unclassified - set it before promoting")
+
+    print(f"Reclassified {changed} of {len(records)} entries")
+    if domain_moves:
+        print("\ndomain changes:")
+        for (old, new), count in sorted(domain_moves.items(), key=lambda kv: -kv[1]):
+            print(f"  {old or '-':<4} -> {new:<4} {count}")
+    if tier_moves:
+        print("\ntier changes:")
+        for (old, new), count in sorted(tier_moves.items(), key=lambda kv: -kv[1]):
+            print(f"  {old or '-':<4} -> {new:<4} {count}")
+
+    if args.dry_run:
+        print("\n(dry run - nothing written)")
+        return 0
+    write_jsonl(out_path, records)
+    print(f"\nWrote {out_path}")
+    return 0
+
+
 def parse_lean_statement(text: str) -> tuple[str, str, str]:
     """Parse one dataset row's Lean source into (name, statement, proof)."""
     cleaned = strip_comments(text or "").strip()
@@ -492,6 +778,27 @@ def hint_lookup(text: str, hints: tuple[tuple[str, str], ...]) -> str | None:
     return None
 
 
+def classify(statement: str, proof: str, informal: str, source_id: str,
+             source_label: str, forced_domain: str | None = None,
+             forced_tier: str | None = None,
+             topic_hints: tuple[tuple[str, str], ...] = ()) -> tuple[str, str, float]:
+    """Assign (domain, tier, domain_score) to one problem.
+
+    The single place classification happens, so `--source`, `--sources` and
+    `--reclassify` cannot drift apart.
+    """
+    domain = forced_domain or hint_lookup(source_id, topic_hints)
+    score = float(PRIOR_BONUS) if domain else 0.0
+    if not domain:
+        domain, score = guess_domain(statement, informal, source_id)
+
+    tier = forced_tier
+    if not tier:
+        # Both the id and the dataset name can carry a competition hint.
+        tier = guess_tier(statement, proof, f"{source_label} {source_id}")
+    return domain, tier, score
+
+
 def run_datasets(args, out_path: Path) -> int:
     """Pull candidates from the Hugging Face datasets named in --sources."""
     try:
@@ -508,9 +815,9 @@ def run_datasets(args, out_path: Path) -> int:
               f"       known: {', '.join(DATASET_SOURCES)}", file=sys.stderr)
         return 1
 
-    existing = load_jsonl(out_path) if args.append else []
+    existing = [] if args.replace else load_jsonl(out_path)
     known_ids = {r.get("id") for r in existing}
-    already_solved = existing_statements(PROBLEMS_DIR)
+    already_solved = solved_statements(existing)
 
     new_records: list[dict] = []
     per_source: dict[str, int] = {}
@@ -543,23 +850,17 @@ def run_datasets(args, out_path: Path) -> int:
                 header = row.get(spec["header_field"]) or ""
                 imports = IMPORT_RE.findall(header) or ["Mathlib"]
 
-                # Domain: id hints first for miniF2F, else keyword scoring.
-                domain = None
-                if source == "minif2f":
-                    domain = hint_lookup(source_id, MINIF2F_DOMAIN_HINTS)
-                if args.domain:
-                    domain = args.domain
-                if not domain:
-                    domain, score = guess_domain(f"{statement}\n{informal}")
-                    if not score:
-                        domain = UNKNOWN_DOMAIN
-
-                # Tier: explicit override, then per-source rule, then heuristic.
-                tier = args.tier or spec.get("default_tier")
-                if not tier and source == "minif2f":
-                    tier = hint_lookup(source_id, MINIF2F_TIER_HINTS)
-                if not tier:
-                    tier = guess_tier(statement, proof, spec["label"])
+                domain, tier, _score = classify(
+                    statement=statement,
+                    proof=proof,
+                    informal=informal,
+                    source_id=source_id,
+                    source_label=spec["label"],
+                    forced_domain=args.domain,
+                    forced_tier=args.tier or spec.get("default_tier"),
+                    topic_hints=(MINIF2F_DOMAIN_HINTS if source == "minif2f"
+                                 else ()),
+                )
 
                 if args.only_domain and domain != args.only_domain:
                     continue
@@ -622,9 +923,13 @@ def main(argv: list[str] | None = None) -> int:
         epilog=(
             "examples:\n"
             "  python problems/extract_candidates.py --seed\n"
+            "  python problems/extract_candidates.py --sources proofnet,minif2f\n"
             "  python problems/extract_candidates.py --source ../datasets/ProofNetSharp\n"
-            "  python problems/extract_candidates.py --source ../datasets --append --limit 50\n"
+            "  python problems/extract_candidates.py --source ../datasets --limit 50\n"
             "  python problems/extract_candidates.py --source ../datasets --only-domain TOP --dry-run\n"
+            "\n"
+            "Every mode MERGES into candidates.jsonl. Nothing is ever dropped unless\n"
+            "you pass --replace, which discards the whole manifest first.\n"
         ),
     )
     parser.add_argument("--source", help="directory of .lean files to scan")
@@ -633,8 +938,15 @@ def main(argv: list[str] | None = None) -> int:
                              + ", ".join(DATASET_SOURCES) + " (needs `pip install datasets`)")
     parser.add_argument("--seed", action="store_true",
                         help="rebuild candidates.jsonl from the verified problems/ tree")
+    parser.add_argument("--reclassify", action="store_true",
+                        help="re-run domain/tier classification over the existing "
+                             "manifest in place (verified entries are left alone)")
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="output JSONL (default: problems/candidates.jsonl)")
-    parser.add_argument("--append", action="store_true", help="append to the existing JSONL instead of replacing it")
+    parser.add_argument("--replace", action="store_true",
+                        help="DESTRUCTIVE: discard the existing manifest instead of "
+                             "merging into it. You lose every verified/promoted entry.")
+    parser.add_argument("--append", action="store_true",
+                        help=argparse.SUPPRESS)  # accepted for compatibility; now the default
     parser.add_argument("--domain", choices=DOMAINS, help="force this domain on every extracted candidate")
     parser.add_argument("--tier", choices=TIERS, help="force this tier on every extracted candidate")
     parser.add_argument("--only-domain", choices=DOMAINS, help="keep only candidates classified into this domain")
@@ -647,12 +959,14 @@ def main(argv: list[str] | None = None) -> int:
 
     out_path = Path(args.out).resolve()
 
+    if args.reclassify:
+        return run_reclassify(args, out_path)
     if args.seed:
-        return run_seed(out_path)
+        return run_seed(out_path, args.replace)
     if args.sources:
         return run_datasets(args, out_path)
     if not args.source:
-        parser.error("one of --seed, --source or --sources is required")
+        parser.error("one of --seed, --sources, --source or --reclassify is required")
     return run_extract(args, out_path)
 
 
