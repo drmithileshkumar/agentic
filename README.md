@@ -96,6 +96,24 @@ a `kpsewhich` shim and `nonreducedgraph` (which avoids the Graphviz `tred`
 binary). Both are explained in `blueprint/src/kpsewhich_shim.py` and
 `blueprint/src/web.tex`; neither is needed if you have TeX Live and Graphviz.
 
+## Repository setup still outstanding
+
+**GitHub Pages is not enabled.** The `docs` job in
+`.github/workflows/lean_action_ci.yml` publishes Mathlib4-style API
+documentation, and `actions/deploy-pages` fails with
+`Failed to create deployment (status: 404)` until a repo admin does:
+
+* **Settings → Pages → Source** → select **"GitHub Actions"**.
+
+That job now only runs on pushes to the default branch, so until Pages is
+enabled the rest of CI stays green — the failure is confined to the one job
+that genuinely needs the setting.
+
+If you also want the blueprint site published rather than downloaded as an
+artifact, note that a repository has a single Pages site: `blueprint.yml` and the
+`docs` job would have to be combined into one deployment rather than both
+pushing to Pages.
+
 ## Known limitations
 
 - **9 of 837 entries (1.1%) are verified.** This is a corpus with a small

@@ -5,11 +5,10 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Least privilege by default. Only the `docs` job below needs more, and it
+# requests it for itself.
 permissions:
-  contents: read # Read access to repository contents
-  pages: write # Write access to GitHub Pages
-  id-token: write # Write access to ID tokens
+  contents: read
 
 jobs:
   # The benchmark's tooling is pure stdlib Python, so this is seconds of work.
@@ -44,11 +43,36 @@ jobs:
             || { echo "::error::blueprint/src/content.tex is stale. Run: python problems/gen_blueprint.py"; exit 1; }
 
   build:
-    name: Lean build and docs
+    name: Lean build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       # Builds every default target, which includes the Problems library — so
       # a seed problem that stops elaborating against Mathlib fails CI.
+      - uses: leanprover/lean-action@v1
+
+  # Mathlib4-style API documentation, published to GitHub Pages.
+  #
+  # This is deliberately a separate job, gated on the default branch. A
+  # repository has exactly one Pages site, so deploying it from every push on
+  # every branch means each branch races to overwrite the others' docs — and it
+  # made the whole Lean CI run red on feature branches for a reason that has
+  # nothing to do with whether the Lean code builds.
+  #
+  # PREREQUISITE: Pages must be enabled for the repository with
+  # Settings -> Pages -> Source = "GitHub Actions". Until it is, this job fails
+  # with `Failed to create deployment (status: 404)` from actions/deploy-pages.
+  # Nothing in this repository can enable it; it needs a repo admin.
+  docs:
+    name: API docs to GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
       - uses: leanprover-community/docgen-action@v1
