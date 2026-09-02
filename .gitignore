@@ -1,0 +1,15 @@
+# Secrets -- QWEN_API_KEY lives here. Never commit.
+.env
+
+# Virtualenv
+harness-venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# MyMathlibProject is its own git repository
+/MyMathlibProject/
+
+# Run artifacts
+/logs/
