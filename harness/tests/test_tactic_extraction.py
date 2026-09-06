@@ -16,7 +16,7 @@ import sys
 
 sys.path.insert(0, r"C:\lean")
 
-from harness.lean_agent import TACTIC_KEYWORDS, _extract_tactic
+from harness.lean_agent import TACTIC_KEYWORDS, _extract_tactic, _is_tactic_line
 
 
 # The verbatim step-1 completion from logs/20260906_164928/proof_0001.jsonl.
@@ -124,6 +124,63 @@ def run():
         check("no surrounding whitespace for %r" % raw[:24], got == got.strip(), repr(got))
         check("empty only if input has no content for %r" % raw[:24],
               bool(got) or not raw.strip().strip("`").strip(), repr(got))
+
+    # --------------------------------------------------------------- case 7
+    print("Case 7: a keyword head is necessary but not sufficient")
+    # Narration about a tactic must not be mistaken for the tactic. Each of
+    # these has a real tactic on an earlier line, so a rejected narration line
+    # has somewhere to fall through to -- proving it was rejected, not merely
+    # returned by the last-line fallback.
+    eq("`simp will rewrite ...` is not a tactic line",
+       "rw [Nat.add_comm]\nsimp will rewrite the goal as x in A and x in B",
+       "rw [Nat.add_comm]")
+    eq("`exact because ...` is not a tactic line",
+       "omega\nexact because the term has type Nat and we need Int",
+       "omega")
+    eq("`rw the goal` is not a tactic line",
+       "ring\nrw the goal",
+       "ring")
+    eq("`apply the lemma` is not a tactic line",
+       "simp\napply the lemma from before",
+       "simp")
+
+    print("Case 7b: genuine calls still accepted after the keyword")
+    eq("bracket after keyword",
+       "Some reasoning.\nrw [Nat.add_comm]", "rw [Nat.add_comm]")
+    eq("end of line after keyword",
+       "Some reasoning.\nomega", "omega")
+    eq("dot-path after keyword -- uppercase but a Lean identifier",
+       "Some reasoning.\napply Nat.le_of_lt", "apply Nat.le_of_lt")
+    eq("dotted term after keyword",
+       "Some reasoning.\nexact h.symm", "exact h.symm")
+    eq("single-letter identifier after keyword",
+       "Some reasoning.\nintro h", "intro h")
+    eq("`have` with a binder",
+       "Some reasoning.\nhave h : a = b := by simp", "have h : a = b := by simp")
+    eq("Lean connective `only`",
+       "Some reasoning.\nsimp only [Set.mem_inter_iff]",
+       "simp only [Set.mem_inter_iff]")
+    eq("Lean connective `at`",
+       "Some reasoning.\npush_neg at h", "push_neg at h")
+    eq("Lean connective `using`",
+       "Some reasoning.\ninduction n using Nat.strong_induction_on",
+       "induction n using Nat.strong_induction_on")
+    eq("digit after keyword", "Some reasoning.\ncongr 1", "congr 1")
+    eq("anonymous constructor after keyword",
+       "Some reasoning.\nrefine ⟨_, _⟩", "refine ⟨_, _⟩")
+    eq("underscore args after keyword",
+       "Some reasoning.\nexact Nat.add_comm _ _", "exact Nat.add_comm _ _")
+
+    print("Case 7c: the proof_0004 step 3 regression")
+    # A backtick left glued to the head is what let a whole sentence through:
+    # `simp` will rewrite ... -> head "simp", so the line was accepted outright.
+    eq("backticked keyword opening a sentence is rejected",
+       "ext x\n`simp` will rewrite `x ∈ A ∩ B` as `x ∈ A ∧ x ∈ B`, "
+       "which is true by commutativity of `∧`.",
+       "ext x")
+    check("the real step-3 line is not a tactic line",
+          not _is_tactic_line(
+              "simp` will rewrite `x ∈ A ∩ B` as `x ∈ A ∧ x ∈ B`."))
 
     print("Case 6b: every declared keyword is actually recognised")
     for kw in sorted(TACTIC_KEYWORDS):

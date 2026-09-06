@@ -93,12 +93,10 @@ DEFAULT_MODEL = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 # model name is wrong, not that it is briefly busy.
 MAX_CONSECUTIVE_LLM_FAILURES = 3
 
-# Completion budget per tactic request. Reasoning models (Nemotron-3-Ultra-550B
-# among them) emit a reasoning trace before the answer, and a tight cap truncates
-# them mid-sentence -- the 20260906_164928 run cut off at "Thus, the next tactic"
-# and that fragment was sent to Lean as if it were a tactic. Room to finish the
-# trace is what makes the final line an actual tactic for _extract_tactic to find.
-MAX_TOKENS = 2048
+# Completion budget per tactic request.
+# Nemotron-3-Ultra-550B emits ~1700+ reasoning tokens on set-theory goals before
+# committing to a tactic. 2048 truncated mid-reasoning on proof_0004.
+MAX_TOKENS = 8192
 
 
 # ---------------------------------------------------------------------------
@@ -153,12 +151,61 @@ def _looks_like_prose(line: str) -> bool:
     return False
 
 
+# Words that legitimately follow a tactic head in Lean and are not narration.
+# Without these, `simp only [h]` and `rw [h] at hx` read as prose.
+LEAN_CONNECTIVES = frozenset({
+    "at", "with", "using", "only", "by", "in", "generalizing",
+})
+
+# Characters that, immediately after a tactic head, mark a call rather than a
+# sentence: argument brackets, a dotted path, a rewrite arrow, a numeral.
+_CALL_STARTERS = "[(._←→⟨"
+
+
+def _is_tactic_call(line: str, head: str) -> bool:
+    """Decide whether a keyword-headed *line* is a tactic call or a sentence.
+
+    A keyword head is necessary but not sufficient -- the model narrates *about*
+    tactics constantly ("simp will rewrite the goal", "exact because the term
+    has type"), and accepting those on the strength of the first word is what
+    sent a 200-character sentence to Lean on proof_0004 step 3.
+
+    What follows the head decides it. A call is followed by nothing, by argument
+    syntax, or by a Lean identifier; narration is followed by an English word.
+    """
+    rest = line[len(head):]
+    if not rest:
+        return True                       # bare tactic: `omega`, `rfl`
+    if rest[0] in _CALL_STARTERS or rest[0].isdigit():
+        return True                       # `rw[h]`, `exact.foo`, `use 5`
+    if not rest[0].isspace():
+        # Anything else glued to the head is not a call -- notably a stray
+        # backtick, which is how `` `simp` will rewrite ... `` slipped through.
+        return False
+
+    nxt = rest.lstrip()
+    if not nxt:
+        return True                       # trailing whitespace only
+    if not nxt[0].isalpha():
+        return True                       # `simp [h]`, `refine ⟨_, _⟩`, `use 5`
+
+    word = nxt.split()[0]
+    if any(c in word for c in "._[]()") or any(c.isdigit() for c in word):
+        return True                       # `apply Nat.le_of_lt`, `exact h.symm`
+    if len(word) == 1:
+        return True                       # `intro h`, `ext x`, `have h : ...`
+    if word.lower() in LEAN_CONNECTIVES:
+        return True                       # `simp only [h]`, `rw [h] at hx`
+    return False                          # `simp will rewrite`, `rw the goal`
+
+
 def _is_tactic_line(line: str) -> bool:
     """True if *line* can plausibly be handed to Lean as a tactic."""
-    # A known head settles it, however long or wordy the rest is:
-    # `exact Nat.add_comm _ _` has four spaces but is a perfectly good tactic.
-    if _line_head(line) in TACTIC_KEYWORDS:
-        return True
+    # A known head is decided on its own terms -- `exact Nat.add_comm _ _` has
+    # four spaces and is fine, `exact because the term ...` has four and is not.
+    head = _line_head(line)
+    if head in TACTIC_KEYWORDS:
+        return _is_tactic_call(line, head)
     if _looks_like_prose(line):
         return False
     # Anything left that is short and unpunctuated -- `rfl`, `h.symm`, `⟨a, b⟩`.
