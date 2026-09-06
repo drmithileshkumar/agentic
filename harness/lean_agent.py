@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -91,6 +92,110 @@ DEFAULT_MODEL = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 # already retries 429/5xx internally, so reaching this means the endpoint or the
 # model name is wrong, not that it is briefly busy.
 MAX_CONSECUTIVE_LLM_FAILURES = 3
+
+# Completion budget per tactic request. Reasoning models (Nemotron-3-Ultra-550B
+# among them) emit a reasoning trace before the answer, and a tight cap truncates
+# them mid-sentence -- the 20260906_164928 run cut off at "Thus, the next tactic"
+# and that fragment was sent to Lean as if it were a tactic. Room to finish the
+# trace is what makes the final line an actual tactic for _extract_tactic to find.
+MAX_TOKENS = 2048
+
+
+# ---------------------------------------------------------------------------
+# Tactic extraction
+#
+# A model that reasons out loud returns a paragraph, not a tactic. Sending the
+# paragraph to Lean wastes a step on `unknown tactic`, so the tactic is pulled
+# out of the prose here. The raw completion is still what gets logged as
+# llm_raw_response; extraction only decides what Lean is asked to run.
+# ---------------------------------------------------------------------------
+
+# Tactic heads recognised as a definite start-of-tactic. Not exhaustive -- it
+# does not need to be, because a short unpunctuated line qualifies anyway. Its
+# job is to rescue tactics that are too wordy for the length heuristic, e.g.
+# `exact Nat.add_comm _ _`.
+TACTIC_KEYWORDS = frozenset({
+    "rw", "simp", "apply", "exact", "intro", "intros", "cases", "induction",
+    "constructor", "use", "ring", "omega", "decide", "rfl", "norm_num",
+    "linarith", "nlinarith", "field_simp", "push_neg", "contrapose",
+    "by_contra", "have", "obtain", "rcases", "ext", "funext", "congr",
+    "refine", "left", "right", "trivial", "tauto", "aesop",
+})
+
+# Trailing punctuation that marks a line as a sentence rather than a tactic.
+_SENTENCE_ENDINGS = (".", ",", ";", ":", "!", "?")
+
+# Leading identifier of a line: letters and underscores up to the first other
+# character, so `rw [h]` -> "rw" and `norm_num` -> "norm_num".
+_HEAD_RE = re.compile(r"^[A-Za-z_]+")
+
+
+def _line_head(line: str) -> str:
+    match = _HEAD_RE.match(line)
+    return match.group(0) if match else ""
+
+
+def _looks_like_prose(line: str) -> bool:
+    """True if *line* reads as a sentence rather than a tactic.
+
+    Three signals, any of which is enough:
+      - it ends in sentence punctuation
+      - it has more than two spaces, i.e. more than three words
+      - it opens with a capitalised word that is not a tactic keyword
+    """
+    if line.endswith(_SENTENCE_ENDINGS):
+        return True
+    if line.count(" ") > 2:
+        return True
+    first = line.split(" ", 1)[0] if " " in line else ""
+    if first and first[:1].isupper() and first.lower() not in TACTIC_KEYWORDS:
+        return True
+    return False
+
+
+def _is_tactic_line(line: str) -> bool:
+    """True if *line* can plausibly be handed to Lean as a tactic."""
+    # A known head settles it, however long or wordy the rest is:
+    # `exact Nat.add_comm _ _` has four spaces but is a perfectly good tactic.
+    if _line_head(line) in TACTIC_KEYWORDS:
+        return True
+    if _looks_like_prose(line):
+        return False
+    # Anything left that is short and unpunctuated -- `rfl`, `h.symm`, `⟨a, b⟩`.
+    return len(line) <= 60
+
+
+def _extract_tactic(raw: str) -> str:
+    """Pull the intended tactic out of a raw LLM completion.
+
+    Scans the non-empty lines from the bottom up and returns the last one that
+    reads as a tactic, because a reasoning model states its answer last. If no
+    line qualifies -- a completion truncated mid-thought, say -- the last
+    non-empty line is returned so the caller still gets the model's own words
+    and Lean's error names the real problem.
+
+    Returns "" only for input that is entirely whitespace, fence markers or
+    backticks; the caller's retry loop treats that as an empty completion.
+    """
+    if not raw or not raw.strip():
+        return ""
+
+    lines: list[str] = []
+    for line in raw.strip().splitlines():
+        line = line.strip()
+        if line.startswith("```"):      # ```lean / ``` fence markers
+            continue
+        line = line.strip("`").strip()  # inline backticks wrapping a tactic
+        if line:
+            lines.append(line)
+
+    if not lines:
+        return ""
+
+    for line in reversed(lines):
+        if _is_tactic_line(line):
+            return line
+    return lines[-1]
 
 
 def _jsonable(obj: object) -> object:
@@ -500,7 +605,7 @@ class LeanAgentHarness:
             calls += 1
             try:
                 return self._client.chat.completions.create(
-                    model=self.model, max_tokens=150, messages=messages)
+                    model=self.model, max_tokens=MAX_TOKENS, messages=messages)
             except Exception as exc:
                 _tag_call_count(exc, calls)
                 raise
@@ -520,12 +625,18 @@ class LeanAgentHarness:
                 resp = _create()
 
             raw = resp.choices[0].message.content
-            # What the model actually said, before any stripping. A missing
+            # What the model actually said, before any extraction. A missing
             # completion is recorded as "" so the field is always a string.
             raw_text = raw if isinstance(raw, str) else ("" if raw is None else str(raw))
-            tactic = (raw or "").strip().strip("`").strip()
+            # ...and what we decided it meant. Only this reaches Lean; the log
+            # keeps both so a bad tactic can be blamed on the model or on us.
+            tactic = _extract_tactic(raw_text)
 
-            attempt_record = {"attempt": _attempt + 1, "raw_response": raw_text}
+            attempt_record = {
+                "attempt":          _attempt + 1,
+                "raw_response":     raw_text,
+                "extracted_tactic": tactic,
+            }
             if tactic:
                 attempt_record["accepted"] = True
             else:

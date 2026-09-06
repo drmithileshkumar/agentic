@@ -204,8 +204,12 @@ def run():
     check("retry_attempts has one accepted entry",
           s["retry_attempts"] == [{"attempt": 1,
                                    "raw_response": "  `exact Nat.add_comm _ _`  ",
+                                   "extracted_tactic": "exact Nat.add_comm _ _",
                                    "accepted": True}],
           s["retry_attempts"])
+    check("extracted_tactic matches the tactic that was run",
+          s["retry_attempts"][-1]["extracted_tactic"] == s["tactic"],
+          s["retry_attempts"][-1])
     check("history_passed empty on step 1", s["history_passed"] == [],
           s["history_passed"])
 
@@ -238,12 +242,18 @@ def run():
     check("two attempts recorded", len(s["retry_attempts"]) == 2, s["retry_attempts"])
     check("attempt 1 skipped as empty_tactic",
           s["retry_attempts"][0] == {"attempt": 1, "raw_response": "",
+                                     "extracted_tactic": "",
                                      "reason_skipped": "empty_tactic"},
           s["retry_attempts"][0])
     check("attempt 2 accepted",
           s["retry_attempts"][1] == {"attempt": 2, "raw_response": "simp",
+                                     "extracted_tactic": "simp",
                                      "accepted": True},
           s["retry_attempts"][1])
+    check("every attempt records both raw and extracted",
+          all({"raw_response", "extracted_tactic"} <= set(a)
+              for a in s["retry_attempts"]),
+          s["retry_attempts"])
     check("no entry has both keys",
           all(("accepted" in a) != ("reason_skipped" in a) for a in s["retry_attempts"]))
     check("llm_raw_response is the accepted completion",

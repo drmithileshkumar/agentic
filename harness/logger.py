@@ -31,9 +31,12 @@ every event of their kind, as null when the harness could not capture them:
     llm_raw_response      (only on "step") the string the model returned,
                           before stripping or tactic extraction
     retry_attempts        (only on "step") one dict per API call parsed this
-                          step: {"attempt": int, "raw_response": str} plus
-                          either {"reason_skipped": "empty_tactic"} or
-                          {"accepted": true}
+                          step: {"attempt": int, "raw_response": str,
+                          "extracted_tactic": str} plus either
+                          {"reason_skipped": "empty_tactic"} or
+                          {"accepted": true}. raw_response is the completion
+                          verbatim, extracted_tactic is what was pulled out of
+                          it and actually sent to Lean
     history_passed        (only on "step") the history list handed to the LLM
                           for this step: dicts of step/tactic/outcome and, when
                           Lean said something, message
