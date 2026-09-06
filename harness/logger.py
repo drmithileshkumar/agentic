@@ -17,6 +17,26 @@ Schema (one JSON object per line):
     total_steps     int (only on "done")
     tactic_outcomes dict[outcome -> count] (only on "done")
     timestamp       ISO-8601 UTC
+
+Verbatim-transcript fields -- every word that crossed the boundary, so a log
+can be replayed or audited without the run being repeated. All are written on
+every event of their kind, as null when the harness could not capture them:
+
+    lean_raw_elaboration  (only on "start") the raw REPL response object
+                          returned by lean_interact when the theorem was
+                          elaborated, as a dict if it round-trips through JSON
+                          and a str() rendering otherwise
+    llm_input             (only on "step") {"system": <system prompt>,
+                          "user": <full user message, formatted goal+history>}
+    llm_raw_response      (only on "step") the string the model returned,
+                          before stripping or tactic extraction
+    retry_attempts        (only on "step") one dict per API call parsed this
+                          step: {"attempt": int, "raw_response": str} plus
+                          either {"reason_skipped": "empty_tactic"} or
+                          {"accepted": true}
+    history_passed        (only on "step") the history list handed to the LLM
+                          for this step: dicts of step/tactic/outcome and, when
+                          Lean said something, message
 """
 
 import json
@@ -62,12 +82,26 @@ class ProofLogger:
     def new_proof_id(self) -> str:
         return str(uuid.uuid4())
 
-    def start(self, proof_id: str, theorem: str, goal: str) -> None:
+    def start(
+        self,
+        proof_id: str,
+        theorem:  str,
+        goal:     str,
+        lean_raw_elaboration: object = None,
+    ) -> None:
+        """Log the initial goal, plus Lean's verbatim elaboration response.
+
+        *lean_raw_elaboration* is whatever lean_interact handed back for the
+        Command that elaborated the theorem. The caller passes a JSON-friendly
+        view of it; anything that still is not serialisable is stringified by
+        _write rather than being allowed to kill the run.
+        """
         self._write({
             "proof_id": proof_id,
             "theorem":  theorem,
             "event":    "start",
             "goal":     goal,
+            "lean_raw_elaboration": lean_raw_elaboration,
         })
 
     def step(
@@ -82,8 +116,22 @@ class ProofLogger:
         lean_messages: list[str],
         llm_calls:     int = 1,
         lean_calls:    int = 1,
+        llm_input:        Optional[dict]       = None,
+        llm_raw_response: Optional[str]        = None,
+        retry_attempts:   Optional[list[dict]] = None,
+        history_passed:   Optional[list[dict]] = None,
     ) -> None:
-        """Log one proof step and accumulate stats."""
+        """Log one proof step and accumulate stats.
+
+        The last four arguments are the verbatim record of the LLM half of the
+        exchange (see module docstring). They default to None so a caller that
+        cannot capture them -- an LLM call that died before it said anything --
+        writes null instead of failing.
+
+        *history_passed* is written as it stands at call time, which is exactly
+        the history the LLM saw for this step: the caller appends this step's
+        own entry only after logging.
+        """
         self._tactic_outcomes[proof_id][outcome] += 1
         self._tactics_used[proof_id].append(tactic)
         self._llm_calls[proof_id]  += llm_calls
@@ -101,6 +149,10 @@ class ProofLogger:
             "lean_messages": lean_messages,
             "llm_calls":     llm_calls,
             "lean_calls":    lean_calls,
+            "llm_input":        llm_input,
+            "llm_raw_response": llm_raw_response,
+            "retry_attempts":   retry_attempts,
+            "history_passed":   history_passed,
         })
 
     def done(
@@ -156,10 +208,50 @@ class ProofLogger:
     # internals
     # ------------------------------------------------------------------
 
+    # Fields carrying captured foreign objects (Lean REPL responses, model
+    # output). If one of them cannot be serialised the event is still worth
+    # writing, so it is dropped to null rather than losing the whole line.
+    _BEST_EFFORT_FIELDS = (
+        "lean_raw_elaboration",
+        "llm_input",
+        "llm_raw_response",
+        "retry_attempts",
+        "history_passed",
+        "raw",
+    )
+
     def _write(self, event: dict) -> None:
         event["timestamp"] = datetime.now(timezone.utc).isoformat()
-        line = json.dumps(event)
+        line = self._encode(event)
         with self.log_path.open("a", encoding="utf-8") as f:
             f.write(line + "\n")
+            f.flush()
         if self.echo:
             print(line)
+
+    def _encode(self, event: dict) -> str:
+        """Serialise *event*, never raising.
+
+        `default=str` covers objects json does not know (e.g. a pydantic REPL
+        response that reached the logger unconverted). Anything that defeats
+        even that -- a cycle, a __str__ that throws -- costs only the offending
+        capture field, not the event.
+        """
+        try:
+            return json.dumps(event, default=str)
+        except (TypeError, ValueError):
+            pass
+        salvaged = dict(event)
+        for key in self._BEST_EFFORT_FIELDS:
+            if key in salvaged:
+                salvaged[key] = None
+        try:
+            return json.dumps(salvaged, default=str)
+        except (TypeError, ValueError):
+            # Last resort: keep the identifying fields so the line still parses.
+            return json.dumps({
+                "proof_id":  str(event.get("proof_id")),
+                "event":     str(event.get("event")),
+                "timestamp": event["timestamp"],
+                "log_error": "event was not serialisable",
+            })

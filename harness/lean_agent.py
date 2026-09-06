@@ -12,6 +12,15 @@ Every message that crosses the agent <-> Lean boundary is logged with:
   - the classified outcome
   - call counts per step (normalised communication)
 
+and, verbatim, both halves of the conversation that produced it:
+  - the exact system and user prompts sent to the model each step
+  - the model's raw completion, before tactic extraction
+  - every retried completion and why it was discarded
+  - the history the model was shown at that step
+  - Lean's raw response to the theorem's elaboration
+
+so a JSONL log is a complete transcript, not a summary of one.
+
 Outcome taxonomy
 ----------------
   proved          tactic closed the goal
@@ -45,6 +54,7 @@ Usage
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass, field
 from typing import Optional
@@ -80,6 +90,40 @@ DEFAULT_MODEL = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 # already retries 429/5xx internally, so reaching this means the endpoint or the
 # model name is wrong, not that it is briefly busy.
 MAX_CONSECUTIVE_LLM_FAILURES = 3
+
+
+def _jsonable(obj: object) -> object:
+    """Best-effort JSON-safe view of a lean_interact response object.
+
+    lean_interact returns pydantic models, which json cannot encode directly.
+    Preference order: pass through anything already serialisable, otherwise
+    dump the model, otherwise fall back to ``str()``. Returns None only if even
+    stringifying fails -- the log gets null rather than the run dying over a
+    field that exists purely for the record.
+    """
+    if obj is None:
+        return None
+
+    try:
+        json.dumps(obj)
+        return obj
+    except (TypeError, ValueError):
+        pass
+
+    for attr in ("model_dump", "dict"):
+        dump = getattr(obj, attr, None)
+        if callable(dump):
+            try:
+                # Round-trip so nested non-serialisable leaves are flattened
+                # here rather than surprising the logger.
+                return json.loads(json.dumps(dump(), default=str))
+            except Exception:
+                pass
+
+    try:
+        return str(obj)
+    except Exception:
+        return None
 
 
 def _tag_call_count(exc: BaseException, count: int) -> None:
@@ -183,6 +227,10 @@ class LeanAgentHarness:
         self._echo         = echo
         self.logger        = ProofLogger(log_path, echo=echo)
 
+        # Verbatim record of the most recent LLM exchange, refilled by
+        # _get_tactic on every step and read back by prove() when it logs.
+        self._last_exchange: dict = {}
+
         # Build the Lean server once and reuse across calls to prove().
         project     = LocalProject(directory=project_dir)
         config      = LeanREPLConfig(project=project, verbose=False)
@@ -228,11 +276,14 @@ class LeanAgentHarness:
 
         # ---- 1. Elaborate the theorem and get the initial goal ----------
         elab_resp = self._lean_run(Command(cmd=theorem_statement))
+        raw_elaboration = _jsonable(elab_resp)
 
         if not elab_resp.sorries:
-            # Lean rejected the statement itself (syntax/type error)
+            # Lean rejected the statement itself (syntax/type error). The raw
+            # response is the whole story here, so it rides on the error event
+            # -- there is no start event on this path to carry it.
             detail = " | ".join(m.data for m in elab_resp.messages) if elab_resp.messages else "no sorry found"
-            self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
+            self.logger.error(proof_id, theorem_statement, detail=detail, raw=raw_elaboration)
             self.logger.done(proof_id, theorem_statement, result="FAILED_ELABORATION", total_steps=0)
             return ProofResult(
                 proof_id=proof_id,
@@ -247,7 +298,11 @@ class LeanAgentHarness:
 
         proof_state = elab_resp.sorries[0].proof_state
         goal_text   = elab_resp.sorries[0].goal
-        self.logger.start(proof_id, theorem_statement, goal=goal_text)
+        self.logger.start(
+            proof_id, theorem_statement,
+            goal=goal_text,
+            lean_raw_elaboration=raw_elaboration,
+        )
 
         history: list[dict] = []
         consecutive_llm_failures = 0
@@ -267,6 +322,10 @@ class LeanAgentHarness:
                 # recorded by _get_tactic; 1 if the exception could not carry it.
                 llm_call_count = getattr(exc, "llm_call_count", 1)
                 detail = f"LLM call failed: {type(exc).__name__}: {exc}"
+                # _get_tactic reset and part-filled this before it raised, so
+                # the prompt it was sending -- and any completions it did get
+                # back -- are still on the record for the failed step.
+                exchange = self._last_exchange
                 self.logger.step(
                     proof_id      = proof_id,
                     theorem       = theorem_statement,
@@ -278,8 +337,17 @@ class LeanAgentHarness:
                     lean_messages = [detail],
                     llm_calls     = llm_call_count,
                     lean_calls    = 0,   # never reached Lean
+                    llm_input        = exchange.get("llm_input"),
+                    llm_raw_response = exchange.get("llm_raw_response"),
+                    retry_attempts   = exchange.get("retry_attempts"),
+                    history_passed   = exchange.get("history_passed"),
                 )
-                history.append({"tactic": "", "outcome": "error", "error": detail})
+                history.append({
+                    "step":    step,
+                    "tactic":  "",
+                    "outcome": "error",
+                    "message": detail,
+                })
 
                 if consecutive_llm_failures >= MAX_CONSECUTIVE_LLM_FAILURES:
                     self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
@@ -300,6 +368,9 @@ class LeanAgentHarness:
             )
 
             # --- 2c. Log the step ----------------------------------------
+            # Logged before history grows, so history_passed serialises as the
+            # history the model actually saw this step.
+            exchange = self._last_exchange
             self.logger.step(
                 proof_id    = proof_id,
                 theorem     = theorem_statement,
@@ -311,12 +382,17 @@ class LeanAgentHarness:
                 lean_messages = lean_messages,
                 llm_calls   = llm_call_count,
                 lean_calls  = lean_call_count,
+                llm_input        = exchange.get("llm_input"),
+                llm_raw_response = exchange.get("llm_raw_response"),
+                retry_attempts   = exchange.get("retry_attempts"),
+                history_passed   = exchange.get("history_passed"),
             )
 
             history.append({
+                "step":    step,
                 "tactic":  tactic,
                 "outcome": outcome,
-                "error":   lean_messages[0] if (lean_messages and outcome in ("error", "rejected")) else None,
+                "message": lean_messages[0] if (lean_messages and outcome in ("error", "rejected")) else None,
             })
 
             if outcome == "proved":
@@ -353,10 +429,25 @@ class LeanAgentHarness:
 
         If a call raises, the exception is tagged with ``llm_call_count`` before
         propagating, so the caller can log the true cost of the failed step too.
+
+        The verbatim exchange -- prompt sent, every raw completion parsed, and
+        the history the model was shown -- is recorded on ``self._last_exchange``
+        rather than returned, so the (tactic, count) contract is unchanged. It
+        is reset on entry, so the caller reading it after an exception sees what
+        this step managed to say, never the previous step's.
         """
+        self._last_exchange = {
+            "llm_input":        None,
+            "llm_raw_response": None,
+            "retry_attempts":   [],
+            # The list itself, not a copy: it is what the LLM was shown, and the
+            # caller logs it before appending this step's own entry.
+            "history_passed":   history,
+        }
+
         history_text = "\n".join(
-            f"Step {i + 1}: tried `{h['tactic']}` -> {h['outcome']}"
-            + (f"  [error: {h['error']}]" if h.get("error") else "")
+            f"Step {h.get('step', i + 1)}: tried `{h['tactic']}` -> {h['outcome']}"
+            + (f"  [error: {h['message']}]" if h.get("message") else "")
             for i, h in enumerate(history)
         ) or "(none yet)"
 
@@ -370,6 +461,14 @@ class LeanAgentHarness:
             {"role": "system", "content": self.system_prompt},
             {"role": "user",   "content": user_msg},
         ]
+
+        # Captured before the first call, so a step that dies mid-request still
+        # logs what it was about to ask. Retries only append the nudge below,
+        # which retry_attempts already accounts for.
+        self._last_exchange["llm_input"] = {
+            "system": self.system_prompt,
+            "user":   user_msg,
+        }
 
         # Ground truth for the metric: incremented on every API call issued,
         # including retries and the call that raises.
@@ -385,6 +484,9 @@ class LeanAgentHarness:
                 _tag_call_count(exc, calls)
                 raise
 
+        attempts: list[dict] = self._last_exchange["retry_attempts"]
+        tactic = ""
+
         resp = _create()
 
         # Some models intermittently return an empty completion. An empty
@@ -395,7 +497,21 @@ class LeanAgentHarness:
             if _attempt:
                 messages[-1]["content"] += "\n\n[Your last response was empty. Respond with EXACTLY ONE Lean 4 tactic and nothing else.]"
                 resp = _create()
-            tactic = (resp.choices[0].message.content or "").strip().strip("`").strip()
+
+            raw = resp.choices[0].message.content
+            # What the model actually said, before any stripping. A missing
+            # completion is recorded as "" so the field is always a string.
+            raw_text = raw if isinstance(raw, str) else ("" if raw is None else str(raw))
+            tactic = (raw or "").strip().strip("`").strip()
+
+            attempt_record = {"attempt": _attempt + 1, "raw_response": raw_text}
+            if tactic:
+                attempt_record["accepted"] = True
+            else:
+                attempt_record["reason_skipped"] = "empty_tactic"
+            attempts.append(attempt_record)
+            self._last_exchange["llm_raw_response"] = raw_text
+
             if tactic:
                 return tactic, calls
         return tactic, calls  # still empty after 4 calls; outer code handles it
