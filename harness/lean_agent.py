@@ -61,6 +61,7 @@ from typing import Optional
 
 import openai
 from lean_interact import Command, LeanREPLConfig, LeanServer, LocalProject, ProofStep
+from lean_interact.interface import LeanError
 
 from .logger import ProofLogger
 
@@ -277,6 +278,26 @@ class LeanAgentHarness:
         # ---- 1. Elaborate the theorem and get the initial goal ----------
         elab_resp = self._lean_run(Command(cmd=theorem_statement))
         raw_elaboration = _jsonable(elab_resp)
+
+        # A LeanError here has no `sorries` to read -- same shape mismatch as in
+        # _apply_tactic. Treat it as a failed elaboration rather than crashing.
+        if isinstance(elab_resp, LeanError):
+            self.logger.error(
+                proof_id, theorem_statement,
+                detail=elab_resp.message or "Lean returned an error",
+                raw=raw_elaboration,
+            )
+            self.logger.done(proof_id, theorem_statement, result="FAILED_ELABORATION", total_steps=0)
+            return ProofResult(
+                proof_id=proof_id,
+                theorem=theorem_statement,
+                outcome="FAILED_ELABORATION",
+                total_steps=0,
+                llm_calls=0,
+                lean_calls=1,
+                tactic_outcomes={},
+                tactics_used=[],
+            )
 
         if not elab_resp.sorries:
             # Lean rejected the statement itself (syntax/type error). The raw
@@ -549,6 +570,14 @@ class LeanAgentHarness:
         except Exception as exc:
             # The REPL was called and failed (crash, timeout, protocol error).
             return "rejected", [str(exc)], None, None, 1
+
+        # The REPL answers with either a ProofStepResponse or a LeanError, and
+        # LeanError carries `message` (str) instead of the `messages`/
+        # `proof_status`/`proof_state` trio. Reading it as a ProofStepResponse
+        # raises AttributeError and takes the whole batch down, so classify it
+        # here: Lean did answer, and what it said was an error.
+        if isinstance(result, LeanError):
+            return "error", [result.message], None, None, 1
 
         messages = [m.data for m in result.messages] if result.messages else []
         has_errors = any(
