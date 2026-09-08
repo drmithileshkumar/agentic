@@ -53,8 +53,10 @@ class FakeCompletions:
     def __init__(self, script):
         self.script = list(script)
         self.calls = []
+        self.timeouts = []
 
-    def create(self, model, max_tokens, messages):
+    def create(self, model, max_tokens, messages, timeout=None):
+        self.timeouts.append(timeout)
         self.calls.append([dict(m) for m in messages])
         item = self.script.pop(0) if self.script else ""
         if isinstance(item, BaseException):

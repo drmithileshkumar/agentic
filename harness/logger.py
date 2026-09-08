@@ -8,12 +8,14 @@ Schema (one JSON object per line):
     step            int (only on "step" events)
     tactic          str (only on "step" events)
     outcome         "proved" | "advanced" | "no_progress" | "error" | "rejected"
+                    | "connectivity_error"
     lean_messages   list[str] -- raw messages from Lean (errors, warnings, etc.)
     goal_before     str -- goal state before the tactic
     goal_after      str | null -- goal state after (null if unchanged or done)
     llm_calls       int -- LLM API calls made in this step
     lean_calls      int -- Lean REPL calls made in this step
-    result          "PROVED" | "FAILED_BUDGET_EXHAUSTED" | "FAILED_ELABORATION" (only on "done")
+    result          "PROVED" | "FAILED_BUDGET_EXHAUSTED" | "FAILED_ELABORATION"
+                    | "FAILED_LLM_ERROR" | "FAILED_CONNECTIVITY_OUTAGE" (only on "done")
     total_steps     int (only on "done")
     tactic_outcomes dict[outcome -> count] (only on "done")
     timestamp       ISO-8601 UTC
@@ -113,7 +115,7 @@ class ProofLogger:
         theorem:       str,
         step:          int,
         tactic:        str,
-        outcome:       str,   # "proved" | "advanced" | "no_progress" | "error" | "rejected"
+        outcome:       str,   # proved|advanced|no_progress|error|rejected|connectivity_error
         goal_before:   str,
         goal_after:    Optional[str],
         lean_messages: list[str],

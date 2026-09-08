@@ -29,12 +29,23 @@ Outcome taxonomy
   error           Lean returned error messages (type error, parse error, etc.),
                   or the LLM call itself failed (404, rate limit, timeout)
   rejected        lean_interact raised an exception (protocol-level failure)
+  connectivity_error  the endpoint could not be reached; the step is retried
+                  after a backoff rather than counted against the model
 
-A step whose LLM call fails is logged as `error` with an empty tactic rather
-than crashing the run, so one bad API response cannot take down a whole batch
-and lose summary.json. After MAX_CONSECUTIVE_LLM_FAILURES such steps in a row
-the proof aborts with FAILED_LLM_ERROR -- a persistent 404 should not silently
-burn the whole tactic budget and then report FAILED_BUDGET_EXHAUSTED.
+A step whose LLM call fails is logged rather than crashing the run, so one bad
+API response cannot take down a whole batch and lose summary.json. Which of two
+budgets it spends depends on why it failed:
+
+  model failure       the endpoint answered with nothing usable (empty
+                      completion after retries, 404, bad model name). Logged as
+                      `error`; after MAX_CONSECUTIVE_LLM_FAILURES in a row the
+                      proof aborts with FAILED_LLM_ERROR, so a persistent 404
+                      does not burn the tactic budget and then misreport
+                      FAILED_BUDGET_EXHAUSTED.
+  connectivity failure  the endpoint was unreachable. Logged as
+                      `connectivity_error` and retried after an exponential
+                      backoff; only after MAX_CONSECUTIVE_CONNECTIVITY_FAILURES
+                      does the proof abort, with FAILED_CONNECTIVITY_OUTAGE.
 
 Usage
 -----
@@ -57,9 +68,11 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Optional
 
+import httpx
 import openai
 from lean_interact import Command, LeanREPLConfig, LeanServer, LocalProject, ProofStep
 from lean_interact.interface import LeanError
@@ -88,10 +101,47 @@ TOGETHER_BASE_URL  = "https://api.together.xyz/v1"
 
 DEFAULT_MODEL = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 
-# Abort a proof after this many consecutive failed LLM calls. The openai client
+# ---------------------------------------------------------------------------
+# Failure budgets
+#
+# Two different things can go wrong with an LLM call, and conflating them is
+# expensive. In the 20260906_191021 run a ~40-second NIM outage destroyed 12
+# consecutive theorems: three connection errors tripped the one circuit breaker
+# there was, each proof aborted in ~4 seconds, and the batch marched on through
+# the backlog without ever pausing. So they are now counted separately.
+#
+#   model failure         the endpoint answered, but nothing usable came back
+#                         (empty completion after retries, 404, bad model name,
+#                         auth rejection). Retrying will not help -- fail fast.
+#   connectivity failure  the endpoint could not be reached at all (connection
+#                         refused, read timeout, 5xx). The theorem is fine; the
+#                         network is not. Wait it out.
+# ---------------------------------------------------------------------------
+
+# Abort a proof after this many consecutive *model* failures. The openai client
 # already retries 429/5xx internally, so reaching this means the endpoint or the
 # model name is wrong, not that it is briefly busy.
 MAX_CONSECUTIVE_LLM_FAILURES = 3
+
+# Abort a proof after this many consecutive *connectivity* failures. With the
+# backoff schedule below that is roughly 32 minutes of sustained outage -- long
+# enough to ride out a blip, short enough not to burn a night on a dead endpoint.
+MAX_CONSECUTIVE_CONNECTIVITY_FAILURES = 10
+
+# Exponential backoff between connectivity retries: 30, 60, 120, 240, then held
+# at the cap. Total wait across all 10 attempts is ~32 minutes.
+CONNECTIVITY_BACKOFF_BASE = 30.0
+CONNECTIVITY_BACKOFF_CAP = 300.0
+
+# Hard ceiling on a single completion request. Proof 0024 of the 20260906_191021
+# run consumed 22.3 hours inside one call: with no timeout the client waited on a
+# socket that was never going to answer. 15 steps x 600s bounds a proof at 2.5h.
+LLM_CALL_TIMEOUT_SECONDS = 600
+
+# Hard ceiling on a single REPL command. lean_interact's LeanServer.run() takes
+# `timeout` as a keyword, so this is enforced rather than merely hoped for. It
+# does not cover config build / `import Mathlib`, which happen at construction.
+LEAN_CALL_TIMEOUT_SECONDS = 120
 
 # Completion budget per tactic request.
 # Nemotron-3-Ultra-550B emits ~1700+ reasoning tokens on set-theory goals before
@@ -279,6 +329,31 @@ def _jsonable(obj: object) -> object:
         return None
 
 
+def _is_connectivity_error(exc: BaseException) -> bool:
+    """True if *exc* means "could not reach the endpoint", not "bad request".
+
+    The distinction drives which circuit breaker fires, so it errs toward
+    connectivity only for causes that are genuinely transport-level. A 404, a
+    401 or a bad model name is emphatically not one of them -- those should
+    fail fast rather than sit through 32 minutes of backoff.
+
+    Note openai.APITimeoutError subclasses openai.APIConnectionError, so the
+    first check already covers per-call timeouts.
+    """
+    if isinstance(exc, openai.APIConnectionError):      # includes APITimeoutError
+        return True
+    if isinstance(exc, openai.InternalServerError):     # 5xx
+        return True
+    if isinstance(exc, (httpx.TransportError, httpx.TimeoutException)):
+        return True                                     # ConnectError, ReadTimeout, ...
+    status = getattr(exc, "status_code", None)
+    if isinstance(status, int) and 500 <= status < 600:
+        return True
+    if isinstance(exc, OSError):                        # socket-level failures
+        return True
+    return False
+
+
 def _tag_call_count(exc: BaseException, count: int) -> None:
     """Record on *exc* how many LLM calls had been issued when it was raised.
 
@@ -303,7 +378,8 @@ class ProofResult:
     """Everything about a single proof attempt."""
     proof_id:        str
     theorem:         str
-    # "PROVED" | "FAILED_BUDGET_EXHAUSTED" | "FAILED_ELABORATION" | "FAILED_LLM_ERROR"
+    # "PROVED" | "FAILED_BUDGET_EXHAUSTED" | "FAILED_ELABORATION"
+    # | "FAILED_LLM_ERROR" | "FAILED_CONNECTIVITY_OUTAGE"
     outcome:         str
     total_steps:     int
     llm_calls:       int
@@ -478,7 +554,9 @@ class LeanAgentHarness:
         )
 
         history: list[dict] = []
-        consecutive_llm_failures = 0
+        # Two independent budgets -- see the module constants for why.
+        consecutive_model_failures = 0
+        consecutive_connectivity_failures = 0
 
         # ---- 2. Proof loop ----------------------------------------------
         for step in range(1, self.max_steps + 1):
@@ -487,42 +565,44 @@ class LeanAgentHarness:
             try:
                 tactic, llm_call_count = self._get_tactic(goal_text, history)
             except Exception as exc:
-                # Mirror how _apply_tactic handles Lean-side failures: log the
-                # step and keep going, so a transient API problem costs one step
-                # rather than the whole batch.
-                consecutive_llm_failures += 1
+                # Log the step and keep going, so one bad API response costs a
+                # step rather than the whole batch.
                 # True number of API calls this step cost before it blew up,
                 # recorded by _get_tactic; 1 if the exception could not carry it.
                 llm_call_count = getattr(exc, "llm_call_count", 1)
                 detail = f"LLM call failed: {type(exc).__name__}: {exc}"
+                connectivity = _is_connectivity_error(exc)
+                if connectivity:
+                    consecutive_connectivity_failures += 1
+                else:
+                    consecutive_model_failures += 1
+
                 # _get_tactic reset and part-filled this before it raised, so
                 # the prompt it was sending -- and any completions it did get
                 # back -- are still on the record for the failed step.
                 exchange = self._last_exchange
-                self.logger.step(
-                    proof_id      = proof_id,
-                    theorem       = theorem_statement,
-                    step          = step,
-                    tactic        = "",
-                    outcome       = "error",
-                    goal_before   = goal_text,
-                    goal_after    = None,
-                    lean_messages = [detail],
-                    llm_calls     = llm_call_count,
-                    lean_calls    = 0,   # never reached Lean
-                    llm_input        = exchange.get("llm_input"),
-                    llm_raw_response = exchange.get("llm_raw_response"),
-                    retry_attempts   = exchange.get("retry_attempts"),
-                    history_passed   = exchange.get("history_passed"),
+                self._log_failed_step(
+                    proof_id, theorem_statement, step, goal_text, detail,
+                    outcome="connectivity_error" if connectivity else "error",
+                    llm_calls=llm_call_count, exchange=exchange, history=history,
                 )
-                history.append({
-                    "step":    step,
-                    "tactic":  "",
-                    "outcome": "error",
-                    "message": detail,
-                })
 
-                if consecutive_llm_failures >= MAX_CONSECUTIVE_LLM_FAILURES:
+                if connectivity:
+                    # The theorem is fine, the endpoint is not. Never abort on a
+                    # blip -- wait, and only give up on a sustained outage.
+                    if consecutive_connectivity_failures >= MAX_CONSECUTIVE_CONNECTIVITY_FAILURES:
+                        self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
+                        self.logger.done(
+                            proof_id, theorem_statement,
+                            result="FAILED_CONNECTIVITY_OUTAGE", total_steps=step,
+                        )
+                        return self._make_result(
+                            proof_id, theorem_statement, "FAILED_CONNECTIVITY_OUTAGE", step
+                        )
+                    self._connectivity_backoff(consecutive_connectivity_failures)
+                    continue
+
+                if consecutive_model_failures >= MAX_CONSECUTIVE_LLM_FAILURES:
                     self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
                     self.logger.done(
                         proof_id, theorem_statement,
@@ -533,7 +613,32 @@ class LeanAgentHarness:
                     )
                 continue
 
-            consecutive_llm_failures = 0
+            # The endpoint answered, whatever it said -- connectivity is fine.
+            consecutive_connectivity_failures = 0
+
+            if not tactic.strip():
+                # The API responded but the model gave nothing usable, even
+                # after _get_tactic's retries. That is a model failure, and an
+                # empty tactic cannot reach Lean anyway.
+                consecutive_model_failures += 1
+                detail = "LLM returned an empty tactic after retries"
+                self._log_failed_step(
+                    proof_id, theorem_statement, step, goal_text, detail,
+                    outcome="error", llm_calls=llm_call_count,
+                    exchange=self._last_exchange, history=history,
+                )
+                if consecutive_model_failures >= MAX_CONSECUTIVE_LLM_FAILURES:
+                    self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
+                    self.logger.done(
+                        proof_id, theorem_statement,
+                        result="FAILED_LLM_ERROR", total_steps=step,
+                    )
+                    return self._make_result(
+                        proof_id, theorem_statement, "FAILED_LLM_ERROR", step
+                    )
+                continue
+
+            consecutive_model_failures = 0
 
             # --- 2b. Send tactic to Lean (0 or 1 Lean calls) ---
             outcome, lean_messages, new_proof_state, new_goal, lean_call_count = (
@@ -590,8 +695,53 @@ class LeanAgentHarness:
     # ------------------------------------------------------------------
 
     def _lean_run(self, cmd):
-        """Thin wrapper so we can intercept/count Lean calls in future."""
-        return self._server.run(cmd)
+        """Thin wrapper so we can intercept/count Lean calls in future.
+
+        The REPL gets a hard timeout: a tactic that sends Lean into an
+        unbounded search would otherwise stall the whole batch behind it.
+        """
+        return self._server.run(cmd, timeout=LEAN_CALL_TIMEOUT_SECONDS)
+
+    def _log_failed_step(self, proof_id, theorem, step, goal_text, detail,
+                         outcome, llm_calls, exchange, history) -> None:
+        """Record a step that never reached Lean, and mirror it into history.
+
+        Shared by the connectivity and model-failure paths so both keep the
+        verbatim transcript fields and both stay visible to the next prompt.
+        """
+        self.logger.step(
+            proof_id      = proof_id,
+            theorem       = theorem,
+            step          = step,
+            tactic        = "",
+            outcome       = outcome,
+            goal_before   = goal_text,
+            goal_after    = None,
+            lean_messages = [detail],
+            llm_calls     = llm_calls,
+            lean_calls    = 0,   # never reached Lean
+            llm_input        = exchange.get("llm_input"),
+            llm_raw_response = exchange.get("llm_raw_response"),
+            retry_attempts   = exchange.get("retry_attempts"),
+            history_passed   = exchange.get("history_passed"),
+        )
+        history.append({
+            "step":    step,
+            "tactic":  "",
+            "outcome": outcome,
+            "message": detail,
+        })
+
+    def _sleep(self, seconds: float) -> None:
+        """Indirection point so tests can observe backoff without waiting."""
+        time.sleep(seconds)
+
+    def _connectivity_backoff(self, attempt: int) -> float:
+        """Wait out a transient outage; returns the delay actually used."""
+        delay = min(CONNECTIVITY_BACKOFF_BASE * (2 ** (attempt - 1)),
+                    CONNECTIVITY_BACKOFF_CAP)
+        self._sleep(delay)
+        return delay
 
     def _get_tactic(self, goal_text: str, history: list[dict]) -> tuple[str, int]:
         """Call the LLM and return (tactic, llm_call_count).
@@ -652,7 +802,8 @@ class LeanAgentHarness:
             calls += 1
             try:
                 return self._client.chat.completions.create(
-                    model=self.model, max_tokens=MAX_TOKENS, messages=messages)
+                    model=self.model, max_tokens=MAX_TOKENS, messages=messages,
+                    timeout=LLM_CALL_TIMEOUT_SECONDS)
             except Exception as exc:
                 _tag_call_count(exc, calls)
                 raise
