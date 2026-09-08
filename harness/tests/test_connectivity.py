@@ -243,7 +243,7 @@ def run():
     probe._server = Srv()
     probe._lean_run("cmd")
     check("LeanServer.run got a timeout",
-          calls.get("timeout") == lean_agent.LEAN_CALL_TIMEOUT_SECONDS, calls)
+          calls.get("timeout") == lean_agent.LEAN_TACTIC_TIMEOUT_SECONDS, calls)
 
     # --------------------------------------------------------------- case 8
     print("Case 8: backoff schedule is well formed")

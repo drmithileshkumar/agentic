@@ -50,7 +50,7 @@ def run():
     agent = object.__new__(LeanAgent)
     calls = []
 
-    def stub(step):
+    def stub(step, timeout=None):
         calls.append(step)
         return LeanError(message="unknown tactic 'frobnicate'")
 
@@ -67,7 +67,7 @@ def run():
     check("REPL was genuinely invoked", len(calls) == 1, len(calls))
 
     print("Case 1b: an empty LeanError message still yields a usable list")
-    agent._lean_run = lambda step: LeanError()
+    agent._lean_run = lambda step, timeout=None: LeanError()
     outcome, msgs, _, _, n = agent._apply_tactic("simp", PS)
     check("outcome == error", outcome == "error", outcome)
     check("messages is a one-element list", msgs == [""], msgs)

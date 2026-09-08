@@ -138,10 +138,21 @@ CONNECTIVITY_BACKOFF_CAP = 300.0
 # socket that was never going to answer. 15 steps x 600s bounds a proof at 2.5h.
 LLM_CALL_TIMEOUT_SECONDS = 600
 
-# Hard ceiling on a single REPL command. lean_interact's LeanServer.run() takes
-# `timeout` as a keyword, so this is enforced rather than merely hoped for. It
-# does not cover config build / `import Mathlib`, which happen at construction.
-LEAN_CALL_TIMEOUT_SECONDS = 120
+# Hard ceilings on a single REPL command. lean_interact's LeanServer.run() takes
+# `timeout` as a keyword, so these are enforced rather than merely hoped for.
+#
+# They must differ, and getting that wrong killed the 20260908_183715 run before
+# it wrote a single proof. Theorems are submitted with their own `import Mathlib`
+# header, so the elaboration Command re-imports Mathlib *inside the command* --
+# measured at ~230s, not the few seconds a tactic takes. A flat 120s therefore
+# timed out every elaboration on the first try.
+#
+# The stakes are higher than a lost command: on timeout lean_interact calls
+# kill() on the server, so an over-tight timeout destroys the shared REPL that
+# costs ~10 minutes to boot. _ensure_server_alive restarts it, but the cheaper
+# fix is not to trip the timeout in the first place.
+LEAN_ELABORATION_TIMEOUT_SECONDS = 900   # covers the command's own import Mathlib
+LEAN_TACTIC_TIMEOUT_SECONDS = 120        # a tactic that needs longer is stuck
 
 # Completion budget per tactic request.
 # Nemotron-3-Ultra-550B emits ~1700+ reasoning tokens on set-theory goals before
@@ -504,7 +515,31 @@ class LeanAgentHarness:
         proof_id = self.logger.new_proof_id()
 
         # ---- 1. Elaborate the theorem and get the initial goal ----------
-        elab_resp = self._lean_run(Command(cmd=theorem_statement))
+        # Wrapped: an exception here used to escape prove() and take the whole
+        # batch down with it (the 20260908_183715 run died on theorem 1 of 50,
+        # losing summary.json). One bad theorem must cost one theorem.
+        try:
+            elab_resp = self._lean_run(
+                Command(cmd=theorem_statement),
+                timeout=LEAN_ELABORATION_TIMEOUT_SECONDS,
+            )
+        except Exception as exc:
+            detail = f"Elaboration failed: {type(exc).__name__}: {exc}"
+            # A timeout kills the REPL; bring it back for the next theorem.
+            self._ensure_server_alive()
+            self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
+            self.logger.done(proof_id, theorem_statement,
+                             result="FAILED_ELABORATION", total_steps=0)
+            return ProofResult(
+                proof_id=proof_id,
+                theorem=theorem_statement,
+                outcome="FAILED_ELABORATION",
+                total_steps=0,
+                llm_calls=0,
+                lean_calls=1,
+                tactic_outcomes={},
+                tactics_used=[],
+            )
         raw_elaboration = _jsonable(elab_resp)
 
         # A LeanError here has no `sorries` to read -- same shape mismatch as in
@@ -694,13 +729,36 @@ class LeanAgentHarness:
     # Internals
     # ------------------------------------------------------------------
 
-    def _lean_run(self, cmd):
+    def _lean_run(self, cmd, timeout: float = LEAN_TACTIC_TIMEOUT_SECONDS):
         """Thin wrapper so we can intercept/count Lean calls in future.
 
         The REPL gets a hard timeout: a tactic that sends Lean into an
         unbounded search would otherwise stall the whole batch behind it.
+        Elaboration passes the longer budget -- see the constants for why.
         """
-        return self._server.run(cmd, timeout=LEAN_CALL_TIMEOUT_SECONDS)
+        return self._server.run(cmd, timeout=timeout)
+
+    def _ensure_server_alive(self) -> bool:
+        """Restart the REPL if a timeout killed it. True if it is usable.
+
+        lean_interact kills the server when a command times out, so without
+        this every later theorem in the batch would fail against a dead REPL.
+        Best-effort: a server that will not come back is reported, not raised,
+        so the batch still writes its summary.
+        """
+        server = getattr(self, "_server", None)
+        if server is None:
+            return False
+        try:
+            if server.is_alive():
+                return True
+        except Exception:
+            pass
+        try:
+            server.restart()
+            return True
+        except Exception:
+            return False
 
     def _log_failed_step(self, proof_id, theorem, step, goal_text, detail,
                          outcome, llm_calls, exchange, history) -> None:
@@ -875,9 +933,12 @@ class LeanAgentHarness:
             return "rejected", [str(exc)], None, None, 0
 
         try:
-            result = self._lean_run(step)
+            result = self._lean_run(step, timeout=LEAN_TACTIC_TIMEOUT_SECONDS)
         except Exception as exc:
             # The REPL was called and failed (crash, timeout, protocol error).
+            # A timeout leaves the server killed, so revive it before the next
+            # step or theorem tries to use it.
+            self._ensure_server_alive()
             return "rejected", [str(exc)], None, None, 1
 
         # The REPL answers with either a ProofStepResponse or a LeanError, and

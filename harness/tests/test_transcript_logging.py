@@ -88,7 +88,8 @@ class LeanStub:
         self.step_results = list(step_results)
         self.calls = 0
 
-    def __call__(self, cmd):
+    def __call__(self, cmd, timeout=None):
+        self.timeout = timeout
         self.calls += 1
         if self.calls == 1:
             return self.elab

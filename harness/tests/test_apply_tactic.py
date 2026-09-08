@@ -44,7 +44,8 @@ class Recorder:
         self.raises = raises
         self.count = 0
 
-    def __call__(self, step):
+    def __call__(self, step, timeout=None):
+        self.timeout = timeout
         self.count += 1
         if self.raises is not None:
             raise self.raises
