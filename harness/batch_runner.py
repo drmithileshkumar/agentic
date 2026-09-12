@@ -27,6 +27,17 @@ from pathlib import Path
 from .lean_agent import DEFAULT_MODEL, LeanAgentHarness, ProofResult
 
 
+# Abort the whole batch after this many consecutive proofs end FAILED_LLM_ERROR.
+#
+# This is a second, coarser layer above the per-proof circuit breaker in
+# lean_agent.py. That one protects a single theorem; nothing protected the
+# batch. In the 20260909_002719 run the NIM endpoint died at 16:59 and the
+# runner cheerfully burned the remaining 23 theorems in 61 seconds, each failing
+# in ~1s -- theorems that were never attempted in any meaningful sense and are
+# now unusable without a full re-run. Stopping early leaves them intact.
+MAX_CONSECUTIVE_PROOF_LLM_FAILURES = 5
+
+
 class BatchRunner:
     """
     Runs a list of theorem strings through the harness one at a time,
@@ -96,6 +107,11 @@ class BatchRunner:
         )
         print(f"Lean server ready in {time.perf_counter() - t_boot:.1f}s\n")
 
+        # Consecutive proofs whose result was FAILED_LLM_ERROR. Any other
+        # outcome -- proved, budget exhausted, elaboration failure -- means the
+        # endpoint answered, so the streak resets.
+        consecutive_llm_failures = 0
+
         for idx, theorem in enumerate(theorems, start=1):
             log_path = self.log_dir / f"proof_{idx:04d}.jsonl"
             print(f"\n[{idx}/{total}] Starting proof {idx:04d}")
@@ -110,6 +126,23 @@ class BatchRunner:
             print(f"  [{status}] steps={result.total_steps}  "
                   f"llm={result.llm_calls}  lean={result.lean_calls}  "
                   f"time={elapsed:.1f}s")
+
+            if result.outcome == "FAILED_LLM_ERROR":
+                consecutive_llm_failures += 1
+            else:
+                consecutive_llm_failures = 0
+
+            if consecutive_llm_failures >= MAX_CONSECUTIVE_PROOF_LLM_FAILURES:
+                skipped = total - idx
+                print(f"\n{'='*60}")
+                print(f"Batch aborted: {consecutive_llm_failures} consecutive LLM "
+                      f"failures -- endpoint likely down")
+                print(f"  Stopped after proof {idx:04d} of {total}. "
+                      f"{skipped} theorem(s) not attempted.")
+                print(f"  Re-run once the endpoint recovers; the untouched "
+                      f"theorems are still usable.")
+                print(f"{'='*60}")
+                break
 
         self.print_summary(results)
         self.save_summary(results)

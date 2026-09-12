@@ -340,6 +340,33 @@ def _jsonable(obj: object) -> object:
         return None
 
 
+# Substrings that mark a Lean message as a failure rather than information.
+#
+# Matching only "error" was not enough: Lean says `Unknown identifier` and
+# `Unknown constant` without ever using the word. In the 20260909_002719 run
+# that let 16 failed tactics be recorded as `advanced`, and the harness then
+# adopted the broken proof state they returned. proof_0007 is the clearest
+# case -- step 2's `exact h5` failed with "Unknown identifier `h5`", was called
+# progress, and every one of the remaining 13 steps hit "No goals to be solved"
+# against a state that had none. It also inflates the RQ4 advanced-rate.
+LEAN_FAILURE_KEYWORDS = ("error", "unknown", "expected", "failed", "invalid")
+
+
+def _messages_report_failure(messages) -> bool:
+    """True if any Lean message indicates the tactic failed.
+
+    Substring matching is blunt, but Lean's message text is the only signal
+    lean_interact surfaces uniformly here, and a false positive merely costs a
+    step that is reported as `error` instead of `advanced` -- far cheaper than
+    a false negative, which corrupts the proof state for every later step.
+    """
+    for message in messages or []:
+        low = str(message).lower()
+        if any(keyword in low for keyword in LEAN_FAILURE_KEYWORDS):
+            return True
+    return False
+
+
 def _is_connectivity_error(exc: BaseException) -> bool:
     """True if *exc* means "could not reach the endpoint", not "bad request".
 
@@ -350,10 +377,18 @@ def _is_connectivity_error(exc: BaseException) -> bool:
 
     Note openai.APITimeoutError subclasses openai.APIConnectionError, so the
     first check already covers per-call timeouts.
+
+    429 counts as connectivity even though it is a 4xx: being throttled says
+    nothing about the request, only that we asked too soon, and waiting is the
+    documented remedy. Treating it as a model failure cost 25 of the 75 LLM
+    failures in the 20260909_002719 run -- proofs 0041-0047 failed fast at three
+    strikes apiece when backing off would have ridden the throttle out.
     """
     if isinstance(exc, openai.APIConnectionError):      # includes APITimeoutError
         return True
     if isinstance(exc, openai.InternalServerError):     # 5xx
+        return True
+    if isinstance(exc, openai.RateLimitError):          # 429 -- wait, don't fail
         return True
     if isinstance(exc, (httpx.TransportError, httpx.TimeoutException)):
         return True                                     # ConnectError, ReadTimeout, ...
@@ -950,9 +985,7 @@ class LeanAgentHarness:
             return "error", [result.message], None, None, 1
 
         messages = [m.data for m in result.messages] if result.messages else []
-        has_errors = any(
-            "error" in str(m).lower() for m in messages
-        )
+        has_errors = _messages_report_failure(messages)
 
         if result.proof_status == "Completed":
             return "proved", messages, result.proof_state, None, 1

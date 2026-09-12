@@ -153,6 +153,43 @@ def run():
     total += make_agent(rec)._apply_tactic("exact Nat.add_comm _ _", PS)[4]
     check("total lean_calls == 1, not 6", total == 1, total)
 
+    # --------------------------------------------------------------- case 9
+    print("Case 9: a failed tactic is never called 'advanced'")
+    # Regression for the 20260909_002719 run: has_errors matched only the
+    # literal word "error", so Lean's "Unknown identifier" sailed through as
+    # progress and the harness adopted the broken state it returned. 22 steps
+    # across the logs were misclassified this way; proof_0007 lost 13 of its
+    # 15 steps to the corrupted state that followed.
+    for msg in ("Unknown identifier `h5`",
+                "Unknown constant `Set.mem_union_iff`",
+                "failed to synthesize instance of type class Bot (Sylow 5 G)",
+                "aesop: failed to prove the goal after exhaustive search.",
+                "<input>:1:0: expected tactic",
+                "invalid field notation",
+                "Lean error: Application type mismatch"):
+        rec = Recorder(result=FakeResult(proof_state=PS_NEW, goals=["g"],
+                                        messages=[msg]))
+        a = make_agent(rec)
+        outcome, msgs, nps, goal, n = a._apply_tactic("simp", PS)
+        short = " ".join(msg.split())[:44]
+        check("error, not advanced: %s" % short, outcome == "error", outcome)
+        check("no state adopted: %s" % short, nps is None, nps)
+
+    print("Case 9b: informational messages are still progress")
+    for msg in ("declaration uses `sorry`", "Goals accomplished!", "trace: foo"):
+        rec = Recorder(result=FakeResult(proof_state=PS_NEW, goals=["g"],
+                                         messages=[msg]))
+        a = make_agent(rec)
+        outcome, _, nps, _, _ = a._apply_tactic("simp", PS)
+        check("still advanced: %r" % msg, outcome == "advanced", outcome)
+
+    print("Case 9c: a silent state change is still advanced")
+    rec = Recorder(result=FakeResult(proof_state=PS_NEW, goals=["g"], messages=[]))
+    a = make_agent(rec)
+    outcome, _, nps, goal, _ = a._apply_tactic("intro h", PS)
+    check("no messages -> advanced", outcome == "advanced", outcome)
+    check("state adopted", nps == PS_NEW, nps)
+
     print("")
     if failures:
         print("FAILED: %d check(s): %s" % (len(failures), ", ".join(failures)))

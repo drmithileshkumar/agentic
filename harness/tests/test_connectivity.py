@@ -96,6 +96,7 @@ def run():
         (httpx.ConnectError("refused"), True, "httpx.ConnectError"),
         (httpx.ReadTimeout("slow"), True, "httpx.ReadTimeout"),
         (OSError("socket died"), True, "OSError"),
+        (openai.RateLimitError("429", response=_response(429), body=None), True, "RateLimitError 429"),
         (openai.NotFoundError("404", response=_response(404), body=None), False, "404 NotFound"),
         (openai.AuthenticationError("401", response=_response(401), body=None), False, "401 auth"),
         (ValueError("bad model"), False, "ValueError"),
