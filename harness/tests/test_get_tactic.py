@@ -74,6 +74,8 @@ def make_agent(script):
     a = object.__new__(LeanAgent)
     a.model = "fake-model"
     a.system_prompt = "SYSTEM"
+    # _create() reads self.max_tokens (provider-aware since the Groq 413 fix).
+    a.max_tokens = 8192
     a._client = FakeClient(script)
     return a
 

@@ -65,6 +65,7 @@ Usage
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 import re
@@ -154,10 +155,32 @@ LLM_CALL_TIMEOUT_SECONDS = 600
 LEAN_ELABORATION_TIMEOUT_SECONDS = 900   # covers the command's own import Mathlib
 LEAN_TACTIC_TIMEOUT_SECONDS = 120        # a tactic that needs longer is stuck
 
-# Completion budget per tactic request.
-# Nemotron-3-Ultra-550B emits ~1700+ reasoning tokens on set-theory goals before
-# committing to a tactic. 2048 truncated mid-reasoning on proof_0004.
-MAX_TOKENS = 8192
+# Completion budget per tactic request, per provider.
+#
+# NVIDIA NIM has no per-request token cap, and Nemotron-3-Ultra-550B emits
+# ~1700+ reasoning tokens on set-theory goals before committing to a tactic --
+# 2048 truncated mid-reasoning on proof_0004, hence 8192.
+#
+# Groq's free tier caps *tokens per minute* at 8000 for the whole request, and
+# max_tokens is counted against it up front. The prompt alone runs ~6-7k tokens
+# once history accumulates, so 8192 guaranteed a 413:
+#
+#   Error code: 413 - Request too large for model `openai/gpt-oss-20b` ...
+#   tokens per minute (TPM): Limit 8000, Requested 8381
+#
+# That was 41 of 42 LLM failures in the 20260913_011157 run, and no amount of
+# backing off would have helped -- the request was structurally too big.
+MAX_TOKENS = 8192          # NVIDIA NIM default
+GROQ_MAX_TOKENS = 1024     # safe under the 8000 TPM free-tier ceiling
+
+
+def _resolve_max_tokens(base_url: str, override: Optional[int] = None) -> int:
+    """Completion budget for *base_url*, unless *override* says otherwise."""
+    if override is not None:
+        return override
+    if "groq.com" in (base_url or ""):
+        return GROQ_MAX_TOKENS
+    return MAX_TOKENS
 
 
 # ---------------------------------------------------------------------------
@@ -393,36 +416,83 @@ TOOL_USE_FAILED_CODE = "tool_use_failed"
 _FAILED_ARGS_RE = re.compile(r'"arguments"\s*:\s*(.*?)\s*\}\s*$', re.DOTALL)
 
 
+# The formatted exception carries the body as a Python repr after the status:
+#   Error code: 400 - {'error': {...}}
+_BODY_FROM_TEXT_RE = re.compile(r"Error code:\s*\d+\s*-\s*(\{.*\})\s*$", re.DOTALL)
+
+# Last-resort scan of the raw text. Accepts either quote style around the key,
+# because the repr form uses single quotes where the JSON-ish blob uses double.
+# Deliberately NOT anchored to the end: in the text form the real closing brace
+# is followed by the enclosing dict's own braces and quotes, so anchoring would
+# swallow them -- "ring\n}'}" instead of "ring".
+_ARGS_LOOSE_RE = re.compile(r"['\"]arguments['\"]\s*:\s*(.*)$", re.DOTALL)
+
+
+def _clean_argument_value(value: str) -> Optional[str]:
+    """Strip the closers and quoting that wrap a recovered arguments value."""
+    value = str(value).strip()
+    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+        try:
+            return str(json.loads(value)).strip() or None
+        except ValueError:
+            return value[1:-1].strip() or None
+    # Text-form values trail the enclosing dict's punctuation: ring\n}'}}
+    value = value.rstrip().rstrip("}'\"").rstrip()
+    return value or None
+
+
+def _salvage_from_body(body: object) -> Optional[str]:
+    """Recover the arguments value from a parsed error body, or None."""
+    error = body.get("error") if isinstance(body, dict) else None
+    if not isinstance(error, dict) or error.get("code") != TOOL_USE_FAILED_CODE:
+        return None
+
+    blob = error.get("failed_generation")
+    if isinstance(blob, dict):                      # already-parsed shape
+        arg = blob.get("arguments")
+        return _clean_argument_value(arg) if arg is not None else None
+    if not isinstance(blob, str) or not blob.strip():
+        return None
+
+    match = _FAILED_ARGS_RE.search(blob)
+    return _clean_argument_value(match.group(1)) if match else None
+
+
+def _salvage_from_text(text: str) -> Optional[str]:
+    """Recover the arguments value from the formatted exception text, or None."""
+    if not text or TOOL_USE_FAILED_CODE not in text:
+        return None
+
+    # Preferred: rebuild the dict and reuse the body path, which knows where
+    # the value ends. literal_eval fails when Groq leaves a value unquoted.
+    match = _BODY_FROM_TEXT_RE.search(text)
+    if match:
+        try:
+            parsed = ast.literal_eval(match.group(1))
+        except Exception:
+            parsed = None
+        recovered = _salvage_from_body(parsed)
+        if recovered:
+            return recovered
+
+    loose = _ARGS_LOOSE_RE.search(text)
+    return _clean_argument_value(loose.group(1)) if loose else None
+
+
 def _salvage_failed_generation(exc: BaseException) -> Optional[str]:
     """Recover the model's text from a Groq tool_use_failed 400, or None.
 
     Returns None for every other error, so the caller's normal failure
     handling is untouched unless this exact provider bug is what happened.
+
+    Two sources, in order. `.body` is the clean one, but the SDK leaves it
+    unset on some errors even though the dict is plainly visible in the
+    formatted message -- that is why salvage fired zero times across the three
+    tool_use_failed events in the 20260913_011157 run despite the parser being
+    correct. The text fallback covers that case.
     """
-    body = getattr(exc, "body", None)
-    error = body.get("error") if isinstance(body, dict) else None
-    if not isinstance(error, dict):
-        return None
-    if error.get("code") != TOOL_USE_FAILED_CODE:
-        return None
-
-    blob = error.get("failed_generation")
-    if not isinstance(blob, str) or not blob.strip():
-        return None
-
-    match = _FAILED_ARGS_RE.search(blob)
-    if not match:
-        return None
-    value = match.group(1).strip()
-
-    # Tolerate a properly quoted value too, in case Groq ever fixes the shape.
-    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
-        try:
-            value = json.loads(value)
-        except ValueError:
-            value = value[1:-1]
-    value = str(value).strip()
-    return value or None
+    return (_salvage_from_body(getattr(exc, "body", None))
+            or _salvage_from_text(str(exc)))
 
 
 class _SalvagedCompletion:
@@ -568,6 +638,7 @@ class LeanAgentHarness:
         max_steps:     int  = 10,
         system_prompt: Optional[str] = None,
         echo:          bool = True,
+        max_tokens:    Optional[int] = None,
     ):
         self.project_dir   = project_dir
         self.model         = model
@@ -595,10 +666,12 @@ class LeanAgentHarness:
                 "Optionally set QWEN_BASE_URL (default: DashScope) and "
                 "QWEN_MODEL (default: qwen2.5-72b-instruct)."
             )
-        self._client = openai.OpenAI(
-            api_key  = api_key,
-            base_url = os.environ.get("QWEN_BASE_URL", DASHSCOPE_BASE_URL),
-        )
+        base_url = os.environ.get("QWEN_BASE_URL", DASHSCOPE_BASE_URL)
+        self._client = openai.OpenAI(api_key=api_key, base_url=base_url)
+
+        # Completion budget depends on the provider -- Groq's free tier counts
+        # max_tokens against an 8000 TPM ceiling. An explicit max_tokens wins.
+        self.max_tokens = _resolve_max_tokens(base_url, max_tokens)
 
     # ------------------------------------------------------------------
     # Public API
@@ -969,7 +1042,7 @@ class LeanAgentHarness:
             calls += 1
             try:
                 return self._client.chat.completions.create(
-                    model=self.model, max_tokens=MAX_TOKENS, messages=messages,
+                    model=self.model, max_tokens=self.max_tokens, messages=messages,
                     timeout=LLM_CALL_TIMEOUT_SECONDS)
             except Exception as exc:
                 # Groq's tool_use_failed 400 carries the model's answer in the

@@ -65,6 +65,7 @@ class BatchRunner:
         model:       str  = DEFAULT_MODEL,
         max_steps:   int  = 10,
         echo:        bool = True,
+        max_tokens:  int | None = None,
     ):
         self.project_dir = project_dir
         self.log_dir     = Path(log_dir)
@@ -72,6 +73,8 @@ class BatchRunner:
         self.model       = model
         self.max_steps   = max_steps
         self.echo        = echo
+        # None means let the harness pick from the provider's base URL.
+        self.max_tokens  = max_tokens
 
     # ------------------------------------------------------------------
 
@@ -104,6 +107,7 @@ class BatchRunner:
             model       = self.model,
             max_steps   = self.max_steps,
             echo        = self.echo,
+            max_tokens  = self.max_tokens,
         )
         print(f"Lean server ready in {time.perf_counter() - t_boot:.1f}s\n")
 

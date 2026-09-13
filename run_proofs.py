@@ -170,6 +170,10 @@ def main():
                         help="Tactic budget per proof")
     parser.add_argument("--theorem",    type=str,  default=None,
                         help="Run a single theorem string instead of the manifest")
+    parser.add_argument("--max-tokens", type=int, default=None,
+                        help="Completion budget per call. Default: auto-detect "
+                             "from the provider (1024 on Groq, whose free tier "
+                             "caps requests at 8000 TPM; 8192 on NVIDIA NIM)")
     parser.add_argument("--no-echo",    action="store_true",
                         help="Suppress per-step stdout output")
     args = parser.parse_args()
@@ -192,6 +196,7 @@ def main():
         model       = api_model,
         max_steps   = args.max_steps,
         echo        = not args.no_echo,
+        max_tokens  = args.max_tokens,
     )
 
     if args.theorem:

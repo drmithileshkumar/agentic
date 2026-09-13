@@ -137,6 +137,8 @@ def make_agent(llm_script, lean_stub, log_path, max_steps=10):
     a.model = "fake-model"
     a.system_prompt = SYSTEM
     a.max_steps = max_steps
+    # _create() reads self.max_tokens (provider-aware since the Groq 413 fix).
+    a.max_tokens = 8192
     a._echo = False
     a._last_exchange = {}
     a._client = FakeClient(llm_script)

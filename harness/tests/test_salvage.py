@@ -143,6 +143,68 @@ def run():
     check("a normal completion is NOT flagged",
           "salvaged" not in json.dumps(_normal_attempt(tmp)), "flag leaked")
 
+    # --------------------------------------------------------------- case 3c
+    print("Case 3c: .body is None -- recover from the exception text instead")
+    # The SDK leaves .body unset on some errors even though the dict is plainly
+    # visible in str(exc). Salvage fired ZERO times across the three
+    # tool_use_failed events in the 20260913_011157 run for exactly this reason:
+    # the parser was correct, the input was never reached.
+    class NoBody(Exception):
+        body = None
+        def __init__(self, text):
+            self._text = text
+        def __str__(self):
+            return self._text
+
+    # verbatim from logs/20260913_011157/proof_0003.jsonl step 1
+    p0003 = ("LLM call failed: BadRequestError: Error code: 400 - "
+             "{'error': {'message': 'Tool choice is none, but model called a tool', "
+             "'type': 'invalid_request_error', 'code': 'tool_use_failed', "
+             "'failed_generation': '{\"name\": \"assistant<|channel|>final\", "
+             "\"arguments\": ring" + chr(10) + "}'}}")
+    check("recovers from proof_0003's real text",
+          _salvage_failed_generation(NoBody(p0003)) == "ring",
+          repr(_salvage_failed_generation(NoBody(p0003))))
+
+    longer = ("Error code: 400 - {'error': {'code': 'tool_use_failed', "
+              "'failed_generation': '{\"name\": \"a\", "
+              "\"arguments\": simpa using Nat.add_comm a b}'}}")
+    check("multi-word tactic from text",
+          _salvage_failed_generation(NoBody(longer)) == "simpa using Nat.add_comm a b",
+          repr(_salvage_failed_generation(NoBody(longer))))
+
+    # shape where failed_generation is a dict with an unquoted value, so
+    # literal_eval cannot parse it and the loose scan must carry it
+    dict_shape = ("Error code: 400 - {'type': 'error', 'error': "
+                  "{'type': 'tool_use_failed', 'code': 'tool_use_failed', "
+                  "'message': 'x', 'failed_generation': {'arguments': ring}}}")
+    check("dict-shaped failed_generation from text",
+          _salvage_failed_generation(NoBody(dict_shape)) == "ring",
+          repr(_salvage_failed_generation(NoBody(dict_shape))))
+
+    check("text without tool_use_failed is not salvaged",
+          _salvage_failed_generation(
+              NoBody("Error code: 413 - {'error': {'code': 'rate_limit_exceeded'}}")) is None)
+    check("empty text is not salvaged", _salvage_failed_generation(NoBody("")) is None)
+
+    print("Case 3d: a .body-less salvage still proves the theorem end to end")
+    agent = make_agent(
+        [NoBody(p0003)],
+        LeanStub(proved_elab(),
+                 [FakeStepResult(proof_status="Completed", proof_state=PS_NEW)]),
+        Path(tmp) / "case3d.jsonl", max_steps=4)
+    agent._sleep = lambda s: None
+    result = agent.prove(THEOREM)
+    steps = [e for e in read_events(Path(tmp) / "case3d.jsonl")
+             if e["event"] == "step"]
+    check("proved on the text-recovered tactic",
+          result.outcome == "PROVED", result.outcome)
+    check("tactic is the recovered text", steps[0]["tactic"] == "ring",
+          steps[0]["tactic"])
+    check("still flagged as salvaged",
+          steps[0]["retry_attempts"][0].get("salvaged") is True,
+          steps[0]["retry_attempts"])
+
     # --------------------------------------------------------------- case 4
     print("Case 4: an unsalvageable 400 still fails the step")
     agent = make_agent(
