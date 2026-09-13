@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lean Agent Harness — Results</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#16161a; --muted:#6b6b76;
+    --line:#e2e2dd; --accent:#2f5d8a; --accent-soft:#dce6f0;
+    --good:#3c7a5b; --warn:#a8762c; --bad:#9c4a41;
+    --c1:#2f5d8a; --c2:#7a9ec4; --c3:#a8762c; --c4:#9c4a41; --c5:#5f6b7a;
+    --shadow:0 1px 2px rgba(20,20,30,.06),0 4px 14px rgba(20,20,30,.05);
+  }
+  :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    /* placeholder — real dark values applied in the media query and attr block */
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#16171a; --panel:#1e2024; --ink:#e9e9ec; --muted:#9a9aa6;
+      --line:#2e3138; --accent:#7fb0dd; --accent-soft:#26323e;
+      --good:#79c39a; --warn:#dbaa5f; --bad:#e08b80;
+      --c1:#7fb0dd; --c2:#4d7ba6; --c3:#dbaa5f; --c4:#e08b80; --c5:#98a3b3;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#16171a; --panel:#1e2024; --ink:#e9e9ec; --muted:#9a9aa6;
+    --line:#2e3138; --accent:#7fb0dd; --accent-soft:#26323e;
+    --good:#79c39a; --warn:#dbaa5f; --bad:#e08b80;
+    --c1:#7fb0dd; --c2:#4d7ba6; --c3:#dbaa5f; --c4:#e08b80; --c5:#98a3b3;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.55 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:38px 26px 70px}
+
+  header.masthead{border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:30px}
+  .titlerow{display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap}
+  h1{font-size:27px; margin:0 0 6px; letter-spacing:-.01em; font-weight:600}
+  .sub{color:var(--muted); font-size:13.5px; margin:0}
+  .metaline{
+    margin-top:12px; color:var(--muted); font-size:12.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    display:flex; gap:20px; flex-wrap:wrap;
+  }
+  .metaline b{color:var(--ink); font-weight:600}
+  button.theme{
+    background:var(--panel); color:var(--ink); border:1px solid var(--line);
+    border-radius:7px; padding:7px 13px; cursor:pointer; font-size:12.5px;
+    font-family:inherit; box-shadow:var(--shadow);
+  }
+  button.theme:hover{border-color:var(--accent)}
+
+  h2{
+    font-size:12px; text-transform:uppercase; letter-spacing:.13em;
+    color:var(--muted); font-weight:600; margin:0 0 14px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  section{margin-bottom:34px}
+
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
+  .kpi{
+    background:var(--panel); border:1px solid var(--line); border-radius:11px;
+    padding:18px 20px; box-shadow:var(--shadow); min-height:118px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .kpi .label{
+    font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .kpi .value{font-size:34px; font-weight:600; letter-spacing:-.02em; line-height:1.1; margin:10px 0 2px}
+  .kpi .value.sm{font-size:23px}
+  .kpi .note{font-size:12px; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+  .panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:11px;
+    padding:20px 22px; box-shadow:var(--shadow);
+  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+  .grid-donut{display:grid; grid-template-columns:300px 1fr; gap:26px; align-items:start}
+  .chartbox{position:relative; height:260px}
+  .chartbox.tall{height:290px}
+  .chartbox.donut{height:250px}
+
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--muted); font-weight:600; padding:8px 10px;
+    border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--panel);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  td{padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--accent-soft)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px}
+  .scroll{max-height:420px; overflow:auto; border:1px solid var(--line); border-radius:9px}
+  .scroll table{font-size:12.5px}
+
+  .pill{
+    display:inline-block; padding:2px 9px; border-radius:99px; font-size:11px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:600;
+    border:1px solid transparent; white-space:nowrap;
+  }
+  .pill.ok{color:var(--good); border-color:var(--good); background:color-mix(in srgb,var(--good) 12%,transparent)}
+  .pill.no{color:var(--bad); border-color:var(--bad); background:color-mix(in srgb,var(--bad) 12%,transparent)}
+  .pill.mid{color:var(--muted); border-color:var(--line); background:transparent}
+  .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:baseline}
+
+  .placeholder{
+    background:var(--panel); border:1px dashed var(--line); border-radius:12px;
+    padding:54px 34px; text-align:center; box-shadow:var(--shadow);
+  }
+  .placeholder h3{margin:0 0 10px; font-size:19px; font-weight:600}
+  .placeholder p{color:var(--muted); margin:0 auto 8px; max-width:620px; font-size:14px}
+  .placeholder pre{
+    text-align:left; background:var(--bg); border:1px solid var(--line); border-radius:8px;
+    padding:14px 16px; margin:20px auto 0; max-width:660px; overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; line-height:1.7;
+  }
+  .err{color:var(--bad); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; margin-top:14px}
+  .empty{color:var(--muted); font-size:13px; padding:22px 4px; text-align:center}
+  .foot{margin-top:44px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:12px}
+  @media (max-width:900px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .grid2,.grid-donut{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="titlerow">
+      <div>
+        <h1>Lean Agent Harness — Results</h1>
+        <p class="sub">Agentic theorem proving over Lean 4 / Mathlib · pass rate, failure taxonomy, step economy</p>
+      </div>
+      <button class="theme" id="themeBtn" type="button">Theme: auto</button>
+    </div>
+    <div class="metaline" id="metaline" hidden></div>
+  </header>
+
+  <div id="placeholder" class="placeholder">
+    <h3>Waiting for data — run the analysis scripts first</h3>
+    <p>This dashboard reads <span class="mono" id="phPath">dashboard_data.json</span>, which has not been loaded yet.</p>
+    <pre>python build_dashboard_data.py --logs-dir C:\lean\logs\&lt;run&gt; --out dashboard_data.json
+
+# then serve this folder — fetch() is blocked on file:// URLs
+python -m http.server 8000
+# open http://localhost:8000/results_dashboard.html</pre>
+    <div class="err" id="phErr"></div>
+  </div>
+
+  <main id="dash" hidden>
+
+    <section>
+      <h2>Headline</h2>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">Pass rate</div>
+          <div><div class="value" id="kPass">—</div>
+          <div class="note" id="kPassCi">—</div></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Proved / run</div>
+          <div><div class="value" id="kProved">—</div>
+          <div class="note" id="kProvedNote">—</div></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Median steps to proof</div>
+          <div><div class="value" id="kSteps">—</div>
+          <div class="note" id="kStepsNote">—</div></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Dominant failure mode</div>
+          <div><div class="value sm" id="kMode">—</div>
+          <div class="note" id="kModeNote">—</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pass rate by tier — 95% Wilson intervals</h2>
+      <div class="panel"><div class="chartbox" id="boxTier"><canvas id="chTier"></canvas></div></div>
+    </section>
+
+    <section>
+      <h2>Failure modes</h2>
+      <div class="panel grid-donut">
+        <div class="chartbox donut" id="boxModes"><canvas id="chModes"></canvas></div>
+        <table>
+          <thead><tr><th>Mode</th><th style="width:60px">Count</th><th style="width:64px">Share</th><th>What it means</th></tr></thead>
+          <tbody id="modeRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Step economy — proofs closed at each step</h2>
+      <div class="panel"><div class="chartbox tall" id="boxSteps"><canvas id="chSteps"></canvas></div></div>
+    </section>
+
+    <section>
+      <h2>Tactic distribution</h2>
+      <div class="grid2">
+        <div class="panel">
+          <h2 style="margin-bottom:10px">Top 10 by frequency</h2>
+          <div class="chartbox tall" id="boxFreq"><canvas id="chFreq"></canvas></div>
+        </div>
+        <div class="panel">
+          <h2 style="margin-bottom:10px">Top 10 by precision — reliable closers highlighted</h2>
+          <div class="chartbox tall" id="boxPrec"><canvas id="chPrec"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Proofs</h2>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th style="width:130px">Proof ID</th><th>Theorem</th>
+            <th style="width:190px">Result</th><th style="width:64px">Steps</th>
+            <th style="width:120px">Dominant outcome</th>
+          </tr></thead>
+          <tbody id="proofRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="foot" id="foot"></div>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+const DATA_PATH = "dashboard_data.json";
+
+const MODE_ORDER = ["NO_PROGRESS_LOOP","ERROR_LOOP","HALLUCINATED_LEMMA",
+                    "SYNTAX_ERROR_LOOP","BUDGET_EXHAUSTION_MIXED"];
+const TIER_NAMES = {E:"Easy", M:"Medium", H:"Hard"};
+
+let DATA = null;
+const charts = [];
+
+/* ---------- theme ---------- */
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function palette(){
+  return {
+    ink: cssVar("--ink"), muted: cssVar("--muted"), line: cssVar("--line"),
+    accent: cssVar("--accent"), panel: cssVar("--panel"),
+    series: [cssVar("--c1"),cssVar("--c2"),cssVar("--c3"),cssVar("--c4"),cssVar("--c5")],
+    good: cssVar("--good"), warn: cssVar("--warn"), bad: cssVar("--bad")
+  };
+}
+const MODES_KEY = "harness-dash-theme";
+function applyTheme(mode){
+  const root = document.documentElement;
+  if (mode === "auto") root.removeAttribute("data-theme");
+  else root.setAttribute("data-theme", mode);
+  const btn = document.getElementById("themeBtn");
+  if (btn) btn.textContent = "Theme: " + mode;
+  try { localStorage.setItem(MODES_KEY, mode); } catch (e) {}
+  if (DATA) renderCharts();
+}
+(function initTheme(){
+  let saved = "auto";
+  try { saved = localStorage.getItem(MODES_KEY) || "auto"; } catch (e) {}
+  applyTheme(saved);
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    const order = ["auto","light","dark"];
+    let cur = "auto";
+    try { cur = localStorage.getItem(MODES_KEY) || "auto"; } catch (e) {}
+    applyTheme(order[(order.indexOf(cur) + 1) % order.length]);
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    let cur = "auto";
+    try { cur = localStorage.getItem(MODES_KEY) || "auto"; } catch (e) {}
+    if (cur === "auto" && DATA) renderCharts();
+  });
+})();
+
+/* ---------- helpers ---------- */
+const num = v => (typeof v === "number" && isFinite(v)) ? v : null;
+const fmtPct = v => num(v) === null ? "—" : v.toFixed(1) + "%";
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function trunc(s, n){ s = String(s == null ? "" : s); return s.length <= n ? s : s.slice(0, n - 1) + "\u2026"; }
+function titleise(mode){ return String(mode).split("_").map(w => w[0] + w.slice(1).toLowerCase()).join(" "); }
+function destroyCharts(){ while (charts.length) { try { charts.pop().destroy(); } catch (e) {} } }
+function showEmpty(boxId, msg){
+  const box = document.getElementById(boxId);
+  if (box) box.innerHTML = '<div class="empty">' + esc(msg) + "</div>";
+}
+
+/* Error-bar plugin: Chart.js has no native whiskers, so draw the CI band
+   from each bar's own ciLow/ciHigh, in data space. */
+const ciWhiskers = {
+  id: "ciWhiskers",
+  afterDatasetsDraw(chart, args, opts){
+    const bands = (opts && opts.bands) || [];
+    if (!bands.length) return;
+    const meta = chart.getDatasetMeta(0);
+    const xs = chart.scales.x, ctx = chart.ctx;
+    if (!meta || !xs) return;
+    ctx.save();
+    ctx.strokeStyle = opts.color || "#666";
+    ctx.lineWidth = 1.5;
+    meta.data.forEach((bar, i) => {
+      const band = bands[i];
+      if (!band || band.lo == null || band.hi == null) return;
+      const x1 = xs.getPixelForValue(band.lo), x2 = xs.getPixelForValue(band.hi);
+      const y = bar.y, cap = Math.min(7, Math.max(3, bar.height / 4));
+      ctx.beginPath();
+      ctx.moveTo(x1, y); ctx.lineTo(x2, y);
+      ctx.moveTo(x1, y - cap); ctx.lineTo(x1, y + cap);
+      ctx.moveTo(x2, y - cap); ctx.lineTo(x2, y + cap);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+};
+
+function baseOpts(p){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    animation:{duration:340},
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:p.panel, titleColor:p.ink, bodyColor:p.ink,
+        borderColor:p.line, borderWidth:1, padding:10, displayColors:false,
+        titleFont:{family:"ui-monospace, Menlo, Consolas, monospace", size:11},
+        bodyFont:{family:"ui-monospace, Menlo, Consolas, monospace", size:12}
+      }
+    }
+  };
+}
+function axis(p, opts){
+  return Object.assign({
+    grid:{color:p.line, drawTicks:false},
+    border:{color:p.line},
+    ticks:{color:p.muted, font:{family:"ui-monospace, Menlo, Consolas, monospace", size:11}}
+  }, opts || {});
+}
+
+/* ---------- KPIs ---------- */
+function renderKpis(){
+  const pr = DATA.pass_rate || {};
+  document.getElementById("kPass").textContent = fmtPct(num(pr.pct));
+  document.getElementById("kPassCi").textContent =
+    (num(pr.ci_low) === null) ? "no interval" :
+    "95% CI " + pr.ci_low.toFixed(1) + "–" + pr.ci_high.toFixed(1) + "%";
+
+  document.getElementById("kProved").textContent =
+    (pr.proved != null ? pr.proved : "—") + " / " + (pr.total != null ? pr.total : "—");
+  const inc = (DATA.meta && DATA.meta.total_proofs != null && pr.total != null)
+    ? DATA.meta.total_proofs - pr.total : 0;
+  document.getElementById("kProvedNote").textContent =
+    inc > 0 ? inc + " incomplete, excluded" : "all proofs completed";
+
+  const se = DATA.step_economy || {};
+  document.getElementById("kSteps").textContent = num(se.median) === null ? "—" : se.median;
+  document.getElementById("kStepsNote").textContent =
+    num(se.min) === null ? "no proved proofs" : "range " + se.min + "–" + se.max + ", mean " + se.mean;
+
+  const modes = DATA.modes || {};
+  let best = null;
+  MODE_ORDER.forEach(m => {
+    const row = modes[m];
+    if (row && row.count > 0 && (!best || row.count > best.count)) best = {mode:m, count:row.count, pct:row.pct};
+  });
+  document.getElementById("kMode").textContent = best ? titleise(best.mode) : "None";
+  document.getElementById("kModeNote").textContent = best
+    ? best.count + " of " + (DATA.total_failed || 0) + " failures · " + fmtPct(best.pct)
+    : (DATA.total_failed ? "unclassified" : "no failures recorded");
+}
+
+/* ---------- charts ---------- */
+function renderTier(p){
+  const byTier = DATA.by_tier || {};
+  const keys = Object.keys(TIER_NAMES).filter(k => byTier[k]);
+  let labels, values, bands, counts;
+  if (keys.length){
+    labels = keys.map(k => TIER_NAMES[k]);
+    values = keys.map(k => byTier[k].pct);
+    bands  = keys.map(k => ({lo:byTier[k].ci_low, hi:byTier[k].ci_high}));
+    counts = keys.map(k => byTier[k].proved + "/" + byTier[k].total);
+  } else {
+    const pr = DATA.pass_rate || {};
+    if (num(pr.pct) === null) { showEmpty("boxTier", "No pass-rate data."); return; }
+    labels = ["Overall"]; values = [pr.pct];
+    bands = [{lo:pr.ci_low, hi:pr.ci_high}];
+    counts = [pr.proved + "/" + pr.total];
+  }
+  const o = baseOpts(p);
+  o.indexAxis = "y";
+  o.scales = {
+    x: axis(p, {min:0, max:100, title:{display:true, text:"pass rate (%)", color:p.muted,
+        font:{family:"ui-monospace, Menlo, Consolas, monospace", size:11}}}),
+    y: axis(p, {grid:{display:false}})
+  };
+  o.plugins.tooltip.callbacks = {
+    label: c => [counts[c.dataIndex] + "  (" + c.parsed.x.toFixed(1) + "%)",
+                 "95% CI " + bands[c.dataIndex].lo.toFixed(1) + "–" + bands[c.dataIndex].hi.toFixed(1) + "%"]
+  };
+  o.plugins.ciWhiskers = {bands, color:p.ink};
+  charts.push(new Chart(document.getElementById("chTier"), {
+    type:"bar",
+    data:{labels, datasets:[{data:values, backgroundColor:p.series[0],
+      borderRadius:3, barPercentage:.55, categoryPercentage:.7}]},
+    options:o, plugins:[ciWhiskers]
+  }));
+}
+
+function renderModes(p){
+  const modes = DATA.modes || {};
+  const present = MODE_ORDER.filter(m => modes[m] && modes[m].count > 0);
+  const tbody = document.getElementById("modeRows");
+  tbody.innerHTML = "";
+  const colours = {};
+  MODE_ORDER.forEach((m, i) => { colours[m] = p.series[i % p.series.length]; });
+
+  MODE_ORDER.forEach(m => {
+    const row = modes[m] || {count:0, pct:0, description:""};
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td><span class="swatch" style="background:' + colours[m] + '"></span><span class="mono">' + esc(m) + "</span></td>" +
+      '<td class="mono">' + (row.count || 0) + "</td>" +
+      '<td class="mono">' + fmtPct(num(row.pct) === null ? 0 : row.pct) + "</td>" +
+      "<td>" + esc(row.description || "") + "</td>";
+    tbody.appendChild(tr);
+  });
+
+  if (!present.length){ showEmpty("boxModes", "No failures to classify."); return; }
+  const o = baseOpts(p);
+  o.cutout = "58%";
+  o.plugins.tooltip.callbacks = {
+    label: c => c.label + ": " + c.parsed + " (" + fmtPct(modes[present[c.dataIndex]].pct) + ")"
+  };
+  charts.push(new Chart(document.getElementById("chModes"), {
+    type:"doughnut",
+    data:{labels:present.map(titleise),
+          datasets:[{data:present.map(m => modes[m].count),
+            backgroundColor:present.map(m => colours[m]),
+            borderColor:p.panel, borderWidth:2}]},
+    options:o
+  }));
+}
+
+function renderSteps(p){
+  const hist = (DATA.step_economy && DATA.step_economy.histogram) || {};
+  const keys = Object.keys(hist).sort((a,b) => (+a) - (+b));
+  if (!keys.length){ showEmpty("boxSteps", "No proved proofs — nothing to plot."); return; }
+  const o = baseOpts(p);
+  o.scales = {
+    x: axis(p, {grid:{display:false}, title:{display:true, text:"step at which the proof closed",
+        color:p.muted, font:{family:"ui-monospace, Menlo, Consolas, monospace", size:11}}}),
+    y: axis(p, {beginAtZero:true, ticks:{precision:0, color:p.muted,
+        font:{family:"ui-monospace, Menlo, Consolas, monospace", size:11}}})
+  };
+  o.plugins.tooltip.callbacks = {
+    title: c => "Step " + c[0].label,
+    label: c => c.parsed.y + (c.parsed.y === 1 ? " proof" : " proofs")
+  };
+  charts.push(new Chart(document.getElementById("chSteps"), {
+    type:"bar",
+    data:{labels:keys, datasets:[{data:keys.map(k => hist[k]),
+      backgroundColor:p.series[0], borderRadius:3, categoryPercentage:.85}]},
+    options:o
+  }));
+}
+
+function renderFreq(p){
+  const rows = (DATA.tactic_freq || []).slice(0, 10);
+  if (!rows.length){ showEmpty("boxFreq", "No tactics recorded."); return; }
+  const o = baseOpts(p);
+  o.indexAxis = "y";
+  o.scales = {
+    x: axis(p, {beginAtZero:true, ticks:{precision:0, color:p.muted,
+        font:{family:"ui-monospace, Menlo, Consolas, monospace", size:11}}}),
+    y: axis(p, {grid:{display:false}, ticks:{color:p.muted, font:{family:"ui-monospace, Menlo, Consolas, monospace", size:10.5}}})
+  };
+  o.plugins.tooltip.callbacks = {
+    title: c => rows[c[0].dataIndex].tactic,
+    label: c => c.parsed.x + " uses (" + fmtPct(rows[c.dataIndex].pct) + " of all)"
+  };
+  charts.push(new Chart(document.getElementById("chFreq"), {
+    type:"bar",
+    data:{labels:rows.map(r => trunc(r.tactic, 26)),
+          datasets:[{data:rows.map(r => r.count), backgroundColor:p.series[1],
+            borderRadius:3, barPercentage:.8, categoryPercentage:.82}]},
+    options:o
+  }));
+}
+
+function renderPrec(p){
+  const rows = (DATA.tactic_precision || []).slice(0, 10);
+  if (!rows.length){ showEmpty("boxPrec", "No tactic reached the minimum-use threshold."); return; }
+  const o = baseOpts(p);
+  o.indexAxis = "y";
+  o.scales = {
+    x: axis(p, {min:0, max:1, title:{display:true, text:"precision (closes / uses)",
+        color:p.muted, font:{family:"ui-monospace, Menlo, Consolas, monospace", size:11}}}),
+    y: axis(p, {grid:{display:false}, ticks:{color:p.muted, font:{family:"ui-monospace, Menlo, Consolas, monospace", size:10.5}}})
+  };
+  o.plugins.tooltip.callbacks = {
+    title: c => rows[c[0].dataIndex].tactic,
+    label: c => {
+      const r = rows[c.dataIndex];
+      return [r.wins + "/" + r.uses + " closes  (" + r.precision.toFixed(2) + ")",
+              r.reliable_closer ? "reliable closer" : ""].filter(Boolean);
+    }
+  };
+  charts.push(new Chart(document.getElementById("chPrec"), {
+    type:"bar",
+    data:{labels:rows.map(r => trunc(r.tactic, 26)),
+          datasets:[{data:rows.map(r => r.precision),
+            backgroundColor:rows.map(r => r.reliable_closer ? p.good : p.series[4]),
+            borderRadius:3, barPercentage:.8, categoryPercentage:.82}]},
+    options:o
+  }));
+}
+
+function renderProofs(){
+  const rows = DATA.proofs || [];
+  const tbody = document.getElementById("proofRows");
+  tbody.innerHTML = "";
+  if (!rows.length){
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No proof rows in this data file.</td></tr>';
+    return;
+  }
+  rows.forEach(r => {
+    const cls = r.result === "PROVED" ? "ok" : (r.result === "INCOMPLETE" ? "mid" : "no");
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td class="mono">' + esc(trunc(r.proof_id, 12)) + "</td>" +
+      "<td>" + esc(trunc(r.theorem, 60)) + "</td>" +
+      '<td><span class="pill ' + cls + '">' + esc(r.result) + "</span></td>" +
+      '<td class="mono">' + (r.total_steps != null ? r.total_steps : "—") + "</td>" +
+      '<td class="mono">' + esc(r.dominant_outcome || "—") + "</td>";
+    tbody.appendChild(tr);
+  });
+}
+
+function renderCharts(){
+  destroyCharts();
+  const p = palette();
+  ["boxTier","boxModes","boxSteps","boxFreq","boxPrec"].forEach(id => {
+    const canvasId = {boxTier:"chTier",boxModes:"chModes",boxSteps:"chSteps",
+                      boxFreq:"chFreq",boxPrec:"chPrec"}[id];
+    const box = document.getElementById(id);
+    if (box && !document.getElementById(canvasId)){
+      box.innerHTML = '<canvas id="' + canvasId + '"></canvas>';
+    }
+  });
+  renderTier(p); renderModes(p); renderSteps(p); renderFreq(p); renderPrec(p);
+}
+
+function renderMeta(){
+  const m = DATA.meta || {};
+  const el = document.getElementById("metaline");
+  el.innerHTML =
+    "<span>run <b>" + esc(m.run_dir || "—") + "</b></span>" +
+    "<span>model <b>" + esc(m.model || "—") + "</b></span>" +
+    "<span>proofs <b>" + esc(m.total_proofs != null ? m.total_proofs : "—") + "</b></span>" +
+    "<span>generated <b>" + esc(m.generated_at || "—") + "</b></span>";
+  el.hidden = false;
+  document.getElementById("foot").textContent =
+    "Pass-rate intervals are 95% Wilson score intervals. Proofs with no done event are " +
+    "excluded from rates and shown as INCOMPLETE. Baseline for comparison: SorryDB agentic, ~20–30% Easy.";
+}
+
+function boot(){
+  document.getElementById("phPath").textContent = DATA_PATH;
+  fetch(DATA_PATH, {cache:"no-store"})
+    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status + " " + r.statusText); return r.json(); })
+    .then(json => {
+      DATA = json;
+      document.getElementById("placeholder").hidden = true;
+      document.getElementById("dash").hidden = false;
+      renderMeta(); renderKpis(); renderCharts(); renderProofs();
+    })
+    .catch(err => {
+      const isFile = location.protocol === "file:";
+      document.getElementById("phErr").textContent = isFile
+        ? "Blocked: fetch() cannot read local files over file:// — serve the folder over HTTP (see above)."
+        : String(err);
+    });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+</script>
+</body>
+</html>
