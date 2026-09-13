@@ -13,3 +13,7 @@ __pycache__/
 
 # Run artifacts
 /logs/
+
+# Orphaned prototype repos — not part of the harness
+agentic/
+agentic_new/
