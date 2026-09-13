@@ -55,6 +55,49 @@ DEFAULT_MODEL      = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 DEFAULT_MAX_STEPS  = 10
 DEFAULT_LIMIT      = 50
 
+# ---------------------------------------------------------------------------
+# Provider routing
+#
+# The harness itself is provider-agnostic: it reads QWEN_API_KEY and
+# QWEN_BASE_URL and talks OpenAI-compatible HTTP to whatever they point at.
+# So adding a provider is a matter of pointing those two at it before the
+# harness is constructed -- no change to lean_agent.py, batch_runner.py, the
+# step loop, or the logging.
+#
+# A --model of "groq/<name>" selects Groq and is sent upstream as "<name>";
+# anything else keeps the existing NVIDIA NIM behaviour untouched.
+# ---------------------------------------------------------------------------
+
+GROQ_PREFIX   = "groq/"
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+
+
+def resolve_provider(model: str) -> tuple[str, str]:
+    """Point the harness's env vars at the right provider for *model*.
+
+    Returns (api_model_name, provider_label). Mutates os.environ, which is
+    where LeanAgentHarness reads its credentials from -- so this must run
+    before BatchRunner is built.
+    """
+    if not model.startswith(GROQ_PREFIX):
+        return model, "NVIDIA NIM"
+
+    api_model = model[len(GROQ_PREFIX):]
+    key = os.environ.get("GROQ_API_KEY", "").strip()
+    if not key:
+        print("ERROR: --model %s selects Groq, but GROQ_API_KEY is empty.\n"
+              "       Add your key to C:\\lean\\.env:\n"
+              "           GROQ_API_KEY=gsk_...\n"
+              "       Free keys: https://console.groq.com" % model,
+              file=sys.stderr)
+        sys.exit(1)
+
+    # The harness reads these two; overriding them here swaps the provider
+    # without the harness knowing a second provider exists.
+    os.environ["QWEN_API_KEY"]  = key
+    os.environ["QWEN_BASE_URL"] = GROQ_BASE_URL
+    return api_model, "Groq"
+
 # Tier codes in candidates.jsonl: E = Easy, M = Medium, H = Hard
 
 
@@ -120,7 +163,9 @@ def main():
                         choices=["Easy", "Medium", "Hard"],
                         help="Filter by difficulty (E/M/H in candidates.jsonl)")
     parser.add_argument("--model",      type=str,  default=DEFAULT_MODEL,
-                        help="Qwen model name (must match QWEN_BASE_URL's provider)")
+                        help="Model name. Bare names go to QWEN_BASE_URL's provider "
+                             "(NVIDIA NIM); prefix with 'groq/' to use Groq instead, "
+                             "e.g. groq/llama-3.1-8b-instant")
     parser.add_argument("--max-steps",  type=int,  default=DEFAULT_MAX_STEPS,
                         help="Tactic budget per proof")
     parser.add_argument("--theorem",    type=str,  default=None,
@@ -128,6 +173,11 @@ def main():
     parser.add_argument("--no-echo",    action="store_true",
                         help="Suppress per-step stdout output")
     args = parser.parse_args()
+
+    # Pick the provider before the harness is built -- it reads its credentials
+    # from os.environ at construction time.
+    api_model, provider = resolve_provider(args.model)
+    print(f"[provider] {provider}  model={api_model}")
 
     # timestamped log directory so runs don't overwrite each other
     run_ts  = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -139,7 +189,7 @@ def main():
     runner = BatchRunner(
         project_dir = PROJECT_DIR,
         log_dir     = log_dir,
-        model       = args.model,
+        model       = api_model,
         max_steps   = args.max_steps,
         echo        = not args.no_echo,
     )

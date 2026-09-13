@@ -367,6 +367,80 @@ def _messages_report_failure(messages) -> bool:
     return False
 
 
+# ---------------------------------------------------------------------------
+# Groq tool_use_failed salvage
+#
+# Groq's harmony-format models (openai/gpt-oss-*) intermittently emit a channel
+# marker that Groq's own parser mistakes for a tool call, then rejects with a
+# 400 -- "Tool choice is none, but model called a tool". The completion never
+# arrives, but the model's actual answer is sitting in the error body:
+#
+#   {'error': {'code': 'tool_use_failed',
+#              'failed_generation': '{"name": "assistant",
+#                                    "arguments": simp [inter_comm]}'}}
+#
+# Measured at 3 of 16 calls (~19%) on the 20260913_000127 Easy-5 run, and all
+# three carried a usable tactic. Recovering them turns a wasted step into a
+# real one. This is provider-specific salvage, so it is gated on the exact
+# error code rather than folded into the general error path.
+# ---------------------------------------------------------------------------
+
+TOOL_USE_FAILED_CODE = "tool_use_failed"
+
+# `failed_generation` looks like JSON but is not: the arguments value is
+# unquoted, so json.loads() rejects the whole blob. Take everything between
+# "arguments": and the closing brace.
+_FAILED_ARGS_RE = re.compile(r'"arguments"\s*:\s*(.*?)\s*\}\s*$', re.DOTALL)
+
+
+def _salvage_failed_generation(exc: BaseException) -> Optional[str]:
+    """Recover the model's text from a Groq tool_use_failed 400, or None.
+
+    Returns None for every other error, so the caller's normal failure
+    handling is untouched unless this exact provider bug is what happened.
+    """
+    body = getattr(exc, "body", None)
+    error = body.get("error") if isinstance(body, dict) else None
+    if not isinstance(error, dict):
+        return None
+    if error.get("code") != TOOL_USE_FAILED_CODE:
+        return None
+
+    blob = error.get("failed_generation")
+    if not isinstance(blob, str) or not blob.strip():
+        return None
+
+    match = _FAILED_ARGS_RE.search(blob)
+    if not match:
+        return None
+    value = match.group(1).strip()
+
+    # Tolerate a properly quoted value too, in case Groq ever fixes the shape.
+    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+        try:
+            value = json.loads(value)
+        except ValueError:
+            value = value[1:-1]
+    value = str(value).strip()
+    return value or None
+
+
+class _SalvagedCompletion:
+    """Minimal stand-in for a chat completion recovered from an error body.
+
+    Shaped like the part of the OpenAI response the caller touches, and flagged
+    so the step record can say the text came from salvage rather than a normal
+    completion.
+    """
+
+    salvaged = True
+
+    def __init__(self, content: str):
+        message = type("msg", (), {"content": content})()
+        choice = type("choice", (), {"message": message})()
+        self.choices = [choice]
+
+
 def _is_connectivity_error(exc: BaseException) -> bool:
     """True if *exc* means "could not reach the endpoint", not "bad request".
 
@@ -898,6 +972,11 @@ class LeanAgentHarness:
                     model=self.model, max_tokens=MAX_TOKENS, messages=messages,
                     timeout=LLM_CALL_TIMEOUT_SECONDS)
             except Exception as exc:
+                # Groq's tool_use_failed 400 carries the model's answer in the
+                # error body; recover it rather than spending the step.
+                recovered = _salvage_failed_generation(exc)
+                if recovered is not None:
+                    return _SalvagedCompletion(recovered)
                 _tag_call_count(exc, calls)
                 raise
 
@@ -928,6 +1007,11 @@ class LeanAgentHarness:
                 "raw_response":     raw_text,
                 "extracted_tactic": tactic,
             }
+            if getattr(resp, "salvaged", False):
+                # Recovered from a provider error body, not a real completion.
+                # Recorded so the log never implies the API answered normally.
+                attempt_record["salvaged"] = True
+                attempt_record["salvage_source"] = "groq_tool_use_failed"
             if tactic:
                 attempt_record["accepted"] = True
             else:
