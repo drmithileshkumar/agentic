@@ -1,0 +1,500 @@
+\chapter{Failure Taxonomy}
+\label{chap:failure_taxonomy}
+
+\section{Failure Mode Taxonomy}
+\label{sec:ft_taxonomy}
+
+Chapter~\ref{chap:results} reported \emph{how often} the agent fails.
+This chapter is about \emph{how} it fails, and it is the part of the study we
+regard as the original contribution.
+Pass rates on formal benchmarks are widely published; what is not published, as
+far as we have been able to establish, is a mechanically checkable taxonomy of
+the ways a language-model proof agent goes wrong, applied to a complete run and
+reported with its own error bars and its own failures of fit.
+The taxonomy below is offered in that spirit: not as a finished instrument, but
+as one specific enough to be wrong in public.
+
+Five modes are defined:
+
+\begin{itemize}
+  \item \texttt{NO\_PROGRESS\_LOOP} --- Lean accepts the tactic but the goal
+        does not change, repeatedly.
+  \item \texttt{ERROR\_LOOP} --- Lean returns the identical message on three
+        consecutive steps that produced a message at all.
+  \item \texttt{HALLUCINATED\_LEMMA} --- the tactic names a capitalised symbol
+        Lean does not know.
+  \item \texttt{SYNTAX\_ERROR\_LOOP} --- three or more steps emit text Lean
+        cannot parse.
+  \item \texttt{BUDGET\_EXHAUSTION\_MIXED} --- none of the above.
+\end{itemize}
+
+The taxonomy is \emph{mutually exclusive} by construction: classification is
+first-match-wins in the order listed, so a proof that would satisfy two tests
+is assigned the earlier one. It is \emph{exhaustive} by construction too, but
+only in the cheap way --- the fifth mode is a residual that accepts anything the
+first four reject. Exhaustiveness bought like that is not evidence the taxonomy
+carves the space well, and \S\ref{sec:ft_negative} reports that it does not.
+
+Ordering is a modelling choice with consequences. \texttt{NO\_PROGRESS\_LOOP}
+is tested first because it is the most specific claim; \texttt{ERROR\_LOOP}
+precedes \texttt{HALLUCINATED\_LEMMA} because a proof that both loops on an
+error and invents a lemma is better described by the loop. A different order
+would produce different counts from identical logs. The counts in this chapter
+are therefore properties of \texttt{classify\_failures.py} as much as of the
+agent, which is the honest way to read any taxonomy of this kind.
+
+\section{Detection Rules}
+\label{sec:ft_rules}
+
+Each rule below is the actual code from \texttt{classify\_failures.py}, not a
+paraphrase. A proof is represented by \texttt{proof.steps}, the step events in
+order; \texttt{\_first\_message(s)} returns the first entry of that step's
+\texttt{lean\_messages} or \texttt{None}; \texttt{\_joined(s)} returns all of
+them lowercased and concatenated.
+
+\subsection{NO\_PROGRESS\_LOOP}
+
+\begin{verbatim}
+    if len(steps) >= 3:
+        tail = steps[-3:]
+        if all(s.get("outcome") == "no_progress" for s in tail):
+            return "NO_PROGRESS_LOOP", tail
+\end{verbatim}
+
+\noindent
+\textbf{Catches:} an agent whose last three tactics were all accepted by Lean
+without changing the goal --- \texttt{skip}-like tactics, a \texttt{simp} with
+nothing to rewrite, a \texttt{try} whose body failed silently.
+
+\noindent
+\textbf{Misses:} any such loop that is interrupted once in its final three
+steps, and --- decisively for this study --- any agent that never receives the
+\texttt{no\_progress} outcome in the first place. See \S\ref{sec:ft_zero}.
+
+\subsection{ERROR\_LOOP}
+
+\begin{verbatim}
+    with_msgs = [s for s in steps if _first_message(s)]
+    if len(with_msgs) >= 3:
+        tail = with_msgs[-3:]
+        first = _first_message(tail[0])
+        if all(_first_message(s) == first for s in tail[1:]):
+            return "ERROR_LOOP", tail
+\end{verbatim}
+
+\noindent
+\textbf{Catches:} exact repetition of Lean's first message across the last
+three message-producing steps. Note that the filter is applied before the tail
+is taken, so silent steps in between do not break the loop.
+
+\noindent
+\textbf{Misses:} semantically identical errors with different text --- two
+different unknown identifiers, or the same type mismatch reported against
+different metavariable numbers, will not compare equal. Conversely it
+\emph{over}-catches: the rule says nothing about where the message came from,
+so three identical provider errors satisfy it exactly. That is the subject of
+\S\ref{sec:ft_provider}, and it turns out to account for 22 of 28 raw hits.
+
+\subsection{HALLUCINATED\_LEMMA}
+
+\begin{verbatim}
+    hallucinated = [s for s in steps
+                    if "unknown identifier" in _joined(s)
+                    and names_a_hallucinated_symbol(s.get("tactic"))]
+    if hallucinated:
+        return "HALLUCINATED_LEMMA", hallucinated[:3]
+\end{verbatim}
+
+\noindent where the helper is
+
+\begin{verbatim}
+    STDLIB_NAMES = frozenset({
+        "Nat", "Int", "Real", "List", "Set", "Finset",
+        "Bool", "Prop", "Type", "Sort",
+    })
+    _CAP_IDENT_RE = re.compile(r"[A-Z][A-Za-z0-9_']*")
+
+    def names_a_hallucinated_symbol(tactic):
+        if not isinstance(tactic, str):
+            return []
+        found = []
+        for match in _CAP_IDENT_RE.findall(tactic):
+            if match not in STDLIB_NAMES and match not in found:
+                found.append(match)
+        return found
+\end{verbatim}
+
+\noindent
+\textbf{Catches:} an invented dotted path whose root is capitalised, such as
+\texttt{Submodule.eq\_top\_of\_orthogonal\_eq\_bot}, while whitelisting the ten
+library roots so that \texttt{exact Nat.add\_comm \_ \_} is not misread as an
+invention.
+
+\noindent
+\textbf{Misses:} a great deal, and asymmetrically. Lean says ``unknown
+identifier'' only for a name that resolves to nothing; a model that invents a
+\emph{lowercase} lemma name --- which is the Mathlib convention for theorems,
+and therefore the common case --- is caught only if the tactic happens to
+mention some other capitalised token. A hallucinated name that collides with a
+real declaration produces a type error instead and is never seen. The reported
+rate is a floor, not an estimate.
+
+Note also that the whitelist is a list of \emph{roots}, but the regex matches
+every capitalised token in the tactic. In
+\texttt{simpa using (Group.orderOf\_conj ...)} the trigger is \texttt{Group},
+which is a perfectly real Mathlib class; the invention is the lowercase
+\texttt{orderOf\_conj} that follows it. The rule fires for the right proof for
+the wrong reason.
+
+\subsection{SYNTAX\_ERROR\_LOOP}
+
+\begin{verbatim}
+    syntax = [s for s in steps
+              if "expected" in _joined(s) or "parse error" in _joined(s)]
+    if len(syntax) >= 3:
+        return "SYNTAX_ERROR_LOOP", syntax[:3]
+\end{verbatim}
+
+\noindent
+\textbf{Catches:} an agent emitting text Lean cannot parse at all --- prose,
+truncated terms, JSON fragments that escaped the tactic extractor.
+
+\noindent
+\textbf{Misses:} the threshold is three \emph{anywhere} in the proof, not three
+consecutively, so this is a rate test wearing the name of a loop. It also
+competes with \texttt{ERROR\_LOOP}, which is tested first: an agent that emits
+the same unparseable string three times in a row is classified as an error loop,
+not a syntax loop. Only agents that fail to parse in three \emph{different} ways
+reach this rule.
+
+\subsection{BUDGET\_EXHAUSTION\_MIXED}
+
+\begin{verbatim}
+    return "BUDGET_EXHAUSTION_MIXED", steps[-3:]
+\end{verbatim}
+
+\noindent
+\textbf{Catches:} everything else.
+
+\noindent
+\textbf{Misses:} nothing, which is the problem. \S\ref{sec:ft_negative}.
+
+\section{Provider Failure Filtering}
+\label{sec:ft_provider}
+
+\subsection{The problem}
+
+The detection rules read Lean messages, but the \texttt{lean\_messages} field
+carries whatever the harness recorded for that step --- including the reason a
+step never reached Lean. When NVIDIA NIM returned 404 for twenty minutes, the
+affected steps recorded
+
+\begin{verbatim}
+    LLM call failed: NotFoundError: Error code: 404
+\end{verbatim}
+
+\noindent identically, step after step. That satisfies the \texttt{ERROR\_LOOP}
+test perfectly. Classified naively, an outage is indistinguishable from a model
+that will not stop repeating itself, and the taxonomy reports an infrastructure
+event as a reasoning defect.
+
+\subsection{What the filter actually is}
+
+The filter is \emph{not} a keyword search over \texttt{lean\_messages}.
+It is an exclusion on the proof's terminal result code, which the harness
+assigns when the attempt ends:
+
+\begin{verbatim}
+    PROVIDER_CODES = {"FAILED_LLM_ERROR",
+                      "FAILED_CONNECTIVITY_OUTAGE",
+                      "FAILED_ELABORATION"}
+
+    if proof.result in PROVIDER_CODES:
+        continue            # not the model's failure; do not classify
+\end{verbatim}
+
+This distinction matters, because a keyword heuristic over the messages would
+not have worked. Counting first-messages across both Easy-50 runs, the string
+\texttt{RateLimitError: Error code: 429} occurs 165 times inside proofs that
+ended in a provider result code --- and 193 times inside proofs that ended in
+\texttt{FAILED\_BUDGET\_EXHAUSTED}. The same marker is more common in the set it
+would have to keep than in the set it would have to drop. Rate limiting is
+pervasive rather than terminal: the harness retries, the retry succeeds, the
+proof continues and eventually runs out of steps for reasons of its own.
+Filtering on result codes works because the harness has already decided, at the
+end of the attempt, what killed it.
+
+\subsection{Before and after}
+
+Table~\ref{tab:ft_filter} gives the distribution under three successively
+stricter definitions of ``the model failed''.
+\emph{Raw} classifies every failed proof.
+\emph{Result-coded} drops proofs whose terminal code blames the provider; this
+is the column Chapter~\ref{chap:results} reports.
+\emph{Strict} additionally drops proofs in which provider errors consumed a
+majority of the steps --- rate-limit casualties that the circuit breaker did not
+catch before the step budget ran out.
+
+\begin{table}[htbp]
+\centering
+\caption{Failure mode distribution under three filters. Excluding provider
+failures cuts \texttt{ERROR\_LOOP} from 28 to 6; the remaining shape is stable.}
+\label{tab:ft_filter}
+\begin{tabular}{@{}lrrrrrr@{}}
+\hline
+ & \multicolumn{2}{c}{\textbf{Raw}} & \multicolumn{2}{c}{\textbf{Result-coded}}
+ & \multicolumn{2}{c}{\textbf{Strict}} \\
+\textbf{Mode} & n & \% & n & \% & n & \% \\
+\hline
+\texttt{NO\_PROGRESS\_LOOP}        &  0 &  0.0 &  0 &  0.0 &  0 &  0.0 \\
+\texttt{ERROR\_LOOP}               & 28 & 32.9 &  6 & 17.1 &  6 & 28.6 \\
+\texttt{HALLUCINATED\_LEMMA}       &  2 &  2.4 &  2 &  5.7 &  1 &  4.8 \\
+\texttt{SYNTAX\_ERROR\_LOOP}       &  2 &  2.4 &  2 &  5.7 &  2 &  9.5 \\
+\texttt{BUDGET\_EXHAUSTION\_MIXED} & 53 & 62.4 & 25 & 71.4 & 12 & 57.1 \\
+\hline
+\textbf{Total}                     & 85 & 100.0 & 35 & 100.0 & 21 & 100.0 \\
+\hline
+\end{tabular}
+\end{table}
+
+Every one of the 22 \texttt{ERROR\_LOOP} cases removed by the result-code filter
+carried the code \texttt{FAILED\_LLM\_ERROR}. None were borderline.
+
+The \emph{strict} column exists because the result-code filter is not sufficient.
+Provider errors that occur \emph{inside} a proof which then exhausts its budget
+survive it, and they are not rare: across the 35 result-coded failures, 206 of
+525 steps (39.2\%) were provider errors rather than Lean verdicts. That figure is
+almost entirely one run. The Nemotron failures are clean --- 9 provider-error
+steps out of 225 (4.0\%), with 9 of 15 proofs entirely free of them. The Groq
+failures are not: 197 of 300 steps (65.7\%), with 14 of 20 proofs spending more
+than half their budget on rate limits. Fourteen of the twenty-five
+\texttt{BUDGET\_EXHAUSTION\_MIXED} cases are Groq proofs that never got enough
+uninterrupted turns to fail on the mathematics.
+
+The shape survives all three filters, which is the useful conclusion: the zero
+stays zero, the residual bucket stays dominant, and no reordering of the modes
+occurs.
+
+\section{BUDGET\_EXHAUSTION\_MIXED as a Negative Result}
+\label{sec:ft_negative}
+
+Between 57\% and 71\% of genuine failures, depending on the filter, land in the
+bucket defined as ``none of the above''. A taxonomy whose residual category is
+its largest is not describing its domain.
+
+It is worth being precise about what those proofs look like, because the bucket
+is not homogeneous and its name is misleading. The agent in these proofs is
+typically not stuck in any detectable sense. It proposes a tactic, Lean rejects
+it, it proposes a different tactic, Lean rejects that too, and after fifteen
+such rounds the budget ends. Sometimes real progress happens first --- 26 of the
+35 result-coded failures contain at least one \texttt{advanced} step --- and
+then the agent stalls at a subgoal it cannot close. Nothing repeats often enough
+to trip a loop detector, nothing is obviously invented, nothing fails to parse
+three times. The proof simply does not get finished.
+
+That pattern deserves a name, and the taxonomy does not have one. A sixth mode
+--- \textsc{Partial Progress Stall}, for a proof that recorded at least one
+\texttt{advanced} step, never repeated a tactic more than twice, and terminated
+on budget --- would separate the genuinely instructive failures from the
+``never got started'' cases currently pooled with them. On this data it would
+claim a substantial share of the residual and leave a much smaller true
+remainder.
+
+Three implications follow, in increasing order of interest.
+
+\paragraph{The step budget is miscalibrated.}
+Chapter~\ref{chap:results} found no proof closing after step~9 and 33 of 38
+closing within four. A budget of 15 therefore spends most of its steps in a
+region where success has never once been observed. Cutting it to 6 would cost
+two proofs out of 38 and return roughly 60\% of the compute currently burned on
+failures. For a study rate-limited by its providers, that is the single
+cheapest available improvement.
+
+\paragraph{Early stopping should key on progress, not on step count.}
+A proof that has made no \texttt{advanced} step by step~5 is in a different
+state from one that has decomposed its goal twice and is working on a subgoal.
+The first should be abandoned; the second is exactly where extra budget might
+pay. The current harness cannot tell them apart because it stops on step count
+alone.
+
+\paragraph{The residual is where the interesting failures are.}
+The four specific modes describe an agent that is malfunctioning --- looping,
+inventing, emitting garbage. The residual describes an agent that is behaving
+sensibly and still failing, which is the harder and more relevant condition.
+The taxonomy was built to catch pathology and the dominant behaviour is not
+pathological; it is competent, patient, and insufficient.
+
+\section{NO\_PROGRESS\_LOOP = 0}
+\label{sec:ft_zero}
+
+\subsection{The hypothesis}
+
+The study was designed expecting \texttt{NO\_PROGRESS\_LOOP} to be the dominant
+mode, on the order of 40\% of failures. The reasoning was ordinary: a greedy
+agent with no backtracking, shown the same goal repeatedly, would propose the
+same tactic repeatedly and spin until its budget ran out.
+
+The observed count is zero. Not small --- zero, in both Easy-50 runs, under both
+models, across all 20 run directories on disk, and under all three filters in
+Table~\ref{tab:ft_filter}.
+
+\subsection{Why}
+
+The mode presupposes a \emph{silent} failure: a tactic Lean accepts while
+leaving the goal unchanged. That is the only way the \texttt{no\_progress}
+outcome is produced. In practice the agent's bad tactics are not accepted
+silently --- they are rejected loudly. Lean returns a message, the harness
+appends it to the history, and the next prompt contains it. The agent is never
+in the epistemic position the hypothesis assumed.
+
+This is best read as a property of the environment rather than of the agent, and
+a favourable one. The Lean REPL does not silently tolerate a wrong tactic. Every
+step returns a verdict: the goal closed, the goal changed, or an error
+explaining what went wrong. An agent working against such an environment cannot
+be confused about whether its last action accomplished anything. Whatever else
+is hard about tactic-by-tactic proving, the credit assignment is free.
+
+\subsection{What it invalidates}
+
+An entire family of proposed improvements addresses this non-condition:
+goal-state diffing to detect stagnation, explicit no-progress counters, forced
+tactic diversity after a repeat, prompt instructions to avoid repeating
+ineffective tactics. On this evidence all of it targets a failure that does not
+occur. The agent's difficulty is not that it fails to notice failure --- it is
+that noticing failure tells it nothing about what to do instead. The 36.4\%
+tactic repetition rate reported in Chapter~\ref{chap:results} is repetition
+\emph{after an explicit error message}, which is a different and harder defect
+than blind spinning.
+
+\section{Representative Traces}
+\label{sec:ft_traces}
+
+Traces are quoted from the logs with whitespace normalised and long Lean
+messages truncated. The reliability caveat in \S\ref{sec:ft_threats} applies to
+the first example and is stated there.
+
+\subsection{HALLUCINATED\_LEMMA}
+
+Theorem \texttt{TOP\_E\_01}: given that preimages of open sets are open, show
+\texttt{Continuous f}. Nemotron, run \texttt{20260909\_002719},
+\texttt{proof\_0008}:
+
+\begin{verbatim}
+  step 1   exact continuous_iff_isOpen.mpr h
+           Unknown identifier `continuous_iff_isOpen.mpr`
+  step 2   apply continuous_iff_isOpen.mpr
+  step 5   exact continuous_iff_isOpen.mpr h
+  step 8   exact continuous_iff_isOpen.mpr h
+  step 12  exact continuous_iff_isOpen.mpr h
+  (15 steps, FAILED_BUDGET_EXHAUSTED)
+\end{verbatim}
+
+The detector reports the invented symbol as \texttt{Open}, the capitalised
+token inside \texttt{continuous\_iff\_isOpen}; the actual invention is the whole
+name. Mathlib has no \texttt{continuous\_iff\_isOpen}. The lemma the model
+wanted exists and is called \texttt{continuous\_def}:
+
+\begin{verbatim}
+  theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y}
+      {f : X -> Y} : Continuous f <-> forall s, IsOpen s -> IsOpen (f ^-1' s)
+\end{verbatim}
+
+This is the characteristic shape of the mode. The model has the mathematics
+exactly right --- it knows the goal follows from an iff-characterisation of
+continuity in terms of open preimages, and \texttt{.mpr} is the correct
+direction to apply. What it does not have is the name. It generates a
+plausible Mathlib-style identifier from the semantics, which is precisely what a
+language model trained on naming conventions would do, and the identifier does
+not exist.
+
+\subsection{ERROR\_LOOP}
+
+Theorem \texttt{SET\_E\_03}, transitivity of subset. Groq, run
+\texttt{20260913\_165146}, \texttt{proof\_0006}, with no provider errors at all:
+
+\begin{verbatim}
+  step 10  exact h1.trans h2        Lean error: No goals to be solved
+  step 11  exact h1.trans h2        Lean error: No goals to be solved
+  step 12  done                     (accepted)
+  step 15  exact h1.trans h2        Lean error: No goals to be solved
+  (15 steps, FAILED_BUDGET_EXHAUSTED)
+\end{verbatim}
+
+The rule fires on steps 10, 11 and 15 --- the last three message-producing
+steps, all carrying byte-identical text, with the silent step 12 skipped by the
+filter. The model repeats one tactic verbatim across a span of six steps.
+
+The honest reading of this trace is not flattering to the taxonomy. Four of the
+six result-coded \texttt{ERROR\_LOOP} cases repeat the message
+\texttt{No goals to be solved}, and a fifth repeats \texttt{Unknown proof
+state.} after a REPL timeout. Both are messages about the \emph{proof state},
+not about the tactic. Only one of the six --- \texttt{proof\_0012}, repeating
+\texttt{unknown tactic} while the model emitted English prose --- is an error
+loop in the sense the mode was written to capture. \texttt{ERROR\_LOOP} as
+implemented is mostly detecting sessions whose state has become incoherent.
+
+\subsection{BUDGET\_EXHAUSTION\_MIXED}
+
+Theorem \texttt{exercise\_4\_4}, on roots of a complex polynomial and its
+derivative. Groq, run \texttt{20260913\_165146}, \texttt{proof\_0018}:
+
+\begin{verbatim}
+  steps 1-4, 6-10   LLM call failed: RateLimitError: 429   (9 steps lost)
+  step 5   exact Iff.rfl         Type mismatch: Iff.rfl has type ?m <-> ?m
+  step 11  apply Iff.intro       (accepted, goal split)
+  step 12  intro hdeg            (accepted, hypothesis introduced)
+  step 13  simpa [hdeg]          Tactic `assumption` failed
+  step 14  simp [hdeg]           (accepted, goal simplified)
+  step 15  LLM call failed: RateLimitError: 429
+  final goal:  case mp ... hdeg : p.degree = sorry |- sorry () = bot
+\end{verbatim}
+
+This is the dominant mode in one trace. Steps 11, 12 and 14 are real progress:
+the iff is split, the hypothesis is introduced, the goal is simplified. Nothing
+repeats, nothing is invented, nothing fails to parse more than once. The agent
+was working correctly and ran out of room --- ten of its fifteen steps went to
+rate limiting, and the four it got after step 10 were spent productively.
+
+The final goal also shows the dataset problem from another angle. The statement
+contains \texttt{sorry} placeholders where \texttt{card} failed to elaborate, so
+the agent was working on a goal that is not the theorem anyone intended. It made
+genuine progress on a malformed target.
+
+\section{Threats to the Classification}
+\label{sec:ft_threats}
+
+\paragraph{One run predates a harness fix.}
+Until commit \texttt{dd33000} (2026-09-12) the harness decided a step had failed
+by searching Lean's messages for the literal word ``error''. Lean reports
+\texttt{Unknown identifier} and \texttt{Unknown constant} without using it, so
+failed tactics were recorded with outcome \texttt{advanced} and the harness
+adopted the broken proof state they returned --- which is why so many
+subsequent steps report \texttt{No goals to be solved}. The Nemotron run
+(2026-09-09) predates the fix; the Groq run (2026-09-13) does not.
+Re-scoring the Nemotron logs with the corrected rule reclassifies 13 of 316
+steps and drops the step-1 \texttt{advanced} rate from 23.9\% to 6.5\%.
+Mode assignments are less affected than step outcomes, because the rules key on
+message text rather than on the outcome label --- with the exception of
+\texttt{NO\_PROGRESS\_LOOP}, whose count is zero under either labelling.
+Traces in \S\ref{sec:ft_traces} were drawn from the post-fix run wherever
+possible; the \texttt{HALLUCINATED\_LEMMA} example is pre-fix, but the Lean
+message it turns on is unaffected by the bug.
+
+\paragraph{At least one proof was scored as a failure after closing its goal.}
+In \texttt{proof\_0006} above, step 3 applied
+\texttt{exact fun x hx => h2 (h1 hx)} --- a correct and complete proof of
+\texttt{SET\_E\_03} --- after which no goals remained, as the subsequent
+\texttt{No goals to be solved} messages confirm. The harness recorded the step
+as \texttt{advanced} rather than \texttt{proved} and the attempt continued to
+budget exhaustion. Six other proofs show the same shape, but in those the
+closing tactic was \texttt{sorry}, \texttt{admit} or \texttt{done}, which
+correctly do not count. This one appears to be a genuine proof scored as a
+failure, which would make the Groq headline 9/50 rather than 8/50. It has not
+been corrected in Chapter~\ref{chap:results} pending confirmation.
+
+\paragraph{The counts are small.}
+Twenty-one to thirty-five classified failures, spread over five modes, three of
+which hold fewer than seven proofs each. No claim about the relative frequency
+of the minority modes is supported by this data. The two findings that are
+robust are the ones that do not depend on small counts: the zero, and the
+dominance of the residual.
