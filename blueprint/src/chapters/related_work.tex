@@ -1,0 +1,87 @@
+\chapter{Related Work}
+\label{chap:related_work}
+
+\section{The state of automated theorem proving}
+
+Automated theorem proving has bifurcated into two traditions.
+Classical automated theorem provers --- Vampire, E, Z3 --- operate on fixed logic fragments
+and are complete within those fragments but cannot handle the dependent types and
+rich library structure of Lean~4.
+Neural theorem provers treat the problem as a search task in a formal language,
+guided by a learned policy.
+This study belongs to the second tradition.
+
+\section{Competition-mathematics systems}
+
+The systems that dominate public leaderboards are trained or searched on competition benchmarks.
+
+\textbf{Seed-Prover} \cite{seed2025} achieves 99.6\% on miniF2F using reinforcement learning
+with a subgoal decomposition reward.
+The model is fine-tuned; the search is deep.
+Its benchmark is competition mathematics: problems with short, structured proofs
+that map naturally to a small set of powerful tactics.
+
+\textbf{BFS-Prover~V2} \cite{bfsprover2025} reaches 95.08\% on miniF2F through
+multi-agent tree search combined with RL fine-tuning.
+The search tree can be orders of magnitude wider than our 15-step budget.
+
+\textbf{Kimina-Prover} \cite{kimina2025} achieves 92.2\% on miniF2F.
+It demonstrates that pass rate scales with model size even without tree search,
+but the model is fine-tuned on formal proof data and the benchmark remains miniF2F.
+
+\textbf{LEAP} \cite{leap2026} scores approximately 70\% on Lean-IMO-Bench
+using structured prompting combined with bounded search.
+It is the closest in spirit to our setup --- prompting without RL --- but still
+uses search and targets competition problems.
+
+None of these systems report a detailed failure taxonomy.
+Pass rate is the metric; why the agent fails is not discussed.
+
+\section{Real-Mathlib benchmarks}
+
+\textbf{SorryDB} \cite{sorrydb2026}, presented at ICLR 2026, is the closest prior work
+to this study.
+It provides a live benchmark of real Mathlib \texttt{sorry} placeholders ---
+theorems left unproved by Mathlib contributors --- and reports agentic pass rates
+in the range of 20--30\% on Easy problems.
+Our study uses a static snapshot of a similar problem class and reports
+31.8\% (Nemotron, reachable-only) and 28.6\% (Groq, reachable-only),
+consistent with SorryDB's range.
+
+SorryDB does not publish per-step event logs or a failure taxonomy.
+The pass rate is the output; the mechanism of failure is not characterised.
+
+\textbf{Discover \& Prove} \cite{discover2025} combines a natural-language discovery
+phase with an ATP prover backend, achieving state-of-the-art results on CombiBench.
+It is a hybrid system: the language model proposes conjectures;
+a classical prover closes them.
+Our agent is pure LLM throughout --- no classical backend.
+
+\section{Positioning}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llllll}
+\hline
+\textbf{System} & \textbf{Benchmark} & \textbf{Best result} & \textbf{Search} &
+\textbf{Fine-tuned} & \textbf{Failure taxonomy} \\
+\hline
+Seed-Prover      & miniF2F     & 99.6\%  & deep RL      & yes & no \\
+BFS-Prover~V2    & miniF2F     & 95.08\% & tree search  & yes & no \\
+Kimina-Prover    & miniF2F     & 92.2\%  & none         & yes & no \\
+LEAP             & Lean-IMO    & $\sim$70\%  & bounded      & no  & no \\
+SorryDB (agents) & Mathlib     & $\sim$20--30\% & unspecified & unspecified & no \\
+\textbf{This work} & \textbf{Mathlib} & \textbf{31.8\%} & \textbf{none} & \textbf{no} & \textbf{yes} \\
+\hline
+\end{tabular}
+\caption{Comparison of neural theorem proving systems. Results are not directly
+comparable: benchmarks, model sizes, and search budgets differ substantially.
+This work's contribution is the failure taxonomy, not the pass rate.}
+\end{table}
+
+This study does not claim a higher pass rate than prior work.
+It claims the first systematic characterisation of \emph{why} a greedy zero-shot
+agent fails on real Mathlib theorems.
+That characterisation is the precondition for knowing which of the techniques above ---
+search, fine-tuning, tool use, better prompting --- would close the largest
+fraction of currently failed proofs.
