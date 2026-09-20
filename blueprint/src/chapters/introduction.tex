@@ -1,0 +1,97 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+Formal theorem proving has undergone a quiet transformation.
+Systems that once required years of expert interaction to close a single non-trivial proof
+now close thousands per day --- automatically, verifiably, at scale.
+The leading systems are remarkable: Seed-Prover achieves 99.6\% on miniF2F;
+BFS-Prover~V2 reaches 95.08\%; Kimina-Prover 92.2\%.
+Each of them is a substantial engineering project --- reinforcement learning pipelines,
+fine-tuned models, tree search over thousands of candidate tactics,
+and verification infrastructure that spans multiple machines.
+
+This study asks a different question.
+
+\section{The gap in the literature}
+
+Every paper that proposes a new search strategy, a new fine-tuning objective,
+or a new prompt structure implicitly assumes a baseline.
+That baseline is usually described briefly --- ``without our method, pass rate falls to X\%'' ---
+and the X is rarely characterised in detail.
+We do not know \emph{why} the unimproved agent fails.
+We do not know whether it fails because it cannot identify the right tactic,
+because it ignores the feedback Lean returns, because it hallucinates lemma names
+that do not exist in Mathlib, or simply because it runs out of attempts on a proof
+that would have yielded with one more step.
+
+Without a detailed failure taxonomy, every proposed improvement is an educated guess
+about which failure mode it addresses.
+
+\section{What this study does}
+
+We characterise the baseline.
+
+The agent is as simple as possible: a single frontier language model ---
+NVIDIA Nemotron-3-Ultra-550B, 550~billion parameters, accessed via the NVIDIA NIM API ---
+operating in a greedy loop.
+At each step it receives the current Lean proof state and the history of what it has tried;
+it proposes one tactic; Lean either accepts it, rejects it with an error, or ignores it
+because the goal did not change.
+No tree search.
+No fine-tuning.
+No auxiliary tools.
+No backtracking.
+One tactic at a time until the proof closes or the budget runs out.
+
+We run this agent on 837 real Mathlib theorems, drawn from eleven mathematical domains
+and stratified into three difficulty tiers.
+Every agent--Lean exchange is recorded in a structured JSONL event log ---
+the exact prompt sent, the raw completion, the tactic extracted, the Lean response,
+and the step outcome.
+That log is the raw material for five questions: what pass rate the agent achieves
+per tier, why it fails when it fails, how many steps a successful proof takes,
+whether it uses the tactic history it is given, and which tactics it reaches for
+versus which ones actually close goals.
+
+\section{Why \emph{this} agent on \emph{these} theorems}
+
+Benchmark suites like miniF2F and PutnamBench are competition mathematics.
+They are well-studied, their statements are clean, and their proofs tend to be short.
+Real Mathlib theorems are different: they assume a working knowledge of the library,
+their proof states can be large, and the right tactic is often one that searches
+Mathlib's namespace rather than one that a language model is likely to guess.
+A system that scores 99.6\% on miniF2F may behave very differently on the theorems
+that practising mathematicians actually leave unproved.
+
+The choice to use a greedy, zero-shot agent is deliberate.
+It is the worst reasonable configuration --- no search, no adaptation, no prior training
+on the target distribution.
+Its failure modes are therefore the \emph{purest} signal: they are not masked by search
+finding a workaround, or fine-tuning compressing a latent fix into the weights.
+If we understand exactly how this agent fails, we know exactly what each proposed
+improvement must overcome.
+
+\section{Contributions}
+
+This study contributes:
+
+\begin{enumerate}
+  \item A reproducible evaluation harness for Lean~4 theorem proving,
+        model-agnostic and open-source --- the model is selected at runtime with a
+        \texttt{--model} flag, and any OpenAI-compatible endpoint works without a
+        code change.
+  \item 837 Mathlib theorems across three difficulty tiers, with per-step JSONL logs
+        for every agent--Lean exchange.
+  \item Pass rates for Nemotron-3-Ultra-550B and Groq~\texttt{gpt-oss-20b} on the Easy
+        tier, reported both as a headline figure over all theorems attempted and as a
+        reachable-only figure over those that actually reached a working model ---
+        a distinction the runs made unavoidable, and one that changes the number
+        substantially. Medium and Hard remain to be run.
+  \item The first published failure-mode taxonomy for LLM-based Lean agents:
+        five mutually exclusive modes derived from the event logs, with examples.
+  \item Evidence on history utilisation: whether the agent reads and acts on
+        the tactic history it receives.
+\end{enumerate}
+
+The result is the characterisation that every subsequent paper in this space can use
+as its reference point.
