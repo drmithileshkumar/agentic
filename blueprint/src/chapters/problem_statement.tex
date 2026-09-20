@@ -1,0 +1,134 @@
+\chapter{Problem Statement}
+\label{chap:problem_statement}
+
+\section{The object of study}
+
+We study a \emph{greedy, zero-shot, tactic-by-tactic} theorem proving agent.
+At each step the agent receives the current Lean~4 proof state and the full history
+of tactics it has tried; it proposes exactly one tactic; Lean either closes the proof,
+advances the goal, leaves it unchanged, or returns an error.
+The agent has no lookahead, no backtracking, and no access to the Mathlib source
+beyond what the language model learned during pretraining.
+
+Formally, the agent defines a policy
+\[
+  \pi : (\text{goal state}, \text{tactic history}) \;\longrightarrow\; \text{tactic string}
+\]
+instantiated by a single frozen language model --- NVIDIA Nemotron-3-Ultra-550B
+or Groq \texttt{gpt-oss-20b} --- queried via a standard chat completion API.
+The policy is evaluated on 837 theorems drawn from real Mathlib,
+stratified into three difficulty tiers (Easy: 310, Medium: 378, Hard: 149).
+
+\section{Research questions}
+
+Five questions structure the study.
+
+\paragraph{RQ1 --- Capability ceiling.}
+What pass rate does the agent achieve on Mathlib Easy, Medium, and Hard theorems?
+Are the tier labels calibrated to agent difficulty, or do they reflect human difficulty alone?
+
+We report two variants, and the distinction is not cosmetic.
+The \emph{headline} pass rate is proved over all theorems attempted.
+The \emph{reachable-only} pass rate is proved over those the model actually got to
+attempt --- that is, theorems the agent either proved or failed to prove within its
+step budget.
+Excluded from the reachable denominator are theorems lost before any mathematics
+happened: those whose statement failed to elaborate in Lean
+(\texttt{FAILED\_ELABORATION}, a dataset-quality signal), and those where the model
+was never reached at all because the provider was down, rate-limiting, or returning
+errors (\texttt{FAILED\_LLM\_ERROR}, \texttt{FAILED\_CONNECTIVITY\_OUTAGE}).
+
+The second exclusion is the load-bearing one.
+Across the two Easy-50 runs conducted so far, 28 of 50 and 22 of 50 theorems
+respectively were lost to provider failure or elaboration --- so the headline figure
+divides successes by a denominator dominated by infrastructure the study does not
+control, and measures API uptime as much as model capability.
+Reporting both is what keeps that visible rather than buried:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\hline
+\textbf{Run (Easy, $n=50$)} & \textbf{Headline} & \textbf{Reachable-only} \\
+\hline
+Nemotron-3-Ultra-550B & 7/50 = 14.0\% & 7/22 = 31.8\% \\
+Groq \texttt{gpt-oss-20b} & 8/50 = 16.0\% & 8/28 = 28.6\% \\
+\hline
+\end{tabular}
+\end{center}
+
+Wilson score intervals accompany every rate; at these sample sizes they are wide, and
+the two models are not distinguishable from one another.
+
+\paragraph{RQ2 --- Failure mode taxonomy.}
+When the agent fails, what is the proximate cause?
+We define five mutually exclusive failure modes, detectable from the JSONL event log
+and assigned first-match-wins in the order below:
+\begin{itemize}
+  \item \textsc{No-Progress Loop} --- the final three steps all report the
+        \texttt{no\_progress} outcome: Lean accepted the tactic but the proof state
+        did not change.
+  \item \textsc{Error Loop} --- the same Lean message is returned by the last three
+        steps that produced any message at all.
+  \item \textsc{Hallucinated Lemma} --- Lean reports ``unknown identifier'' or
+        ``unknown constant'' while the tactic names a capitalised symbol. Known
+        library roots (\texttt{Nat}, \texttt{Int}, \texttt{Real}, \texttt{List},
+        \texttt{Set}, \texttt{Finset}, \texttt{Bool}, \texttt{Prop}, \texttt{Type},
+        \texttt{Sort}) are whitelisted, so \texttt{exact Nat.add\_comm \_ \_} is not
+        misread as an invention.
+  \item \textsc{Syntax Error Loop} --- three or more steps return messages mentioning
+        ``expected'' or ``parse error''.
+  \item \textsc{Budget Exhaustion (Mixed)} --- none of the above;
+        the agent made some progress but ran out of steps.
+\end{itemize}
+The relative frequency of these modes determines which improvement ---
+better prompting, search, tool use, or fine-tuning --- would have the largest effect.
+
+Failures caused by the provider rather than the model are excluded before
+classification. Without that filter a run of identical \texttt{APIConnectionError}
+messages classifies as \textsc{Error Loop}, which would attribute an outage to the
+agent's reasoning.
+
+\paragraph{RQ3 --- Step economy.}
+How many steps does a successful proof require?
+Is there a step threshold beyond which the probability of success effectively vanishes?
+A survival curve --- $P(\text{proved} \mid \text{still alive after } k \text{ steps})$ ---
+as a function of step number motivates or rules out early stopping heuristics.
+
+\paragraph{RQ4 --- History utilisation.}
+Does the agent read and act on its tactic history?
+We measure three proxies: the fraction of steps where the model repeats a tactic it already tried
+(repetition rate), whether the \emph{advanced} outcome rate increases with step number
+(which would indicate the model is learning within the episode),
+and how quickly the goal state shrinks (measured by proof-state character count).
+The history shown to the model is itself logged per step, so these measures are taken
+against what the model actually saw rather than what it was assumed to have seen.
+
+\paragraph{RQ5 --- Tactic distribution.}
+Which tactics does the model use, and which ones work?
+We separate \emph{usage frequency} from \emph{success rate} (fraction of uses that occur
+as the final step of a proved proof) and cluster tactics into reliable closers,
+progress makers, and dead ends.
+
+\section{What we do not study}
+
+This study does not optimise pass rate.
+We do not implement tree search, self-consistency sampling, fine-tuning,
+or any auxiliary tool beyond the Lean REPL.
+We do not compare against competition-mathematics benchmarks such as miniF2F or PutnamBench.
+The agent is deliberately minimal: its failure modes are therefore maximally interpretable,
+not masked by engineering that fixes them before they can be observed.
+
+\section{Success criteria}
+
+The study succeeds if it produces:
+\begin{enumerate}
+  \item Pass rates with confidence intervals for at least the Easy tier,
+        with the headline/reachable distinction clearly stated.
+  \item A classified failure breakdown for all failed proofs,
+        with at least one documented example per mode.
+  \item Enough step-level data to plot the survival curve and
+        the repetition-rate statistic.
+  \item A tactic frequency and precision table covering all tactics observed.
+\end{enumerate}
+Medium and Hard results would strengthen RQ1 but are not required for the
+other four research questions, which are answerable from the Easy runs alone.
