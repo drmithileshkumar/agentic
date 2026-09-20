@@ -3,7 +3,7 @@
 
 \emph{Agentic Hallucinations --- Independent Study.} Design spec for how the agent and Lean 4 actually communicate, and what ``environment switching'' means across this project's full stack. Written to be concrete enough to hand to an implementer (human or Claude Code) as a blueprint --- not just a description.
 
-Sources: \href{https://github.com/leanprover-community/repl}{leanprover-community/repl} (protocol fetched and quoted directly below), \href{https://arxiv.org/abs/2410.16429}{Pantograph (arXiv:2410.16429)}, \href{https://github.com/oOo0oOo/lean-lsp-mcp}{lean-lsp-mcp}, \href{https://github.com/augustepoiroux/leaninteract}{LeanInteract}. Full bibliography: \texttt{docs/resources.md}.
+Sources: \href{https://github.com/leanprover-community/repl}{leanprover-community/repl} (protocol fetched and quoted directly below), \href{https://arxiv.org/abs/2410.16429}{Pantograph (arXiv:2410.16429)}, \href{https://github.com/oOo0oOo/lean-lsp-mcp}{lean-lsp-mcp}, \href{https://github.com/augustepoiroux/leaninteract}{LeanInteract}.
 
 \section{The loop, restated precisely}
 
@@ -124,7 +124,7 @@ Distilling the above into the fields the harness needs to track per iteration:
 \hline
 \textbf{Field} & \textbf{Source} & \textbf{Notes} \\
 \hline
-\texttt{theorem\_id} & problem set (\texttt{docs/resources.md} topic/difficulty split, Goal 9) & which problem this attempt belongs to \\
+\texttt{theorem\_id} & problem set (\texttt{problems/candidates.jsonl}, with its topic/difficulty split) & which problem this attempt belongs to \\
 \texttt{attempt\_id} & harness & one per full proof attempt (a theorem may be attempted multiple times) \\
 \texttt{step\_index} & harness & position in this attempt's tactic sequence \\
 \texttt{proofState\_before} & REPL & the \texttt{proofState} id the tactic was proposed against \\
@@ -134,11 +134,21 @@ Distilling the above into the fields the harness needs to track per iteration:
 \texttt{outcome} & derived & \texttt{advanced} / \texttt{rejected} / \texttt{proved} (\texttt{goals == []}) / \texttt{no\_progress} (accepted syntactically but \texttt{goals\_after == goals\_before}) \\
 \texttt{error\_message} & REPL \texttt{messages} & full text, only present on \texttt{outcome == rejected} \\
 \texttt{wall\_time\_ms} & harness & time for this one REPL round-trip --- needed to separate ``slow tactic'' (e.g.\ a heavy \texttt{simp}/\texttt{aesop} call) from a hung process (\S7) \\
+\texttt{llm\_input} & harness & the exact prompt sent to the model this step, as \texttt{\{system, user\}} --- the system prompt verbatim plus the user turn with the formatted goal and history \\
+\texttt{llm\_raw\_response} & agent output & the completion exactly as returned, \emph{before} tactic extraction. Distinguishing this from \texttt{tactic\_string} is what separates ``the model proposed nonsense'' from ``our extractor mangled a good answer'' \\
+\texttt{retry\_attempts} & harness & one entry per completion parsed this step, each carrying the raw text, the extracted tactic, and whether it was accepted or skipped as empty --- so an empty-completion retry is visible rather than inferred from a call count \\
+\texttt{history\_passed} & harness & the history list as the model saw it at this step, logged before the step appends its own entry --- a true per-step snapshot, never back-filled \\
 \hline
 \end{tabular}
 \end{center}
 
-This table is the seed of the logging schema for Goal 8 (agent-thinking logging system) --- that doc should extend this with \emph{why} the agent chose the tactic (its reasoning/prompt context), not just what Lean did with it.
+The first ten rows are the Lean-side record this document set out to specify.
+The last four are the agent-side half that \S9 anticipated: the implemented
+harness logs both, so a JSONL file is a complete transcript of the exchange
+rather than a summary of it. Every field above ships in the per-step
+\texttt{step} event, with \texttt{proofState}/\texttt{goals} naming following
+the harness's own vocabulary (\texttt{goal\_before}, \texttt{goal\_after},
+\texttt{lean\_messages}, \texttt{llm\_calls}, \texttt{lean\_calls}).
 
 \section{Environment switching --- three distinct senses}
 
@@ -148,7 +158,7 @@ This table is the seed of the logging schema for Goal 8 (agent-thinking logging 
 
 Each Lean \textbf{project} pins a \texttt{lean-toolchain} (exact compiler version) and a \texttt{lakefile} dependency set (which Mathlib commit, which other libraries). A single REPL process is started via \texttt{lake env <repl-binary>} \textbf{inside a specific project directory} and inherits \emph{that} project's toolchain and imports for its whole lifetime.
 
-For this project's problem set (set theory / topology / algebra, all drawn from Mathlib per the Lean 4 Tutorial chapter, \S10--12), \textbf{one Mathlib-linked project should suffice for all three topics} --- Mathlib is a single library spanning all of them, so topic segmentation is a \emph{content/selection} concern, not an environment concern. Toolchain switching only becomes real if the problem set later pulls in an external benchmark repo with its own pinned toolchain (e.g.\ cloning \texttt{miniF2F} or \texttt{PutnamBench} directly rather than re-stating their theorems inside our own project --- see \texttt{docs/resources.md} \S3). In that case, the harness needs one REPL process (and one working directory) per distinct toolchain, and a router that dispatches each theorem attempt to the correct process based on which benchmark it came from.
+For this project's problem set (set theory / topology / algebra, all drawn from Mathlib per the Lean 4 Tutorial chapter, \S10--12), \textbf{one Mathlib-linked project should suffice for all three topics} --- Mathlib is a single library spanning all of them, so topic segmentation is a \emph{content/selection} concern, not an environment concern. Toolchain switching only becomes real if the problem set later pulls in an external benchmark repo with its own pinned toolchain (e.g.\ cloning \texttt{miniF2F} or \texttt{PutnamBench} directly rather than re-stating their theorems inside our own project). In that case, the harness needs one REPL process (and one working directory) per distinct toolchain, and a router that dispatches each theorem attempt to the correct process based on which benchmark it came from.
 
 \subsection{Session/state switching}
 
@@ -169,24 +179,51 @@ Distinct from the mathematical error taxonomy in the Lean 4 Tutorial chapter, \S
   \item \textbf{Resource exhaustion across a long run} --- REPL processes accumulate \texttt{Environment}/\texttt{proofState} objects in memory; a long batch run needs periodic process restarts (using the pickling mechanism from \S3 to preserve any state worth keeping) rather than one REPL process for the entire experiment.
 \end{itemize}
 
-\section{Open design decisions}
+\subsection{What actually happened}
 
-Flagging these explicitly rather than silently deciding them --- they affect the statistics, so they're worth deciding deliberately once the logging doc (Goal 8) and problem set (Goal 9) exist alongside this one:
-
-\begin{enumerate}
-  \item \textbf{What counts as ``one iteration''?} A single \texttt{\{"tactic": ...\}} call, or a semicolon/\texttt{<;>}-chained combinator treated as one agent turn (per the Lean 4 Tutorial chapter, \S9's note on this same ambiguity)? Affects every downstream ``iterations to converge'' statistic.
-  \item \textbf{Retry budget policy.} Fixed max tactics per theorem? Max wall-clock time? Does the agent get to see the full history of its own rejected attempts, or only the current goal state?
-  \item \textbf{What exactly gets shown to the agent on error} --- the raw Lean error string (verbose, sometimes includes internal term representations) or a cleaned/truncated version? This is a real methodological choice: a cleaner error message could materially change the agent's hallucination rate, which means it needs to be fixed and reported, not tuned ad hoc per run.
-  \item \textbf{Attempt independence.} Are repeated attempts at the same theorem statistically independent draws (fresh \texttt{proofState 0}, no memory of prior attempts) or is the agent allowed to see its own history across attempts? Both are defensible, but they answer different questions, and the analysis needs to know which one was run.
-\end{enumerate}
-
-\section{What this doc feeds}
+All four predicted failures materialised in practice. Three are fixed; one is not.
 
 \begin{itemize}
-  \item \textbf{Goal 8 (agent-thinking logging system)} extends \S4's per-step schema with the agent's actual reasoning trace (prompt, chain-of-thought if any, model/temperature metadata) --- this doc defines the \emph{Lean-side} half of each logged record; Goal 8 defines the \emph{agent-side} half.
-  \item \textbf{Goal 9 (problem set)} should be authored and hand-verified via the VS Code path (\S5c) before being fed to the harness described here.
-  \item \textbf{Goal 7 (environment-switching fluency guide)} is the practitioner-facing companion to \S5 --- this doc explains the \emph{architecture} of the three switching senses; Goal 7 should be the concrete day-to-day checklist (``here's how you personally move between VS Code, a terminal REPL session, and reading harness logs without losing track of which project/state you're in'').
+  \item \textbf{Non-terminating tactic} --- fixed. \texttt{LEAN\_TACTIC\_TIMEOUT\_SECONDS = 120} bounds each tactic step with a hard kill. Elaboration gets its own, far longer budget (\texttt{LEAN\_ELABORATION\_TIMEOUT\_SECONDS = 900}), because a theorem submitted with its own \texttt{import Mathlib} header re-imports Mathlib inside the command --- measured at roughly 230\,s. Applying one flat timeout to both killed an entire 50-theorem run on its first theorem.
+  \item \textbf{Process crash} --- fixed. \texttt{lean\_interact} kills the server when a command times out, so a single expired tactic would otherwise leave every later theorem facing a dead REPL that costs about ten minutes to rebuild. \texttt{\_ensure\_server\_alive()} restarts it, and both the elaboration and tactic call sites are wrapped so one bad theorem costs one theorem rather than the batch.
+  \item \textbf{Malformed input / protocol violation} --- fixed, in the form it actually took. The REPL answers with either a structured response or a \texttt{LeanError} carrying only \texttt{message}; reading the latter as the former raised \texttt{AttributeError} and took down a whole run mid-batch. It is now classified as an ordinary error outcome.
+  \item \textbf{Infrastructure versus reasoning} --- fixed, and load-bearing. The distinction this section insisted on is now carried by the result codes: \texttt{FAILED\_CONNECTIVITY\_OUTAGE} and \texttt{FAILED\_LLM\_ERROR} mark theorems the model never got to attempt, while \texttt{FAILED\_BUDGET\_EXHAUSTED} marks a genuine mathematical failure. Every pass rate in this study is reported twice because of it --- once over all theorems, once over only those that reached a working model.
+  \item \textbf{Resource exhaustion across a long run} --- \emph{not} implemented. There are no periodic REPL restarts; a batch holds one process for its whole duration. The longest run to date kept a single REPL alive for roughly 42 hours without observable degradation, so this has not yet forced the issue --- but the prediction stands and the mitigation is still unwritten.
 \end{itemize}
+
+\section{Design decisions (resolved)}
+
+These four were flagged as open when this document was written, on the grounds that they affect the statistics and so deserved deliberate choices rather than silent ones. All four are now settled in the implemented harness, and are recorded here so the analysis can state which variant was run:
+
+\begin{enumerate}
+  \item \textbf{What counts as ``one iteration''?} \emph{One LLM call is one step.} Each call produces exactly one \texttt{step} event in the JSONL log, whatever the proposed tactic contains --- a \texttt{<;>}-chained combinator counts once, because the agent took one turn. Every ``iterations to converge'' figure in the analysis is a count of these events.
+  \item \textbf{Retry budget policy.} \emph{A fixed tactic budget, with full history visible.} \texttt{--max-steps} bounds the attempt (15 in the Easy-50 runs); there is no wall-clock budget, but a per-call timeout bounds each request. The agent sees its complete history every step --- every previous tactic, its outcome, and Lean's message --- and \texttt{history\_passed} records exactly what it was shown, so the claim is checkable rather than asserted.
+  \item \textbf{What exactly gets shown to the agent on error.} \emph{The raw Lean error string, untruncated, identical across every run.} No cleaning, no summarisation, no per-run tuning. This was the choice the original text argued for, and it is worth keeping for the reason given there: a cleaner message could materially move the hallucination rate, so it has to be fixed and reported rather than adjusted.
+  \item \textbf{Attempt independence.} \emph{Fresh proof state per attempt.} Each theorem starts from the \texttt{proofState} its own elaboration returned; a tactic is submitted against the current state, and nothing carries across attempts at the same theorem. Repeated attempts are therefore independent draws, matching \S5.2's recommendation.
+\end{enumerate}
+
+One consequence of (1) and (2) together is worth noting for the analysis: because an errored step does not advance the proof state, a 15-step budget is not 15 chances at 15 different goals --- it is 15 chances at however many distinct states the agent actually reached. In the Easy-50 runs the proved proofs closed within four steps and nothing closed later, so the budget was rarely the binding constraint.
+
+\section{What this document fed --- and what changed}
+
+Three deliverables were planned downstream of this chapter.
+Two shipped; one proved unnecessary.
+
+\textbf{Logging system (Goal 8).}
+The agent-side schema described here shipped as four additional fields now recorded in every \texttt{step} event: \texttt{llm\_input} (the exact prompt sent), \texttt{llm\_raw\_response} (the raw completion before tactic extraction), \texttt{retry\_attempts} (a per-attempt trace of raw text, extracted tactic, and accepted/skipped status), and \texttt{history\_passed} (the tactic history the model received).
+These are documented in \S4's event schema table.
+
+\textbf{Problem set (Goal 9).}
+\texttt{problems/candidates.jsonl} was populated with 837 theorems across three difficulty tiers (310 Easy, 378 Medium, 149 Hard) drawn from real Mathlib.
+The planned hand-verification step --- authoring \texttt{.lean} files and checking elaboration in VS Code before any harness run --- was not completed.
+Only 9 of the 837 theorems have hand-verified proofs; the remainder came from automated extraction.
+The cost was visible: 4 of the first 50 Easy theorems failed elaboration outright (\texttt{FAILED\_ELABORATION}), which hand-verification would have caught.
+
+\textbf{Environment-switching guide (Goal 7).}
+Never written, and retrospectively unnecessary.
+The harness runs a single Lean project, a single toolchain, and a single REPL process per batch.
+The day-to-day switching problem the guide was meant to address did not materialise.
+An unwritten deliverable that turned out to be unneeded is worth recording: the single-project decision argued for in \S5.1 resolved the problem the guide was meant to paper over.
 
 \section{References}
 
@@ -194,7 +231,7 @@ Flagging these explicitly rather than silently deciding them --- they affect the
   \item \href{https://github.com/leanprover-community/repl}{leanprover-community/repl} --- protocol and JSON examples in \S3 quoted directly from this README
   \item \href{https://arxiv.org/abs/2410.16429}{Pantograph: A Machine-to-Machine Interaction Interface for Advanced Theorem Proving, High Level Reasoning, and Data Extraction in Lean 4} --- Aniva, Sun, Miranda, Barrett, Koyejo (arXiv:2410.16429)
   \item \href{https://github.com/oOo0oOo/lean-lsp-mcp}{lean-lsp-mcp}
-  \item \href{https://github.com/augustepoiroux/leaninteract}{LeanInteract} --- Python wrapper, likely implementation choice once past design stage
-  \item The Lean 4 Tutorial chapter, \S13 (mathematical error taxonomy, distinct from \S6's infrastructure failures here)
-  \item Full annotated bibliography, including the agent-Lean systems this design was compared against (LeanDojo/ReProver, LeanAgent, Prover Agent, APOLLO): \texttt{docs/resources.md}
+  \item \href{https://github.com/augustepoiroux/leaninteract}{LeanInteract} --- Python wrapper; the implementation used throughout all runs
+  \item The Lean 4 Tutorial chapter, \S13 (reading errors and diagnosing failed proofs), distinct from \S6's infrastructure failures here. The implemented failure taxonomy --- five modes: \textsc{No-Progress Loop}, \textsc{Error Loop}, \textsc{Hallucinated Lemma}, \textsc{Syntax Error Loop}, \textsc{Budget Exhaustion (Mixed)} --- lives in \texttt{classify\_failures.py}
+  \item Agent-Lean systems this design was compared against: LeanDojo/ReProver, LeanAgent, Prover Agent, APOLLO
 \end{itemize}

@@ -1,34 +1,80 @@
-\chapter{Mobile-Capable LLMs for Mathematical Reasoning}
-\label{ch:mobile_llms}
+\chapter{Rejected Design: On-Device Models}
+\label{chap:mobile_llms}
 
-This chapter surveys which language models are actually practical to run on a phone for mathematical reasoning tasks, then argues for a specific model to use in our hallucination study.
+\section{What Was Considered}
 
-\section{The landscape (2026)}
+Early in the project, we considered running a small quantised model on the
+same machine as the Lean server, eliminating the network entirely.
+The leading candidate was \textbf{Qwen2.5-Math-1.5B-Instruct} in GGUF Q4
+format ($\approx$1\,GB), runnable offline via \texttt{llama.cpp} or
+\texttt{MLC-LLM}.
 
-Two families of models are viable on-device today, and they trade off differently.
+The reasoning was sound: no API outages, no rate limits, fully reproducible,
+no cost. The Lean REPL is local anyway, so the only inter-process hop would
+be a loopback socket.
 
-\textbf{General-purpose edge models.} Phi-4-mini (3.8B) and Gemma~3~4B are the two most-cited on-device options. Phi-4-mini leads on reasoning quality --- 88.6\% on GSM8K --- and runs at roughly 13--18 tokens/sec on an iPhone~17~Pro, 10--15 tok/s on an iPhone~16~Pro, once quantized.\footnote{\url{https://www.promptquorum.com/power-local-llm/mobile-llm-models-phi4-gemma-smollm}} Gemma~3~4B is the faster of the two (around 27 tok/s on iPhone~16~Pro via Google's AI Edge SDK) and is generally rated the best all-around edge model, though its math-specific numbers are less standout than Phi-4-mini's.\footnote{\url{https://awesomeagents.ai/leaderboards/edge-mobile-llm-leaderboard/}} Both are general chat/instruction models that happen to be good at math, not models built for math.
+\section{Why We Did Not Use It}
 
-\textbf{Math-specialized small models.} The Qwen2.5-Math family (0.5B/1.5B/7B/72B) is trained specifically for mathematical reasoning via a self-improvement pipeline, and is released with official GGUF quantizations for llama.cpp-style local inference.\footnote{\url{https://github.com/QwenLM/Qwen2.5-Math}} GLM-Z1-9B is another math-strong small model, but at 9B it sits at the edge of what's comfortable on a phone rather than squarely inside it.\footnote{\url{https://www.siliconflow.com/articles/en/best-open-source-LLM-for-math}}
+\begin{enumerate}
+  \item \textbf{Capability gap.} The research question is what a
+        \emph{frontier} model achieves on real Mathlib theorems.
+        A 1.5B parameter model cannot answer that question; it can only
+        establish a floor.
+  \item \textbf{Cache dependency.} The Lean build cache must be warm for
+        every run --- 8{,}667 \texttt{.olean} files, and a \texttt{.lake}
+        directory of roughly 6.5\,GB across 140{,}000 files once dependencies
+        are unpacked. A machine provisioned for that, and for a resident Lean
+        REPL holding a full Mathlib environment in memory, is not meaningfully
+        constrained by a 1\,GB model weight. The on-device design's central
+        advantage --- a small footprint --- buys nothing here.
+  \item \textbf{Capability was the deciding factor, not reproducibility.}
+        We chose hosted APIs for reach, accepting a reproducibility cost
+        rather than avoiding one. See below.
+\end{enumerate}
 
-\textbf{Quantization.} Q4\_K\_M (4 bits/weight) is the practical standard for mobile deployment in 2026, keeping roughly 95\% of full-precision quality at a quarter of the file size.\footnote{\url{https://www.siliconflow.com/articles/en/best-lightweight-LLMs-for-mobile-devices}} Across the board, 1--3B parameters is the comfortable range for typical phones; 7--9B only works on current flagship hardware.
+\section{The Reproducibility Cost We Accepted}
 
-\section{Model choice: Qwen2.5-Math-1.5B-Instruct}
+It would be convenient to claim that versioned API endpoints give the same
+reproducibility guarantee as local weights. They do not, and this project has
+direct evidence against it.
 
-We pick \textbf{Qwen2.5-Math-1.5B-Instruct} for this project.
-
-\textbf{What it is.} A 1.5B-parameter member of the Qwen2.5-Math series, instruction-tuned and trained via an iterative self-improvement process described in the Qwen2.5-Math technical report.\footnote{\url{https://arxiv.org/pdf/2409.12122}} It ships with official GGUF weights, so it runs directly under llama.cpp / MLC-LLM without any conversion step.
-
-\textbf{Why.}
 \begin{itemize}
-  \item \emph{It punches far above its parameter count on math specifically.} With tool-integrated reasoning it scores 79.7 on the MATH benchmark\footnote{\url{https://www.emergentmind.com/topics/qwen2-5-math-1-5b}} --- competitive with, or ahead of, general models 2--3$\times$ its size on math tasks. That's a stronger reasoning-per-parameter trade than either Phi-4-mini or Gemma~3~4B offers.
-  \item \emph{It is genuinely small.} At 1.5B and Q4 quantization, the memory footprint is roughly 1\,GB, which runs on mid-range Android hardware, not just this year's flagship iPhone. That matters if we want results that generalize past top-tier devices.
-  \item \emph{It's a math specialist, not a generalist doing math.} Since this project studies hallucinations \emph{in mathematical tasks}, a model trained specifically on math gives a cleaner read on math-specific failure modes, rather than mixing in general-instruction-following weaknesses.
-  \item \emph{Fully open and offline.} Open weights plus official GGUF builds mean we can run everything locally with no API dependency --- important for reproducibility, since we're not at the mercy of an upstream model being silently updated mid-study.
-  \item \emph{The self-improvement training story is itself interesting.} The model was partly trained on math data it generated and filtered itself. That's a plausible source of distinctive hallucination signatures worth comparing against a purely human-data-trained baseline.
+  \item \textbf{Models were withdrawn mid-study.} A smoke test against
+        \texttt{llama-3.1-8b-instant} returned \texttt{404 model\_not\_found};
+        \texttt{llama3-8b-8192} and \texttt{mixtral-8x7b-32768} returned
+        \texttt{400 model\_decommissioned}. Model identifiers that were
+        current when the harness was written had ceased to exist by the time
+        it ran against them.
+  \item \textbf{Endpoints went down for days, not minutes.} The NVIDIA NIM
+        endpoint began returning 404/429/503 partway through an Easy-50 run
+        and had not recovered three days later, costing 24 of 50 theorems.
+  \item \textbf{Provider-side behaviour changed under us.} Groq's harmony-format
+        models intermittently returned \texttt{400 tool\_use\_failed} --- the
+        provider's own parser misreading its own model's output --- which the
+        harness now has to detect and recover from.
 \end{itemize}
 
-\textbf{Caveat.} The 79.7 MATH score relies on tool-integrated reasoning (code execution), not pure chain-of-thought; the CoT-only score is lower. Since our study cares about the model's own reasoning failures, we should benchmark both modes ourselves rather than citing the TIR number as if it reflects unaided reasoning.
+An offline GGUF checkpoint has none of these properties: the weights are a
+file, and a file does not get deprecated, rate-limited, or rewritten upstream.
+The honest statement of the trade is therefore that we gave up
+reproducibility and uptime in exchange for evaluating a model 350 times
+larger, and that the cost was real --- roughly half the theorems in each of
+the two Easy-50 runs were lost to provider problems rather than to the model
+failing at mathematics.
 
-% TODO: once we've actually run this on-device, replace the caveat above with
-% our own measured numbers instead of the published ones.
+This is why every result in this study reports a reachable-only pass rate
+alongside the headline: the headline figure silently mixes provider uptime
+into a capability measurement, and the gap between the two numbers is exactly
+the price of this design decision.
+
+\section{Future Use}
+
+A small on-device model remains a natural ablation: does model scale predict
+proof rate, or does the failure taxonomy look the same at 1.5B and 550B?
+This is deferred to Phase~2 (multi-model comparison).
+
+The instrumentation is already in place. Provider selection is a runtime flag
+rather than a code change, and any OpenAI-compatible endpoint works --- which
+includes \texttt{llama.cpp}'s own server. Adding a local model is a matter of
+pointing the base URL at \texttt{localhost} and setting an appropriate
+completion budget, not of modifying the harness.

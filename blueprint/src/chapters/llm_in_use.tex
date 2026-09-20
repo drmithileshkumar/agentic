@@ -1,39 +1,175 @@
-\chapter{The LLM We're Using}
-\label{ch:llm_in_use}
+\chapter{Language Models in Use}
+\label{chap:llm_in_use}
 
-\emph{Agentic Hallucinations --- Independent Study.} A record of which model actually drives the agent harness, and where that choice lives in the code.
+\section{Overview}
 
-\section{What the harness calls}
-
-The end-to-end harness script, \texttt{agents/first\_e2e\_test.py}, hardcodes the model as a module-level constant:
-
-\begin{verbatim}
-MODEL = "claude-sonnet-5"
-\end{verbatim}
-
-It is called through the official \texttt{anthropic} Python SDK, using the Messages API:
+The harness supports two providers via an OpenAI-compatible HTTP interface.
+The model is selected at runtime with the \texttt{--model} flag; no code
+change is needed to switch providers.
 
 \begin{verbatim}
-import anthropic
+# NVIDIA NIM (Nemotron-3-Ultra-550B)
+python run_proofs.py --difficulty Easy --limit 50 \
+    --model nvidia/nemotron-3-ultra-550b-a55b
 
-client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
-
-resp = client.messages.create(
-    model=MODEL,
-    max_tokens=100,
-    system=SYSTEM_PROMPT,
-    messages=[{"role": "user", "content": user_msg}],
-)
+# Groq (gpt-oss-20b)
+python run_proofs.py --difficulty Easy --limit 50 \
+    --model groq/openai/gpt-oss-20b
 \end{verbatim}
 
-The client is constructed with no arguments, so it resolves credentials from the environment --- specifically \texttt{ANTHROPIC\_API\_KEY}, which the script's own docstring instructs you to set before running.
+A \texttt{groq/} prefix selects Groq and is stripped before the request is
+sent, so \texttt{groq/openai/gpt-oss-20b} reaches the API as
+\texttt{openai/gpt-oss-20b}. Any other model string goes to whatever
+\texttt{QWEN\_BASE\_URL} points at. Provider routing lives entirely in
+\texttt{run\_proofs.py}; the harness itself is provider-agnostic.
 
-\section{It is a constant, not configuration}
+\section{Provider Details}
 
-\texttt{MODEL} is a plain module-level constant. It is not read from a config file, an environment variable, or a command-line argument, and nothing else in the repository overrides it. Changing which model the harness uses therefore means editing that line in \texttt{agents/first\_e2e\_test.py} directly.
+\subsection{NVIDIA NIM --- Primary Model}
 
-% TODO: why Claude Sonnet 5 specifically (cost/capability/context length/availability) -- not yet documented, fill in once decided or confirmed.
+\begin{itemize}
+  \item \textbf{Model:} \texttt{nvidia/nemotron-3-ultra-550b-a55b} (550 billion parameters)
+  \item \textbf{API base:} \texttt{https://integrate.api.nvidia.com/v1}
+  \item \textbf{Credential:} \texttt{QWEN\_API\_KEY} in \texttt{C:\textbackslash lean\textbackslash .env}
+  \item \textbf{Completion budget:} \texttt{max\_tokens=8192} per call
+\end{itemize}
 
-\section{Status: current state, not a final choice}
+The credential variable is named \texttt{QWEN\_API\_KEY} for historical
+reasons --- the harness originally targeted Qwen 2.5 on DashScope, and the
+variable names (\texttt{QWEN\_API\_KEY}, \texttt{QWEN\_BASE\_URL},
+\texttt{QWEN\_MODEL}) were never renamed when the provider changed. They are
+provider-neutral in effect: whatever base URL and key they carry is what the
+harness talks to.
 
-The script's own docstring describes it as a \emph{first draft} smoke test rather than production harness code, and flags at least one branch inside it as unverified pending a real run. What this chapter records is therefore the model in use as of the current state of the repository --- not a settled decision about which model the study will ultimately run against.
+The budget is generous because Nemotron is a reasoning model. It emits on the
+order of 1700 reasoning tokens on set-theory goals before committing to a
+tactic; earlier settings of 150 and then 2048 both truncated it mid-sentence,
+and the truncated fragment was sent to Lean as though it were a tactic.
+
+\subsection{Groq --- Second Model}
+
+\begin{itemize}
+  \item \textbf{Model:} \texttt{openai/gpt-oss-20b} (accessed via the \texttt{groq/} prefix)
+  \item \textbf{API base:} \texttt{https://api.groq.com/openai/v1}
+  \item \textbf{Credential:} \texttt{GROQ\_API\_KEY} in \texttt{C:\textbackslash lean\textbackslash .env}
+  \item \textbf{Limit:} 8000 tokens per minute on the free tier; the harness
+        caps \texttt{max\_tokens=1024} to stay under it.
+\end{itemize}
+
+The cap matters more than it looks. Groq counts \texttt{max\_tokens} against
+the per-minute ceiling \emph{before} the request runs, so a budget that
+overshoots is rejected outright rather than truncated:
+
+\begin{verbatim}
+Error code: 413 - Request too large for model `openai/gpt-oss-20b` ...
+tokens per minute (TPM): Limit 8000, Requested 8381
+\end{verbatim}
+
+Once history accumulates the prompt alone runs to roughly 6--7k tokens, which
+leaves about 1k for the completion. Carrying the NVIDIA budget of 8192 across
+to Groq produced this 413 on 41 of 42 LLM failures in one run, and no amount
+of retrying would have helped --- the request was structurally too large. The
+budget is therefore resolved per provider at harness construction, and can be
+overridden for a single run with \texttt{--max-tokens}.
+
+\section{Shared Configuration}
+
+Both providers receive the same system prompt every step:
+
+\begin{verbatim}
+You are proving a Lean 4 theorem one tactic at a time.
+You will be shown the current goal state and a history of what you tried.
+Respond with EXACTLY ONE Lean 4 tactic and nothing else -- no explanation,
+no code fences, no markdown. Just the tactic text, e.g.:
+    rw [Nat.add_comm]
+
+If the previous step returned an error, read it carefully and adjust.
+If the goal did not change, your tactic had no effect -- try something different.
+\end{verbatim}
+
+The full tactic history and current proof state are included in the user turn.
+Up to 3 retries are issued if the extracted tactic is empty, each appending a
+short nudge to the user message.
+
+\subsection{Tactic extraction}
+
+Both models ignore the ``exactly one tactic'' instruction often enough that the
+completion cannot be sent to Lean as-is. \texttt{\_extract\_tactic} recovers the
+tactic by scanning the non-empty lines \emph{bottom-up} --- a reasoning model
+states its answer last --- after discarding code-fence markers and inline
+backticks. A line is accepted when it either opens with a known tactic keyword
+followed by call syntax, or is short and free of sentence punctuation. If no
+line qualifies, the last non-empty line is returned, so a single-line response
+always survives.
+
+The keyword test alone is not sufficient, because the models narrate
+\emph{about} tactics constantly. \texttt{simp will rewrite the goal} and
+\texttt{exact because the term has type} both open with a tactic keyword and
+are both prose; what follows the keyword decides it. The raw completion is
+logged verbatim alongside the extracted string, so a bad tactic can be
+attributed to the model or to the extractor rather than guessed at.
+
+\section{Reliability and Circuit Breaker}
+
+Neither provider guarantees uptime, and the two fail differently. The harness
+therefore counts two kinds of failure separately, because conflating them is
+expensive:
+
+\begin{center}
+\begin{tabular}{@{}p{0.20\linewidth}p{0.40\linewidth}p{0.34\linewidth}@{}}
+\hline
+\textbf{Kind} & \textbf{Trigger} & \textbf{Response} \\
+\hline
+\textbf{Model failure} & The endpoint answered with nothing usable: empty
+completion after retries, 404, 401, bad model name & Fail fast.
+\texttt{MAX\_CONSECUTIVE\_LLM\_FAILURES = 3} consecutive, then
+\texttt{FAILED\_LLM\_ERROR} \\
+\textbf{Connectivity failure} & The endpoint was unreachable: connection
+error, read timeout, 5xx, 429 & Back off 30/60/120/240/300\,s and retry.
+\texttt{MAX\_CONSECUTIVE\_CONNECTIVITY\_FAILURES = 10} (roughly 32 minutes),
+then \texttt{FAILED\_CONNECTIVITY\_OUTAGE} \\
+\hline
+\end{tabular}
+\end{center}
+
+Only a successful call resets a counter; a model failure does not hand the
+connectivity budget a free reset. A second, coarser breaker sits above these
+in \texttt{BatchRunner}: five consecutive proofs ending
+\texttt{FAILED\_LLM\_ERROR} abort the whole batch, leaving the remaining
+theorems untouched and re-runnable rather than burned against a dead endpoint.
+
+Timeouts are enforced on both sides of the loop:
+\texttt{LLM\_CALL\_TIMEOUT\_SECONDS = 600} bounds a single completion request
+(one call once hung for 22.3 hours without it), while the Lean REPL gets
+\texttt{LEAN\_ELABORATION\_TIMEOUT\_SECONDS = 900} for the initial
+elaboration --- which re-imports Mathlib inside the command, measured at
+roughly 230\,s --- and \texttt{LEAN\_TACTIC\_TIMEOUT\_SECONDS = 120} for each
+tactic step.
+
+\section{What the two Easy-50 runs cost}
+
+\begin{center}
+\begin{tabular}{@{}p{0.26\linewidth}p{0.16\linewidth}p{0.16\linewidth}p{0.36\linewidth}@{}}
+\hline
+\textbf{Run} & \textbf{Headline} & \textbf{Reachable} & \textbf{Lost, and to what} \\
+\hline
+NIM, Nemotron-550B & 7/50 = 14.0\% & 7/22 = 31.8\% & 28: twenty-four to a
+multi-day 404/429/503 outage, four to Lean elaboration \\
+Groq, gpt-oss-20b & 8/50 = 16.0\% & 8/28 = 28.6\% & 22: fifteen connectivity
+outages, three model failures, four to Lean elaboration \\
+\hline
+\end{tabular}
+\end{center}
+
+The headline figure divides successes by theorems the model never saw, so it
+measures provider uptime as much as capability. The reachable-only figure
+counts only theorems that reached a working model --- those proved plus those
+that exhausted the step budget --- and is the number this study reports. Both
+land near the SorryDB agentic baseline of roughly 20--30\% on Easy, on samples
+of 22 and 28 respectively, so the confidence intervals are wide and the two
+models are not yet distinguishable from one another.
+
+The Groq run took roughly 42 hours, most of it spent in connectivity backoff
+rather than computation. That is the retry layer working as designed: it keeps
+theorems alive at the cost of wall-clock, where the alternative is discarding
+them.
