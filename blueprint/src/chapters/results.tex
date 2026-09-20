@@ -1,0 +1,315 @@
+\chapter{Results}
+\label{chap:results}
+
+This chapter reports what the agent actually did, question by question.
+All figures come from two Easy-tier runs of 50 theorems each --- one against
+NVIDIA Nemotron-3-Ultra-550B (run \texttt{20260909\_002719}), one against Groq
+\texttt{gpt-oss-20b} (run \texttt{20260913\_165146}) --- with a step budget of 15.
+Where a figure is drawn from the wider set of 20 run directories rather than from
+these two runs alone, the text says so.
+Medium and Hard tiers are unrun; \S\ref{sec:results_limits} states what that costs.
+
+\section{RQ1 --- Capability ceiling}
+\label{sec:results_rq1}
+
+Table~\ref{tab:pass_rates} gives the two pass-rate variants defined in
+Chapter~\ref{chap:problem_statement}.
+
+\begin{table}[htbp]
+\centering
+\caption{Easy-tier pass rates, $n=50$ per run. The reachable denominator counts
+only theorems the model was actually asked to prove and either proved or failed
+to prove within budget.}
+\label{tab:pass_rates}
+\begin{tabular}{@{}lccc@{}}
+\hline
+\textbf{Model} & \textbf{Headline} & \textbf{Reachable-only} & \textbf{Reachable $n$} \\
+\hline
+Nemotron-3-Ultra-550B      & 7/50 = 14.0\% & 7/22 = 31.8\% & 22 \\
+Groq \texttt{gpt-oss-20b}  & 8/50 = 16.0\% & 8/28 = 28.6\% & 28 \\
+\hline
+\end{tabular}
+\end{table}
+
+The gap between the two columns is the whole point.
+On the headline figure the smaller model appears to lead by two percentage points;
+on the reachable figure the larger model leads by three.
+Neither difference is meaningful --- the Wilson intervals at these sample sizes
+overlap almost completely --- but the fact that the ordering \emph{reverses}
+under a defensible change of denominator is the clearest possible evidence that
+the headline number is not measuring model capability.
+
+What the headline denominator is measuring instead is visible in the result codes.
+Of Nemotron's 50 attempts, 24 ended in \texttt{FAILED\_LLM\_ERROR}: the provider
+returned errors and the model was never reached.
+Of Groq's 50, 15 ended in \texttt{FAILED\_CONNECTIVITY\_OUTAGE} and 3 more in
+\texttt{FAILED\_LLM\_ERROR}, the residue of free-tier rate limiting.
+Between them the two runs lost 42 of 100 theorems to infrastructure.
+
+\subsection{Elaboration failures}
+
+Four theorems failed to elaborate in Lean before any tactic was proposed:
+\texttt{exercise\_4\_4\_6a}, \texttt{exercise\_4\_5\_25}, \texttt{exercise\_6\_7},
+and \texttt{exercise\_11\_4\_6b}.
+The same four failed in both runs, which is the useful part of the observation:
+an elaboration failure is a property of the dataset, not of the model, and it
+reproduces exactly across providers.
+These are statements whose Lean~4 rendering does not typecheck against current
+Mathlib --- stale names, missing instances, or signatures that have drifted since
+the problem set was transcribed.
+They are excluded from the reachable denominator because no policy, however good,
+could have proved them.
+
+\subsection{Theorems proved}
+
+Across both runs the agent proved nine distinct theorems:
+
+\begin{center}
+\begin{tabular}{@{}llc@{}}
+\hline
+\textbf{Theorem} & \textbf{Domain} & \textbf{Proved by} \\
+\hline
+\texttt{ALG\_E\_01} & Algebra          & both \\
+\texttt{ALG\_E\_02} & Algebra          & both \\
+\texttt{ALG\_E\_03} & Algebra          & both \\
+\texttt{SET\_E\_01} & Set theory       & both \\
+\texttt{SET\_E\_02} & Set theory       & both \\
+\texttt{SET\_E\_03} & Set theory       & Nemotron only \\
+\texttt{TOP\_E\_02} & Topology         & Groq only \\
+\texttt{LIN\_E\_01} & Linear algebra   & both \\
+\texttt{ABA\_E\_01} & Abstract algebra & Groq only \\
+\hline
+\end{tabular}
+\end{center}
+
+\texttt{LIN\_E\_01} and \texttt{ABA\_E\_01} appear in the raw logs under their
+source names \texttt{exercise\_1\_3} and \texttt{exercise\_7\_1\_11}; they were
+renamed on promotion into the problem set, and the union of the two runs' proved
+sets is nine theorems rather than fifteen because five were proved twice.
+
+The overlap is itself a result.
+Seven of the nine were proved by both models, and the two singletons are not
+obviously harder than the shared seven.
+Two models three orders of magnitude apart in parameter count succeed on very
+nearly the same set --- which suggests that on this tier the binding constraint
+is not model scale but whether the theorem happens to fall to a single
+well-known Mathlib lemma.
+
+\section{RQ2 --- Failure mode taxonomy}
+\label{sec:results_rq2}
+
+Classification follows Chapter~\ref{chap:problem_statement}: five modes,
+first-match-wins, with provider-caused failures excluded before classification.
+That exclusion matters enormously here and is worth quantifying.
+Classified without it, the 85 failed proofs across both runs yield 28
+\textsc{Error Loop} cases --- but a run of identical \texttt{APIConnectionError}
+messages satisfies the \textsc{Error Loop} test exactly, so most of those 28 are
+outages wearing the costume of a reasoning failure.
+Restricting to the 35 failures the model is actually responsible for
+(\texttt{FAILED\_BUDGET\_EXHAUSTED}) gives:
+
+\begin{center}
+\begin{tabular}{@{}lrr@{}}
+\hline
+\textbf{Mode} & \textbf{Count} & \textbf{Share} \\
+\hline
+\textsc{No-Progress Loop}         &  0 &  0.0\% \\
+\textsc{Error Loop}               &  6 & 17.1\% \\
+\textsc{Hallucinated Lemma}       &  2 &  5.7\% \\
+\textsc{Syntax Error Loop}        &  2 &  5.7\% \\
+\textsc{Budget Exhaustion (Mixed)}& 25 & 71.4\% \\
+\hline
+\textbf{Total}                    & 35 & 100.0\% \\
+\hline
+\end{tabular}
+\end{center}
+
+The headline is the zero, and \S\ref{sec:results_rq4} takes it up properly.
+
+The rest of the distribution is a tail behind one dominant bucket.
+\textsc{Budget Exhaustion (Mixed)} is not a pathology --- it is the absence of one.
+It means the agent tried fifteen different things, none of them repeated often
+enough or wrongly enough to trip a named mode, and then ran out of steps.
+That nearly three quarters of genuine failures land there is a negative result
+about the taxonomy as much as about the agent: the five modes were designed
+expecting the agent to get \emph{stuck} in a characteristic way, and mostly it
+does not get stuck, it simply does not know the answer.
+
+\textsc{Hallucinated Lemma} deserves a caveat in the other direction.
+Two confirmed cases is a floor, not an estimate.
+The detector fires only when Lean says ``unknown identifier'' \emph{and} the
+tactic names a capitalised non-stdlib symbol; a model that invents a lowercase
+lemma name, or whose invented name happens to exist with the wrong signature,
+produces a type error rather than an unknown identifier and lands in
+\textsc{Budget Exhaustion} instead. The true rate is higher than 5.7\%.
+
+\section{RQ3 --- Step economy}
+\label{sec:results_rq3}
+
+Two different quantities can both be called ``steps to proof'', and they give
+very different answers. Across all 38 proofs in all 20 run directories:
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\hline
+\textbf{Measure} & \textbf{Min} & \textbf{Median} & \textbf{Max} \\
+\hline
+Attempts made (all tactics proposed)     & 1 & 1 & 9 \\
+Proof length (tactics that survived)     & 1 & 1 & 3 \\
+\hline
+\end{tabular}
+\end{center}
+
+\emph{Attempts made} counts every tactic the agent proposed, failures included:
+20 of 38 proofs closed on the first attempt, 33 of 38 within four, and the
+longest took nine.
+\emph{Proof length} counts only the steps whose outcome was \texttt{advanced} or
+\texttt{proved} --- the tactics that actually appear in the compiled proof, since
+a tactic that errored left the proof state untouched.
+By that measure no proof exceeds three tactics and 34 of 38 are a single tactic.
+
+The distinction is not pedantry: it is the difference between what the agent did
+and what it produced. The proofs this agent finds are one-liners that it
+sometimes takes several guesses to hit.
+
+For early stopping the operative number is the first one, and it is encouraging.
+No proof in any run closed after step~9, and the marginal return past step~4 is
+five proofs out of 38. With a budget of 15, roughly two thirds of the compute
+spent on eventually-successful proofs is spent after the point where success has
+become unlikely --- and all of the compute on the 25 budget-exhausted failures is
+spent there. Cutting the budget to 6 would have cost two proofs and saved a
+large majority of the wasted steps.
+
+\section{RQ4 --- History utilisation}
+\label{sec:results_rq4}
+
+\subsection{The hypothesis was wrong}
+
+The study was designed around the expectation that \textsc{No-Progress Loop}
+would be the dominant failure mode, on the order of 40\%: the agent would propose
+a tactic, Lean would accept it without changing the goal, the agent would fail to
+notice and propose it again, and the episode would spin in place until the budget
+ran out.
+
+It occurred zero times. Not rarely --- never, in either run, under either model,
+and not in any of the 20 run directories.
+
+The mechanism is straightforward once observed. The failure mode presupposes a
+silent failure: a tactic that Lean accepts while leaving the goal untouched.
+In practice the agent's bad tactics do not fail silently, they fail loudly.
+Lean returns an error message, that message is appended to the history, and the
+next prompt contains it. The agent is never in the epistemic position the
+hypothesis assumed. Whatever else it does wrong, it is never left guessing
+whether its last move did anything.
+
+This is a genuine negative result and it redirects the improvement effort.
+Work aimed at making the agent notice stagnation --- goal-state diffing,
+explicit no-progress detection, forced tactic diversity --- addresses a condition
+that does not arise. The agent's problem is not that it fails to notice failure.
+It is that noticing failure does not tell it what to do next.
+
+\subsection{Repetition}
+
+The agent repeats itself, but not blindly.
+Pooled over all steps, 36.4\% of Nemotron's steps and 32.6\% of Groq's proposed a
+tactic that had already appeared earlier in the same proof (34.9\% combined,
+29.6\% across all 20 run directories).
+The distribution is skewed: the median proof repeats little, while a handful
+repeat heavily --- two Groq proofs repeated on 11 of 15 steps.
+
+Repetition after an error is not the same defect as repetition after no-progress.
+The agent has been told the tactic failed and why, and tries it anyway --- often
+with a small perturbation that does not address the error.
+This is a failure to use the feedback, not a failure to receive it.
+
+\subsection{Within-episode learning}
+
+If the agent learned from its history, the \texttt{advanced} rate would rise with
+step number. It falls:
+
+\begin{center}
+\begin{tabular}{@{}lcccccc@{}}
+\hline
+\textbf{Step} & 1 & 2 & 3 & 4 & 5 & 6--8 \\
+\hline
+\textbf{Advanced rate} & 23.9\% & 11.9\% & 4.9\% & 16.7\% & 6.2\% & 0.0\% \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent (Nemotron run; the denominator shrinks as proofs terminate.)
+The first tactic is by far the most likely to work, and the curve decays to zero
+by step~6. The agent front-loads its best guess and then degrades.
+
+Goal-state size tells the same story. Measured in characters of the goal shown to
+the model, proofs that eventually succeeded went 64, 66, 71, 71 at steps 1, 3, 6
+and 10; proofs that failed went 86, 87, 87, 87.
+Both rows are flat or rising. The agent is not decomposing the problem into
+smaller pieces --- it is restating it. A successful proof is one where the first
+or second guess happened to close a goal that was small to begin with.
+
+\section{RQ5 --- Tactic distribution}
+\label{sec:results_rq5}
+
+The single most striking result in this chapter is which tactic each model used
+most often.
+
+For Nemotron, over 231 tactic uses spanning 124 distinct tactics, the most
+frequent tactic was \texttt{sorry} --- 19 uses, 8.2\% of everything it proposed.
+\texttt{sorry} is Lean's placeholder for an omitted proof. It closes the goal
+by assumption and proves nothing; the harness scores it as a failure, and its
+precision over those 19 uses is 0.00.
+
+For Groq the same behaviour appears in a different costume and at greater
+frequency: \texttt{done} (20 uses) and \texttt{admit} (20 uses) top the table,
+followed by \texttt{exact sorry} (7) and \texttt{exact (by admit)} (3).
+Together those four are 50 of 141 uses --- 35.5\% of everything the smaller model
+proposed was a way of giving up.
+
+The natural reading is that the model loses track of what it is being asked to do.
+The prompt contains a theorem statement ending in \texttt{by sorry} --- the
+benchmark's own placeholder --- and the model, pattern-matching on a
+familiar shape, completes the file as a source-code exercise rather than
+proposing the next tactic in a live proof state. It is not conceding;
+it is answering a different question.
+
+This is an important target because it is cheap to fix and it is not a capability
+limit. Roughly a third of the smaller model's step budget is being spent on
+tactics that cannot possibly succeed. A prompt-level change, or a harness-level
+rejection of surrender tactics with a re-ask, would recover that budget without
+any improvement in mathematical ability.
+
+Among tactics that did work, the pattern is narrow. Groq's \texttt{simp} closed
+3 of 5 uses (precision 0.60), the only tactic in either run to clear the
+three-use minimum with a positive rate. The proofs that succeeded were closed by
+single applications of exactly the right Mathlib lemma --- \texttt{rw [neg\_neg]},
+\texttt{exact sq\_eq\_one\_iff.mp hx}, \texttt{exact h1.trans h2} --- which is
+consistent with RQ3's finding that successful proofs are one-liners.
+
+\section{Limitations}
+\label{sec:results_limits}
+
+\paragraph{Sample size.}
+Fifty theorems per run, of which 22 and 28 were reachable. Every rate in this
+chapter carries a Wilson interval wide enough to accommodate most competing
+hypotheses. No claim of a difference between the two models is supported.
+
+\paragraph{Medium and Hard tiers are unrun.}
+The tier labels are inherited from the source problem set and describe human
+difficulty; whether they predict agent difficulty is exactly RQ1's second half
+and it remains unanswered. The runs are gated on provider reliability rather than
+on compute: an Easy-50 run that loses 42\% of its theorems to outages would lose
+proportionally more of a 378-theorem Medium tier, and the resulting headline
+figure would be uninterpretable. Reporting Easy-only is the honest consequence of
+that, not an omission.
+
+\paragraph{The failure taxonomy is coarse.}
+71\% of genuine failures land in the residual bucket. The taxonomy successfully
+falsified its central hypothesis (\S\ref{sec:results_rq4}) but it does not
+discriminate well among the failures that remain, and
+\textsc{Hallucinated Lemma} is a known undercount.
+
+\paragraph{Single-sample, zero-shot.}
+One attempt per theorem, one tactic per step, no temperature sweep, no
+self-consistency. These results bound what a minimal agent does, not what these
+models can do.
