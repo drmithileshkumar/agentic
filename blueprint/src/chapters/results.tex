@@ -26,18 +26,29 @@ to prove within budget.}
 \textbf{Model} & \textbf{Headline} & \textbf{Reachable-only} & \textbf{Reachable $n$} \\
 \hline
 Nemotron-3-Ultra-550B      & 7/50 = 14.0\% & 7/22 = 31.8\% & 22 \\
-Groq \texttt{gpt-oss-20b}  & 8/50 = 16.0\% & 8/28 = 28.6\% & 28 \\
+Groq \texttt{gpt-oss-20b}  & 9/50 = 18.0\% & 9/28 = 32.1\% & 28 \\
 \hline
 \end{tabular}
 \end{table}
 
 The gap between the two columns is the whole point.
-On the headline figure the smaller model appears to lead by two percentage points;
-on the reachable figure the larger model leads by three.
-Neither difference is meaningful --- the Wilson intervals at these sample sizes
-overlap almost completely --- but the fact that the ordering \emph{reverses}
-under a defensible change of denominator is the clearest possible evidence that
-the headline number is not measuring model capability.
+Groq leads on both metrics (18.0\% vs.\ 14.0\% headline; 32.1\% vs.\ 31.8\%
+reachable), but the 4-percentage-point headline gap narrows to 0.3~pp once the
+infrastructure-dominated denominator is removed --- a difference not significant
+at $\alpha = 0.05$. The headline gap is thus almost entirely an artefact of
+differential infrastructure exposure between runs, not a capability difference.
+
+Groq's figure incorporates one correction.\footnote{Groq \texttt{proof\_0006}
+step~3 applied \texttt{exact fun x hx => h2 (h1 hx)}, closing
+\texttt{SET\_E\_03} with no goals remaining; the harness recorded
+\texttt{advanced} and the attempt continued to budget exhaustion. The tactic is
+axiom-free and independently confirmed by \texttt{lake env lean}. The cause is
+\emph{not} the pre-\texttt{dd33000} misclassification discussed in
+\S\ref{sec:results_rq4} --- this run postdates that fix by twenty hours. Step
+outcomes are decided by \texttt{proof\_status} being \texttt{Completed} alone,
+so a REPL
+response carrying an empty goal list without that status falls through to
+\texttt{advanced} with a null goal. The defect is still present.}
 
 What the headline denominator is measuring instead is visible in the result codes.
 Of Nemotron's 50 attempts, 24 ended in \texttt{FAILED\_LLM\_ERROR}: the provider
@@ -74,7 +85,7 @@ Across both runs the agent proved nine distinct theorems:
 \texttt{ALG\_E\_03} & Algebra          & both \\
 \texttt{SET\_E\_01} & Set theory       & both \\
 \texttt{SET\_E\_02} & Set theory       & both \\
-\texttt{SET\_E\_03} & Set theory       & Nemotron only \\
+\texttt{SET\_E\_03} & Set theory       & both \\
 \texttt{TOP\_E\_02} & Topology         & Groq only \\
 \texttt{LIN\_E\_01} & Linear algebra   & both \\
 \texttt{ABA\_E\_01} & Abstract algebra & Groq only \\
@@ -88,8 +99,10 @@ renamed on promotion into the problem set, and the union of the two runs' proved
 sets is nine theorems rather than fifteen because five were proved twice.
 
 The overlap is itself a result.
-Seven of the nine were proved by both models, and the two singletons are not
-obviously harder than the shared seven.
+Seven of the nine were proved by both models, and the two that were not ---
+\texttt{TOP\_E\_02} and \texttt{ABA\_E\_01} --- were both proved by Groq alone.
+Nemotron proved nothing the smaller model did not also prove, and neither
+singleton is obviously harder than the shared seven.
 Two models three orders of magnitude apart in parameter count succeed on very
 nearly the same set --- which suggests that on this tier the binding constraint
 is not model scale but whether the theorem happens to fall to a single
