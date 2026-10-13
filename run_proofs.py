@@ -176,7 +176,15 @@ def main():
                              "caps requests at 8000 TPM; 8192 on NVIDIA NIM)")
     parser.add_argument("--no-echo",    action="store_true",
                         help="Suppress per-step stdout output")
+    parser.add_argument("--retry-delay", type=float, default=5.0,
+                        help="Seconds before the first retry of an LLM call that "
+                             "could not reach the API; the 2nd and 3rd retries "
+                             "wait 3x and 9x this (default 5: 5s, 15s, 45s). "
+                             "Raise it for overnight runs, e.g. 60 rides out "
+                             "~13 minutes of outage")
     args = parser.parse_args()
+    if args.retry_delay < 0:
+        parser.error("--retry-delay must be >= 0")
 
     # Pick the provider before the harness is built -- it reads its credentials
     # from os.environ at construction time.
@@ -197,6 +205,7 @@ def main():
         max_steps   = args.max_steps,
         echo        = not args.no_echo,
         max_tokens  = args.max_tokens,
+        retry_delay = args.retry_delay,
     )
 
     if args.theorem:

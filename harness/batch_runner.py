@@ -24,7 +24,7 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .lean_agent import DEFAULT_MODEL, LeanAgentHarness, ProofResult
+from .lean_agent import DEFAULT_MODEL, DEFAULT_RETRY_DELAY, LeanAgentHarness, ProofResult
 
 
 # Abort the whole batch after this many consecutive proofs end FAILED_LLM_ERROR.
@@ -66,6 +66,7 @@ class BatchRunner:
         max_steps:   int  = 10,
         echo:        bool = True,
         max_tokens:  int | None = None,
+        retry_delay: float = DEFAULT_RETRY_DELAY,
     ):
         self.project_dir = project_dir
         self.log_dir     = Path(log_dir)
@@ -75,6 +76,8 @@ class BatchRunner:
         self.echo        = echo
         # None means let the harness pick from the provider's base URL.
         self.max_tokens  = max_tokens
+        # First connectivity-retry wait; see LeanAgentHarness.
+        self.retry_delay = retry_delay
 
     # ------------------------------------------------------------------
 
@@ -108,6 +111,7 @@ class BatchRunner:
             max_steps   = self.max_steps,
             echo        = self.echo,
             max_tokens  = self.max_tokens,
+            retry_delay = self.retry_delay,
         )
         print(f"Lean server ready in {time.perf_counter() - t_boot:.1f}s\n")
 

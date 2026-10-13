@@ -29,12 +29,12 @@ Outcome taxonomy
   error           Lean returned error messages (type error, parse error, etc.),
                   or the LLM call itself failed (404, rate limit, timeout)
   rejected        lean_interact raised an exception (protocol-level failure)
-  connectivity_error  the endpoint could not be reached; the step is retried
-                  after a backoff rather than counted against the model
+  connectivity_error  the endpoint stayed unreachable through every retry; the
+                  last step of a FAILED_CONNECTIVITY_OUTAGE proof
 
 A step whose LLM call fails is logged rather than crashing the run, so one bad
-API response cannot take down a whole batch and lose summary.json. Which of two
-budgets it spends depends on why it failed:
+API response cannot take down a whole batch and lose summary.json. What happens
+depends on why it failed:
 
   model failure       the endpoint answered with nothing usable (empty
                       completion after retries, 404, bad model name). Logged as
@@ -42,10 +42,13 @@ budgets it spends depends on why it failed:
                       proof aborts with FAILED_LLM_ERROR, so a persistent 404
                       does not burn the tactic budget and then misreport
                       FAILED_BUDGET_EXHAUSTED.
-  connectivity failure  the endpoint was unreachable. Logged as
-                      `connectivity_error` and retried after an exponential
-                      backoff; only after MAX_CONSECUTIVE_CONNECTIVITY_FAILURES
-                      does the proof abort, with FAILED_CONNECTIVITY_OUTAGE.
+  connectivity failure  the endpoint was unreachable. The call is retried in
+                      place, inside _get_tactic, after delays of 1x, 3x and 9x
+                      the retry delay (5s, 15s, 45s by default), so a blip never
+                      reaches the proof loop: no step is logged and the retries
+                      are not counted as LLM calls. Only if all retries fail is
+                      a `connectivity_error` step logged, and the proof aborts
+                      with FAILED_CONNECTIVITY_OUTAGE.
 
 Usage
 -----
@@ -116,7 +119,14 @@ DEFAULT_MODEL = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 #                         auth rejection). Retrying will not help -- fail fast.
 #   connectivity failure  the endpoint could not be reached at all (connection
 #                         refused, read timeout, 5xx). The theorem is fine; the
-#                         network is not. Wait it out.
+#                         network is not. Wait it out, in place.
+#
+# Connectivity failures used to be logged as connectivity_error steps, with the
+# proof loop backing off between them. That spent the model's step budget and
+# put network noise into the transcript the model reads back as history: 382 of
+# the 1349 steps across the August-October logs were connectivity_error. They
+# are now retried inside the call and never become steps unless the retries run
+# out.
 # ---------------------------------------------------------------------------
 
 # Abort a proof after this many consecutive *model* failures. The openai client
@@ -124,15 +134,13 @@ DEFAULT_MODEL = os.environ.get("QWEN_MODEL", "qwen2.5-72b-instruct")
 # model name is wrong, not that it is briefly busy.
 MAX_CONSECUTIVE_LLM_FAILURES = 3
 
-# Abort a proof after this many consecutive *connectivity* failures. With the
-# backoff schedule below that is roughly 32 minutes of sustained outage -- long
-# enough to ride out a blip, short enough not to burn a night on a dead endpoint.
-MAX_CONSECUTIVE_CONNECTIVITY_FAILURES = 10
-
-# Exponential backoff between connectivity retries: 30, 60, 120, 240, then held
-# at the cap. Total wait across all 10 attempts is ~32 minutes.
-CONNECTIVITY_BACKOFF_BASE = 30.0
-CONNECTIVITY_BACKOFF_CAP = 300.0
+# Retries of one LLM call after a connectivity failure, before the step is
+# logged as connectivity_error and the proof aborts. Retry k (from 1) waits
+# retry_delay * 3**(k-1): 5s, 15s, 45s at the default, ~65s in all. Overnight
+# runs can pass a larger --retry-delay to sit out longer outages.
+CONNECTIVITY_RETRIES = 3
+DEFAULT_RETRY_DELAY = 5.0
+CONNECTIVITY_BACKOFF_FACTOR = 3
 
 # Hard ceiling on a single completion request. Proof 0024 of the 20260906_191021
 # run consumed 22.3 hours inside one call: with no timeout the client waited on a
@@ -517,7 +525,7 @@ def _is_connectivity_error(exc: BaseException) -> bool:
     The distinction drives which circuit breaker fires, so it errs toward
     connectivity only for causes that are genuinely transport-level. A 404, a
     401 or a bad model name is emphatically not one of them -- those should
-    fail fast rather than sit through 32 minutes of backoff.
+    fail fast rather than sit through the retry backoff.
 
     Note openai.APITimeoutError subclasses openai.APIConnectionError, so the
     first check already covers per-call timeouts.
@@ -628,7 +636,14 @@ class LeanAgentHarness:
         Override the default system prompt.
     echo : bool
         Whether the logger should also print to stdout.
+    retry_delay : float
+        First wait, in seconds, before retrying an LLM call that could not
+        reach the endpoint; later retries wait 3x and 9x this.
     """
+
+    # A class attribute as well, so a harness built without __init__ (the tests
+    # do this) still has one.
+    retry_delay: float = DEFAULT_RETRY_DELAY
 
     def __init__(
         self,
@@ -639,12 +654,14 @@ class LeanAgentHarness:
         system_prompt: Optional[str] = None,
         echo:          bool = True,
         max_tokens:    Optional[int] = None,
+        retry_delay:   float = DEFAULT_RETRY_DELAY,
     ):
         self.project_dir   = project_dir
         self.model         = model
         self.max_steps     = max_steps
         self.system_prompt = system_prompt or DEFAULT_SYSTEM_PROMPT
         self._echo         = echo
+        self.retry_delay   = retry_delay
         self.logger        = ProofLogger(log_path, echo=echo)
 
         # Verbatim record of the most recent LLM exchange, refilled by
@@ -771,9 +788,10 @@ class LeanAgentHarness:
         )
 
         history: list[dict] = []
-        # Two independent budgets -- see the module constants for why.
+        # Connectivity failures need no counter here: _get_tactic retries them
+        # itself, and one that still escapes means the outage outlasted every
+        # retry.
         consecutive_model_failures = 0
-        consecutive_connectivity_failures = 0
 
         # ---- 2. Proof loop ----------------------------------------------
         for step in range(1, self.max_steps + 1):
@@ -789,10 +807,6 @@ class LeanAgentHarness:
                 llm_call_count = getattr(exc, "llm_call_count", 1)
                 detail = f"LLM call failed: {type(exc).__name__}: {exc}"
                 connectivity = _is_connectivity_error(exc)
-                if connectivity:
-                    consecutive_connectivity_failures += 1
-                else:
-                    consecutive_model_failures += 1
 
                 # _get_tactic reset and part-filled this before it raised, so
                 # the prompt it was sending -- and any completions it did get
@@ -805,20 +819,18 @@ class LeanAgentHarness:
                 )
 
                 if connectivity:
-                    # The theorem is fine, the endpoint is not. Never abort on a
-                    # blip -- wait, and only give up on a sustained outage.
-                    if consecutive_connectivity_failures >= MAX_CONSECUTIVE_CONNECTIVITY_FAILURES:
-                        self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
-                        self.logger.done(
-                            proof_id, theorem_statement,
-                            result="FAILED_CONNECTIVITY_OUTAGE", total_steps=step,
-                        )
-                        return self._make_result(
-                            proof_id, theorem_statement, "FAILED_CONNECTIVITY_OUTAGE", step
-                        )
-                    self._connectivity_backoff(consecutive_connectivity_failures)
-                    continue
+                    # _get_tactic already retried this call CONNECTIVITY_RETRIES
+                    # times with backoff, so the outage is sustained: stop.
+                    self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
+                    self.logger.done(
+                        proof_id, theorem_statement,
+                        result="FAILED_CONNECTIVITY_OUTAGE", total_steps=step,
+                    )
+                    return self._make_result(
+                        proof_id, theorem_statement, "FAILED_CONNECTIVITY_OUTAGE", step
+                    )
 
+                consecutive_model_failures += 1
                 if consecutive_model_failures >= MAX_CONSECUTIVE_LLM_FAILURES:
                     self.logger.error(proof_id, theorem_statement, detail=detail, raw=None)
                     self.logger.done(
@@ -829,9 +841,6 @@ class LeanAgentHarness:
                         proof_id, theorem_statement, "FAILED_LLM_ERROR", step
                     )
                 continue
-
-            # The endpoint answered, whatever it said -- connectivity is fine.
-            consecutive_connectivity_failures = 0
 
             if not tactic.strip():
                 # The API responded but the model gave nothing usable, even
@@ -976,10 +985,9 @@ class LeanAgentHarness:
         """Indirection point so tests can observe backoff without waiting."""
         time.sleep(seconds)
 
-    def _connectivity_backoff(self, attempt: int) -> float:
-        """Wait out a transient outage; returns the delay actually used."""
-        delay = min(CONNECTIVITY_BACKOFF_BASE * (2 ** (attempt - 1)),
-                    CONNECTIVITY_BACKOFF_CAP)
+    def _connectivity_backoff(self, retry: int) -> float:
+        """Wait before connectivity retry *retry* (from 1); returns the delay."""
+        delay = self.retry_delay * CONNECTIVITY_BACKOFF_FACTOR ** (retry - 1)
         self._sleep(delay)
         return delay
 
@@ -988,7 +996,9 @@ class LeanAgentHarness:
 
         Retries up to 3 extra times if the model returns an empty completion;
         the returned count reflects how many API calls that actually took, so
-        the caller can log it accurately.
+        the caller can log it accurately. Separately, each call that cannot
+        reach the endpoint is retried CONNECTIVITY_RETRIES times with backoff;
+        those attempts are not counted.
 
         If a call raises, the exception is tagged with ``llm_call_count`` before
         propagating, so the caller can log the true cost of the failed step too.
@@ -1033,25 +1043,39 @@ class LeanAgentHarness:
             "user":   user_msg,
         }
 
-        # Ground truth for the metric: incremented on every API call issued,
-        # including retries and the call that raises.
+        # Ground truth for the metric: incremented on every API call the
+        # endpoint answered -- completions, empty-completion retries, and calls
+        # it rejected (404, ...). Calls that never reached it are not counted.
         calls = 0
 
         def _create():
             nonlocal calls
-            calls += 1
-            try:
-                return self._client.chat.completions.create(
-                    model=self.model, max_tokens=self.max_tokens, messages=messages,
-                    timeout=LLM_CALL_TIMEOUT_SECONDS)
-            except Exception as exc:
-                # Groq's tool_use_failed 400 carries the model's answer in the
-                # error body; recover it rather than spending the step.
-                recovered = _salvage_failed_generation(exc)
-                if recovered is not None:
-                    return _SalvagedCompletion(recovered)
-                _tag_call_count(exc, calls)
-                raise
+            for retry in range(CONNECTIVITY_RETRIES + 1):
+                try:
+                    resp = self._client.chat.completions.create(
+                        model=self.model, max_tokens=self.max_tokens, messages=messages,
+                        timeout=LLM_CALL_TIMEOUT_SECONDS)
+                    calls += 1
+                    return resp
+                except Exception as exc:
+                    # Groq's tool_use_failed 400 carries the model's answer in
+                    # the error body; recover it rather than spending the step.
+                    recovered = _salvage_failed_generation(exc)
+                    if recovered is not None:
+                        calls += 1
+                        return _SalvagedCompletion(recovered)
+                    if not _is_connectivity_error(exc):
+                        calls += 1
+                        _tag_call_count(exc, calls)
+                        raise
+                    if retry == CONNECTIVITY_RETRIES:
+                        _tag_call_count(exc, calls)
+                        raise
+                    delay = self._connectivity_backoff(retry + 1)
+                    if self._echo:
+                        print(f"  [connectivity] {type(exc).__name__}; waited {delay:.0f}s, "
+                              f"retrying ({retry + 1}/{CONNECTIVITY_RETRIES})")
+            raise AssertionError("unreachable: the last attempt returns or raises")
 
         attempts: list[dict] = self._last_exchange["retry_attempts"]
         tactic = ""
