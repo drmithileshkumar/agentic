@@ -1,4 +1,4 @@
-# Secrets -- QWEN_API_KEY lives here. Never commit.
+# Secrets -- API keys live here. Never commit.
 .env
 
 # Virtualenv
@@ -8,12 +8,18 @@ harness-venv/
 __pycache__/
 *.pyc
 
+# Lean build artifacts
+*.olean
+*.ilean
+.lake/
+
 # MyMathlibProject is its own git repository
 /MyMathlibProject/
 
 # Run artifacts
-/logs/
+logs/
+*.jsonl.bak
 
-# Orphaned prototype repos — not part of the harness
+# Orphaned prototype repos -- not part of the harness
 agentic/
 agentic_new/

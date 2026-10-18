@@ -1,0 +1,146 @@
+=== 1e90727a2439  exercise_13_4b1  [SET]
+reason: goal contains sorry: Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_13_4b1 (X I : Type*) (T : I → Set (Set X)) (h : ∀ i, is_topology X (T i)) :
+  ∃! T', is_topology X T' ∧ (∀ i, T i ⊆ T') ∧
+  ∀ T'', is_topology X T'' → (∀ i, T i ⊆ T'') → T' ⊆ T''
+
+=== e0d3533feb12  exercise_28_5  [TOP]
+reason: goal contains sorry: Function expected at
+  countably_compact
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `countably_compact` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_28_5
+  (X : Type*) [TopologicalSpace X] :
+  countably_compact X ↔ ∀ (C : ℕ → Set X), (∀ n, IsClosed (C n)) ∧
+  (∀ n, C n ≠ ∅) ∧ (∀ n, C (n + 1) ⊆ C n) → ∃ x, ∀ n, x ∈ C n
+
+=== b71c38a12981  exercise_1_13c  [CAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open Complex Filter Function Metric Finset in
+open scoped BigOperators Topology in
+theorem exercise_1_13c {f : ℂ → ℂ} (Ω : Set ℂ) (a b : Ω) (h : IsOpen Ω)
+  (hf : DifferentiableOn ℂ f Ω) (hc : ∃ (c : ℝ), ∀ z ∈ Ω, abs (f z) = c) :
+  f a = f b
+
+=== e818f3d723c6  exercise_13_4b2  [SET]
+reason: goal contains sorry: Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_13_4b2 (X I : Type*) (T : I → Set (Set X)) (h : ∀ i, is_topology X (T i)) :
+  ∃! T', is_topology X T' ∧ (∀ i, T' ⊆ T i) ∧
+  ∀ T'', is_topology X T'' → (∀ i, T'' ⊆ T i) → T'' ⊆ T'
+
+=== 9695455e2280  exercise_16_6  [TOP]
+reason: goal contains sorry: Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  b
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  d
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_16_6
+  (S : Set (Set (ℝ × ℝ)))
+  (hS : ∀ s, s ∈ S → ∃ a b c d, (rational a ∧ rational b ∧ rational c ∧ rational d
+  ∧ s = {x | ∃ x₁ x₂, x = (x₁, x₂) ∧ a < x₁ ∧ x₁ < b ∧ c < x₂ ∧ x₂ < d})) :
+  IsTopologicalBasis S
+
+=== cd5863ecda68  exercise_5_1  [CAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open Complex Filter Function Metric Finset in
+open scoped BigOperators Topology in
+theorem exercise_5_1 (f : ℂ → ℂ) (hf : DifferentiableOn ℂ f (ball 0 1))
+  (hb : Bornology.IsBounded (Set.range f)) (h0 : f ≠ 0) (zeros : ℕ → ℂ)
+  (hz : Set.range zeros = {z | f z = 0 ∧ z ∈ (ball (0 : ℂ) 1)}) :
+  ∃ (l : ℝ), Tendsto (λ n => (∑ i ∈ range n, (1 - abs (zeros i)))) atTop (𝓝 l)
+

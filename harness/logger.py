@@ -4,7 +4,8 @@ ProofLogger -- structured JSONL logging for every agent <-> Lean exchange.
 Schema (one JSON object per line):
     proof_id        uuid4 -- unique per theorem attempt
     theorem         the theorem statement string
-    event           "start" | "step" | "done" | "error"
+    event           "start" | "step" | "done" | "error" | "challenge" | "defense"
+                    | "variant"
     step            int (only on "step" events)
     tactic          str (only on "step" events)
     outcome         "proved" | "advanced" | "no_progress" | "error" | "rejected"
@@ -18,7 +19,31 @@ Schema (one JSON object per line):
                     | "FAILED_LLM_ERROR" | "FAILED_CONNECTIVITY_OUTAGE" (only on "done")
     total_steps     int (only on "done")
     tactic_outcomes dict[outcome -> count] (only on "done")
+    generation_mode str (only on "done") -- how the proof was produced,
+                    e.g. "tactic_by_tactic"
     timestamp       ISO-8601 UTC
+
+Adversarial-robustness events (see log_challenge / log_defense):
+
+    step_index          int -- the proof step that was challenged
+    challenge_type      str -- kind of challenge issued
+    original_tactic     (only on "challenge") the tactic under challenge
+    prompt_sent         (only on "challenge") the full challenge prompt
+    model_response      (only on "defense") the model's verbatim reply
+    modified_proof_text (only on "defense") the proof text after the model
+                        responded, or null if it was left unchanged
+    lean_outcome        (only on "defense") "sycophantic" | "robust"
+                        | "refused" | "improved" | "error"
+    lean_messages       (only on "defense") raw messages from Lean when the
+                        (possibly modified) proof was re-checked
+
+Calibration events (see variant_generator.run_variant_experiment):
+
+    base_proof_id       (only on "variant") the proof the variant derives from;
+                        proof_id on this event is the variant's own id
+    variant_kind        (only on "variant") "wrong_hypothesis" | "wrong_conclusion"
+    original_theorem    (only on "variant") the true statement
+    variant_theorem     (only on "variant") the altered, false statement
 
 Verbatim-transcript fields -- every word that crossed the boundary, so a log
 can be replayed or audited without the run being repeated. All are written on
@@ -166,14 +191,21 @@ class ProofLogger:
         theorem:     str,
         result:      str,   # "PROVED" | "FAILED_BUDGET_EXHAUSTED" | "FAILED_ELABORATION"
         total_steps: int,
+        generation_mode: str = "tactic_by_tactic",
     ) -> None:
-        """Log the final summary event for a proof."""
+        """Log the final summary event for a proof.
+
+        *generation_mode* records how the proof was produced (default
+        "tactic_by_tactic") so runs using different strategies can be told
+        apart in the log.
+        """
         self._write({
             "proof_id":       proof_id,
             "theorem":        theorem,
             "event":          "done",
             "result":         result,
             "total_steps":    total_steps,
+            "generation_mode": generation_mode,
             "total_llm_calls":  self._llm_calls[proof_id],
             "total_lean_calls": self._lean_calls[proof_id],
             "tactic_outcomes":  dict(self._tactic_outcomes[proof_id]),
@@ -194,6 +226,91 @@ class ProofLogger:
             "event":    "error",
             "detail":   detail,
             "raw":      raw,
+        })
+
+    # ------------------------------------------------------------------
+    # adversarial-robustness events
+    # ------------------------------------------------------------------
+
+    # "error" is the fifth, for a challenge whose LLM call failed: there is no
+    # defense to judge, but the attempt still belongs on the record.
+    _LEAN_OUTCOMES = ("sycophantic", "robust", "refused", "improved", "error")
+
+    def log_challenge(
+        self,
+        proof_id:        str,
+        step_index:      int,
+        challenge_type:  str,
+        original_tactic: str,
+        prompt_sent:     str,
+    ) -> None:
+        """Log a challenge issued against one step of a completed proof.
+
+        *prompt_sent* is the full prompt handed to the model, verbatim, so the
+        exchange can be audited without being re-run.
+        """
+        self._write({
+            "proof_id":        proof_id,
+            "event":           "challenge",
+            "step_index":      step_index,
+            "challenge_type":  challenge_type,
+            "original_tactic": original_tactic,
+            "prompt_sent":     prompt_sent,
+        })
+
+    def log_defense(
+        self,
+        proof_id:            str,
+        step_index:          int,
+        challenge_type:      str,
+        model_response:      str,
+        modified_proof_text: Optional[str],
+        lean_outcome:        str,   # sycophantic|robust|refused|improved|error
+        lean_messages:       list[str],
+    ) -> None:
+        """Log the model's response to a challenge and how Lean judged it.
+
+        *modified_proof_text* is the proof after the model responded, or None
+        if the model left it unchanged. *lean_outcome* must be one of
+        "sycophantic", "robust", "refused", "improved" or "error" (the LLM
+        call for this challenge failed, so there was nothing to check).
+        """
+        if lean_outcome not in self._LEAN_OUTCOMES:
+            raise ValueError(
+                f"lean_outcome must be one of {self._LEAN_OUTCOMES}, got {lean_outcome!r}"
+            )
+        self._write({
+            "proof_id":            proof_id,
+            "event":               "defense",
+            "step_index":          step_index,
+            "challenge_type":      challenge_type,
+            "model_response":      model_response,
+            "modified_proof_text": modified_proof_text,
+            "lean_outcome":        lean_outcome,
+            "lean_messages":       lean_messages,
+        })
+
+    def log_variant(
+        self,
+        base_proof_id:    str,
+        variant_kind:     str,
+        variant_proof_id: str,
+        original_theorem: str,
+        variant_theorem:  str,
+    ) -> None:
+        """Tie a deliberately-false variant theorem back to its base proof.
+
+        Written once per variant, before the agent's own start event for
+        *variant_proof_id*, so the log can say which true theorem a false
+        one was derived from.
+        """
+        self._write({
+            "proof_id":         variant_proof_id,
+            "event":            "variant",
+            "base_proof_id":    base_proof_id,
+            "variant_kind":     variant_kind,
+            "original_theorem": original_theorem,
+            "variant_theorem":  variant_theorem,
         })
 
     # ------------------------------------------------------------------
@@ -223,6 +340,9 @@ class ProofLogger:
         "retry_attempts",
         "history_passed",
         "raw",
+        "prompt_sent",
+        "model_response",
+        "modified_proof_text",
     )
 
     def _write(self, event: dict) -> None:

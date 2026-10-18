@@ -1,0 +1,246 @@
+=== 5d8ed68057a5  exercise_13_4a1  [SET]
+reason: goal contains sorry: Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_13_4a1 (X I : Type*) (T : I → Set (Set X)) (h : ∀ i, is_topology X (T i)) :
+  is_topology X (⋂ i : I, T i)
+
+=== 5135dc327f7c  exercise_13_6  [TOP]
+reason: goal contains sorry: Unknown identifier `Rl.IsOpen` | Unknown identifier `K_topology.IsOpen` | Unknown identifier `K_topology.IsOpen` | Unknown identifier `Rl.IsOpen`
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_13_6 :
+  ¬ (∀ U, Rl.IsOpen U → K_topology.IsOpen U) ∧ ¬ (∀ U, K_topology.IsOpen U → Rl.IsOpen U)
+
+=== 7de50d0d5a74  exercise_13_8b  [TOP]
+reason: goal contains sorry: Function expected at
+  lower_limit_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  ℝ
+
+Hint: The identifier `lower_limit_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_13_8b (T : Set (Set ℝ))
+  (hT : T = {S : Set ℝ | ∃ a b : ℚ, a < b ∧ S = Ioo ↑a ↑b}) :
+  IsTopologicalBasis T ∧
+  generateFrom T ≠
+  lower_limit_topology ℝ
+
+=== 6eec374bfc3c  exercise_22_2b  [TOP]
+reason: goal contains sorry: Function expected at
+  QuotientMap
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  r
+
+Hint: The identifier `QuotientMap` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace Topology in
+theorem exercise_22_2b {X : Type*} [TopologicalSpace X]
+  {A : Set X} (r : X → A) (hr : Continuous r) (h : ∀ x : A, r x = x) :
+  QuotientMap r
+
+=== a93e6103d4e2  exercise_25_4  [TOP]
+reason: no sorry/proof state; invalid binder annotation, type is not a class instance
+  LocPathConnectedSpace X
+
+Note: Use the command `set_option checkBinderAnnotations false` to disable the check
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_25_4 {X : Type*} [TopologicalSpace X]
+  [LocPathConnectedSpace X] (U : Set X) (hU : IsOpen U)
+  (hcU : IsConnected U) : IsPathConnected U
+
+=== 5ba62426de7a  exercise_1_11a  [CAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open Topology Filter Real Complex TopologicalSpace Finset in
+open scoped BigOperators in
+theorem exercise_1_11a (z : ℂ) :
+  ∃ (r : ℝ) (w : ℂ), r ≥ 0 ∧ abs w = 1 ∧ z = r * w
+
+=== b2d8ad07b183  exercise_1_18a  [RAN]
+reason: goal contains sorry: Application type mismatch: The argument
+  x
+has type
+  EuclideanSpace ℝ (Fin n)
+of sort `Type` but is expected to have type
+  Type ?u.19
+of sort `Type (?u.19 + 1)` in the application
+  @inner x
+open Topology Filter Real Complex TopologicalSpace Finset in
+open scoped BigOperators in
+theorem exercise_1_18a
+  (n : ℕ)
+  (h : n > 1)
+  (x : EuclideanSpace ℝ (Fin n)) 
+  : ∃ (y : EuclideanSpace ℝ (Fin n)), y ≠ 0 ∧ (inner x y) = (0 : ℝ)
+
+=== 854b23715ef4  exercise_3_3  [RAN]
+reason: no sorry/proof state; typeclass instance problem is stuck
+  Preorder ?m.14
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `Preorder` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+open Topology Filter Real Complex TopologicalSpace Finset in
+open scoped BigOperators in
+theorem exercise_3_3
+  : ∃ (x : ℝ), Tendsto f atTop (𝓝 x) ∧ ∀ n, f n < 2
+
+=== 001af65fc060  exercise_1_19b  [RAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open Complex Filter Function Metric Finset in
+open scoped BigOperators Topology in
+theorem exercise_1_19b (z : ℂ) (hz : abs z = 1) (s : ℕ → ℂ)
+    (h : s = (λ n => ∑ i ∈ (range n), z ^ (i + 1) / (i + 1) ^ 2)) :
+    ∃ y, Tendsto s atTop (𝓝 y)
+
+=== 864db3f1d1fd  exercise_3_3_3  [ABA]
+reason: goal contains sorry: Invalid field `relindex`: The environment does not contain `Subgroup.relindex`, so it is not possible to project the field `relindex` from an expression
+  K ⊓ H
+of type `Subgroup G`
+open Fintype Subgroup Set Polynomial Ideal in
+open scoped BigOperators in
+theorem exercise_3_3_3 {p : Nat.Primes} {G : Type*} [Group G]
+  {H : Subgroup G} [hH : H.Normal] (hH1 : H.index = p) :
+  ∀ K : Subgroup G, K ≤ H ∨ (H ⊔ K = ⊤ ∧ (K ⊓ H).relindex K = p)
+
+=== 453ced6029b0  exercise_13_4a2  [SET]
+reason: goal contains sorry: Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace in
+open scoped Topology in
+theorem exercise_13_4a2 :
+  ∃ (X I : Type*) (T : I → Set (Set X)),
+  (∀ i, is_topology X (T i)) ∧ ¬  is_topology X (⋃ i : I, T i)
+
+=== 058a949df684  exercise_22_2a  [TOP]
+reason: goal contains sorry: Function expected at
+  QuotientMap
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  p
+
+Hint: The identifier `QuotientMap` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace Topology in
+theorem exercise_22_2a {X Y : Type*} [TopologicalSpace X]
+  [TopologicalSpace Y] (p : X → Y) (h : Continuous p) :
+  (∃ (f : Y → X), Continuous f ∧ p ∘ f = id) → QuotientMap p
+
+=== 92a0aa6e0892  exercise_23_11  [TOP]
+reason: goal contains sorry: Function expected at
+  QuotientMap
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  p
+
+Hint: The identifier `QuotientMap` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+open Filter Set TopologicalSpace Topology in
+theorem exercise_23_11 {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  (p : X → Y) (hq : QuotientMap p)
+  (hY : ConnectedSpace Y) (hX : ∀ y : Y, IsConnected (p ⁻¹' {y})) :
+  ConnectedSpace X
+
+=== 492da790038e  exercise_3_7  [RAN]
+reason: goal contains sorry: Ambiguous term
+  sqrt
+Possible interpretations:
+  (↑(a i)).sqrt : ℂ
+  
+  √(a i) : ℝ
+open Topology Filter Real Complex TopologicalSpace Finset in
+open scoped BigOperators in
+theorem exercise_3_7
+  (a : ℕ → ℝ)
+  (hnneg : ∀ n, a n ≥ 0)
+  (h : ∃ y, (Tendsto (λ n => (∑ i ∈ (range n), a i)) atTop (𝓝 y))) :
+  ∃ y, Tendsto (λ n => (∑ i ∈ (range n), sqrt (a i) / (i + 1))) atTop (𝓝 y)
+
+=== 0329f8ae30dd  exercise_1_19a  [RAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open Complex Filter Function Metric Finset in
+open scoped BigOperators Topology in
+theorem exercise_1_19a (z : ℂ) (hz : abs z = 1) (s : ℕ → ℂ)
+    (h : s = (λ n => ∑ i ∈ (range n), i * z ^ i)) :
+    ¬ ∃ y, Tendsto s atTop (𝓝 y)
+
+=== 51566b4e3c4e  exercise_1_19c  [RAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open Complex Filter Function Metric Finset in
+open scoped BigOperators Topology in
+theorem exercise_1_19c (z : ℂ) (hz : abs z = 1) (s : ℕ → ℂ)
+    (h : s = (λ n => ∑ i ∈ (range n), z ^ (i + 1) / (i + 1))) :
+    (∃ z₀, Tendsto s atTop (𝓝 z₀)) ↔ z ≠ 1
+
+=== b1f85c53b1c4  induction_prod1p1onk3le3m1onn  [ALG]
+reason: elaboration errors: failed to synthesize instance of type class
+  HAdd ℕ ℕ ℝ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+open BigOperators Real Nat Topology in
+theorem induction_prod1p1onk3le3m1onn
+  (n : ℕ)
+  (h₀ : 0 < n) :
+  ∏ k ∈ Finset.Icc 1 n, (1 + 1 / k^3) ≤ (3:ℝ) - 1 / ↑n
+
+=== fe4a6ec98ccf  amc12a_2020_p15  [CAN]
+reason: goal contains sorry: Unknown constant `Complex.abs`
+open BigOperators Real Nat Topology in
+theorem amc12a_2020_p15
+  (a b : ℂ)
+  (h₀ : a^3 - 8 = 0)
+  (h₁ : b^3 - 8 * b^2 - 8 * b + 64 = 0) :
+  Complex.abs (a - b) ≤ 2 * Real.sqrt 21
+

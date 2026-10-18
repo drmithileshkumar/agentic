@@ -1,0 +1,13 @@
+﻿✔ [8671/8674] Built LIN.E.LIN_E_01 (489s)
+⚠ [8672/8674] Built ABA.E.ABA_E_01 (490s)
+warning: problems/ABA/E/ABA_E_01.lean:10:17: missing space in the source
+
+This part of the code
+  'x^2 = 1)'
+should be written as
+  'x ^ 2'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+✔ [8673/8674] Built Problems (36s)
+Build completed successfully (8674 jobs).

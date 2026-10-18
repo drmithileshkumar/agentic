@@ -1,0 +1,609 @@
+=== 88eb2a954cb4  exercise_10_7_10  [ABA]
+reason: goal contains sorry: Function expected at
+  IsMaximal
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  M
+
+Hint: The identifier `IsMaximal` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  IsMaximal
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  N
+
+Hint: The identifier `IsMaximal` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_10_7_10 {R : Type*} [Ring R]
+  (M : Ideal R) (hM : ∀ (x : R), x ∉ M → IsUnit x)
+  (hProper : ∃ x : R, x ∉ M) :
+  IsMaximal M ∧ ∀ (N : Ideal R), IsMaximal N → N = M
+
+=== 4056b44a0072  exercise_4_5_16  [ABA]
+reason: goal contains sorry: Function expected at
+  card
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  G
+
+Hint: The identifier `card` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_4_5_16 {p q r : ℕ} {G : Type*} [Group G]
+  [Fintype G]  (hpqr : p < q ∧ q < r)
+  (hpqr1 : p.Prime ∧ q.Prime ∧ r.Prime)(hG : card G = p*q*r) :
+  (∃ (P : Sylow p G), P.Normal) ∨ (∃ (P : Sylow q G), P.Normal) ∨ (∃ (P : Sylow r G), P.Normal)
+
+=== 1e90727a2439  exercise_13_4b1  [SET]
+reason: goal contains sorry: Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_13_4b1 (X I : Type*) (T : I → Set (Set X)) (h : ∀ i, is_topology X (T i)) :
+  ∃! T', is_topology X T' ∧ (∀ i, T i ⊆ T') ∧
+  ∀ T'', is_topology X T'' → (∀ i, T i ⊆ T'') → T' ⊆ T''
+
+=== a667513bd1ba  exercise_21_8  [TOP]
+reason: goal contains sorry: Function expected at
+  Tendsto
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  x
+
+Hint: The identifier `Tendsto` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  Tendsto
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (λ n => f n (x n))
+
+Hint: The identifier `Tendsto` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_21_8
+  {X : Type*} [TopologicalSpace X] {Y : Type*} [MetricSpace Y]
+  {f : ℕ → X → Y} {x : ℕ → X}
+  (hf : ∀ n, Continuous (f n))
+  (x₀ : X)
+  (hx : Tendsto x atTop (𝓝 x₀))
+  (f₀ : X → Y)
+  (hh : TendstoUniformly f f₀ atTop) :
+  Tendsto (λ n => f n (x n)) atTop (𝓝 (f₀ x₀))
+
+=== e0d3533feb12  exercise_28_5  [TOP]
+reason: goal contains sorry: Function expected at
+  countably_compact
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `countably_compact` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_28_5
+  (X : Type*) [TopologicalSpace X] :
+  countably_compact X ↔ ∀ (C : ℕ → Set X), (∀ n, IsClosed (C n)) ∧
+  (∀ n, C n ≠ ∅) ∧ (∀ n, C (n + 1) ⊆ C n) → ∃ x, ∀ n, x ∈ C n
+
+=== ed476f8519ca  exercise_33_8  [TOP]
+reason: elaboration errors: Function expected at
+  Icc
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  0
+
+Hint: The identifier `Icc` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_33_8
+  (X : Type*) [TopologicalSpace X] [CompletelyRegularSpace X]
+  (A B : Set X) (hA : IsClosed A) (hB : IsClosed B)
+  (hAB : Disjoint A B)
+  (hAc : IsCompact A) :
+  ∃ (f : X → Icc 0 1), Continuous f ∧ f '' A = {0} ∧ f '' B = {1}
+
+=== 50e8bc39e0a3  exercise_3_1a  [RAN]
+reason: goal contains sorry: Function expected at
+  Tendsto
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (λ (n : ℕ) => f n)
+
+Hint: The identifier `Tendsto` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  Tendsto
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (λ (n : ℕ) => |f n|)
+
+Hint: The identifier `Tendsto` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_3_1a
+  (f : ℕ → ℝ)
+  (h : ∃ (a : ℝ), Tendsto (λ (n : ℕ) => f n) atTop (𝓝 a))
+  : ∃ (a : ℝ), Tendsto (λ (n : ℕ) => |f n|) atTop (𝓝 a)
+
+=== b71c38a12981  exercise_1_13c  [CAN]
+reason: goal contains sorry: failed to synthesize instance of type class
+  Lattice ℂ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+theorem exercise_1_13c {f : ℂ → ℂ} (Ω : Set ℂ) (a b : Ω) (h : IsOpen Ω)
+  (hf : DifferentiableOn ℂ f Ω) (hc : ∃ (c : ℝ), ∀ z ∈ Ω, abs (f z) = c) :
+  f a = f b
+
+=== 09711d22b342  exercise_2_5_52  [ABA]
+reason: goal contains sorry: Function expected at
+  card
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  G
+
+Hint: The identifier `card` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  card
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  I
+
+Hint: The identifier `card` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_2_5_52 {G : Type*} [Group G] [Fintype G]
+  (φ : G ≃* G) {I : Finset G} (hI : ∀ x ∈ I, φ x = x⁻¹)
+  (hI1 : (0.75 : ℚ) * card G ≤ card I) :
+  (∀ x : G, φ x = x⁻¹) ∧ ∀ x y : G, x*y = y*x
+
+=== a0cadeaa38a6  exercise_2_8_15  [NUM]
+reason: goal contains sorry: Function expected at
+  card
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  G
+
+Hint: The identifier `card` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  card
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  H
+
+Hint: The identifier `card` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_2_8_15 {G H: Type*} [Fintype G] [Group G] [Fintype H] [Group H]
+  (hG_nonab : ∃ x y : G, x * y ≠ y * x) (hH_nonab : ∃ x y : H, x * y ≠ y * x)
+  {p q : ℕ} (hp : Nat.Prime p) (hq : Nat.Prime q)
+  (h : p > q) (h1 : q ∣ p - 1) (hG : card G = p*q) (hH : card H = p*q) :
+  Nonempty (G ≃* H)
+
+=== 4c71cb3f9963  exercise_5_4_3  [CAN]
+reason: goal contains sorry: Function expected at
+  sqrt
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  2
+
+Hint: The identifier `sqrt` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  sqrt
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  5
+
+Hint: The identifier `sqrt` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  sqrt
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  7
+
+Hint: The identifier `sqrt` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  sqrt
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  11
+
+Hint: The identifier `sqrt` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_5_4_3 {a : ℂ} {p : ℂ → ℂ}
+  (hp : p = λ (x : ℂ) => x^5 + sqrt 2 * x^3 + sqrt 5 * x^2 + sqrt 7 * x + sqrt 11)
+  (ha : p a = 0) :
+  ∃ q : Polynomial ℂ, q ≠ 0 ∧ q.degree ≤ 80 ∧ a ∈ q.roots ∧
+  ∀ n : q.support, ∃ a b : ℤ, q.coeff n = a / b
+
+=== e818f3d723c6  exercise_13_4b2  [SET]
+reason: goal contains sorry: Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  is_topology
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `is_topology` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_13_4b2 (X I : Type*) (T : I → Set (Set X)) (h : ∀ i, is_topology X (T i)) :
+  ∃! T', is_topology X T' ∧ (∀ i, T' ⊆ T i) ∧
+  ∀ T'', is_topology X T'' → (∀ i, T'' ⊆ T i) → T'' ⊆ T'
+
+=== 9695455e2280  exercise_16_6  [TOP]
+reason: goal contains sorry: Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  b
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  c
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  rational
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  d
+
+Hint: The identifier `rational` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  IsTopologicalBasis
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  S
+
+Hint: The identifier `IsTopologicalBasis` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_16_6
+  (S : Set (Set (ℝ × ℝ)))
+  (hS : ∀ s, s ∈ S → ∃ a b c d, (rational a ∧ rational b ∧ rational c ∧ rational d
+  ∧ s = {x | ∃ x₁ x₂, x = (x₁, x₂) ∧ a < x₁ ∧ x₁ < b ∧ c < x₂ ∧ x₂ < d})) :
+  IsTopologicalBasis S
+
+=== fa6580846714  exercise_34_9  [TOP]
+reason: no sorry/proof state; Function expected at
+  MetrizableSpace
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  X1
+
+Hint: The identifier `MetrizableSpace` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  MetrizableSpace
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  X2
+
+Hint: The identifier `MetrizableSpace` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  MetrizableSpace
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  X
+
+Hint: The identifier `MetrizableSpace` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Type mismatch
+  univ
+has type
+  ?m.1
+but is expected to have type
+  Set X
+theorem exercise_34_9
+  (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+  (X1 X2 : Set X) (hX1 : IsClosed X1) (hX2 : IsClosed X2)
+  (hX : X1 ∪ X2 = univ) (hX1m : MetrizableSpace X1)
+  (hX2m : MetrizableSpace X2) : MetrizableSpace X
+
+=== 99bb6dca0ab8  exercise_4_15a  [RAN]
+reason: no sorry/proof state; Function expected at
+  Icc
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `Icc` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  Ioi
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  0
+
+Hint: The identifier `Ioi` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  Tendsto
+but this term has type
+  ?m.3
+
+Note: Expected a function because this term is being applied to the argument
+  μ
+
+Hint: The identifier `Tendsto` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  Icc
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `Icc` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  Icc
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `Icc` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_4_15a (a b : ℝ) (hab : a ≤ b) (f : Icc a b → ℝ) :
+  UniformContinuous f ↔ ∃ (μ : ℝ → ℝ), ∀ (x : ℝ), (x > 0 → μ x > 0) ∧
+  StrictMonoOn μ (Ioi 0) ∧ Tendsto μ (𝓝 0) (𝓝 0) ∧
+  (∀ s t : Icc a b, |f s - f t| ≤ μ (|s - t|))
+
+=== 07cdd1ed4f7e  exercise_3_5  [RAN]
+reason: goal contains sorry: Function expected at
+  limsup
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `limsup` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  limsup
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  b
+
+Hint: The identifier `limsup` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  limsup
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (λ n => a n + b n)
+
+Hint: The identifier `limsup` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  limsup
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  a
+
+Hint: The identifier `limsup` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement. | Function expected at
+  limsup
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  b
+
+Hint: The identifier `limsup` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_3_5
+    (a b : ℕ → EReal)
+    (hareal : ∀ n, a n ≠ ⊤ ∧ a n ≠ ⊥)
+    (hbreal : ∀ n, b n ≠ ⊤ ∧ b n ≠ ⊥)
+    (ha : limsup a ≠ ⊤)
+    (hb : limsup b ≠ ⊥) :
+    limsup (λ n => a n + b n) ≤ limsup a + limsup b
+
+=== 1e6f9cb84e25  exercise_3_21  [RAN]
+reason: goal contains sorry: Function expected at
+  Tendsto
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (λ n => Metric.diam (E n))
+
+Hint: The identifier `Tendsto` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+theorem exercise_3_21
+  {X : Type*} [MetricSpace X] [CompleteSpace X]
+  (E : ℕ → Set X)
+  (hEcl : ∀ n, IsClosed (E n))
+  (hEne : ∀ n, (E n).Nonempty)
+  (hEbdd : ∀ n, Bornology.IsBounded (E n))
+  (hE : ∀ n, E n ⊇ E (n + 1))
+  (hE' : Tendsto (λ n => Metric.diam (E n)) atTop (𝓝 0)) :
+  ∃ a, Set.iInter E = {a}
+
+=== 01e810e4fa2d  exercise_2_13  [TOP]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem exercise_2_13 {f : ℂ → ℂ}
+    (hf : ∀ z₀ : ℂ, ∃ (s : Set ℂ) (c : ℕ → ℂ), IsOpen s ∧ z₀ ∈ s ∧
+      (∀ z ∈ s, Tendsto (λ n => ∑ i in range n, (c i) * (z - z₀)^i) atTop (𝓝 (f z₀)))
+      ∧ ∃ i, c i = 0) :
+    ∃ (c : ℕ → ℂ) (n : ℕ), f = λ z => ∑ i in range n, (c i) * z ^ i
+
+=== cd5863ecda68  exercise_5_1  [CAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem exercise_5_1 (f : ℂ → ℂ) (hf : DifferentiableOn ℂ f (ball 0 1))
+  (hb : Bornology.IsBounded (Set.range f)) (h0 : f ≠ 0) (zeros : ℕ → ℂ)
+  (hz : Set.range zeros = {z | f z = 0 ∧ z ∈ (ball (0 : ℂ) 1)}) :
+  ∃ (l : ℝ), Tendsto (λ n => (∑ i in range n, (1 - abs (zeros i)))) atTop (𝓝 l)
+
+=== b00712912070  aime_1991_p6  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem aime_1991_p6
+  (r : ℝ)
+  (h₀ : ∑ k in Finset.Icc (19 : ℕ) 91, (Int.floor (r + k / 100)) = 546) :
+  Int.floor (100 * r) = 743
+
+=== 00fbbb5f4d82  aime_1997_p11  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem aime_1997_p11
+  (x : ℝ)
+  (h₀ : x = (∑ n in Finset.Icc (1 : ℕ) 44, Real.cos (n * π / 180)) / (∑ n in Finset.Icc (1 : ℕ) 44, Real.sin (n * π / 180))) :
+  Int.floor (100 * x) = 241
+
+=== 430d02f40d40  imo_1978_p5  [SET]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem imo_1978_p5
+  (n : ℕ)
+  (a : ℕ → ℕ)
+  (h₀ : Function.Injective a)
+  (h₁ : a 0 = 0)
+  (h₂ : 0 < n) :
+  (∑ k in Finset.Icc 1 n, (1 : ℝ)/k) ≤ ∑ k in Finset.Icc 1 n, (a k)/k^2
+
+=== e62717337224  imo_1967_p3  [NUM]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem imo_1967_p3
+  (k m n : ℕ)
+  (c : ℕ → ℕ)
+  (h₀ : 0 < k ∧ 0 < m ∧ 0 < n)
+  (h₁ : ∀ s, c s = s * (s + 1))
+  (h₂ : Nat.Prime (k + m + 1))
+  (h₃ : n + 1 < k + m + 1) :
+  (∏ i in Finset.Icc 1 n, c i) ∣ (∏ i in Finset.Icc 1 n, (c (m + i) - c k))
+
+=== 4feaf0593eb4  aime_1988_p4  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem aime_1988_p4
+  (n : ℕ)
+  (a : ℕ → ℝ)
+  (h₀ : ∀ n, abs (a n) < 1)
+  (h₁ : ∑ k in Finset.range n, (abs (a k)) = 19 + abs (∑ k in Finset.range n, a k)) :
+  20 ≤ n
+
+=== f7c0cfb799f8  imo_1966_p4  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem imo_1966_p4
+  (n : ℕ)
+  (x : ℝ)
+  (h₀ : ∀ k : ℕ, 0 < k → ∀ m : ℤ, x ≠ m * π / (2^k))
+  (h₁ : 0 < n) :
+  ∑ k in Finset.Icc 1 n, (1 / Real.sin ((2^k) * x)) = 1 / Real.tan x - 1 / Real.tan ((2^n) * x)
+
+=== 7d8750c4157f  imo_1979_p1  [NUM]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem imo_1979_p1
+  (p q : ℕ)
+  (h₀ : 0 < q)
+  (h₁ : ∑ k in Finset.Icc (1 : ℕ) 1319, ((-1:ℤ)^(k + 1) * ((1)/k)) = p/q) :
+  1979 ∣ p
+
+=== 5c09c7c8ae80  imo_1969_p2  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem imo_1969_p2
+  (m n : ℝ)
+  (k : ℕ)
+  (a : ℕ → ℝ)
+  (y : ℝ → ℝ)
+  (h₀ : 0 < k)
+  (h₁ : ∀ x, y x = ∑ i in Finset.range k, ((Real.cos (a i + x)) / (2^i)))
+  (h₂ : y m = 0)
+  (h₃ : y n = 0) :
+  ∃ t : ℤ, m - n = t * π
+
+=== d752adef4293  mathd_numbertheory_552  [NUM]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem mathd_numbertheory_552
+  (f g h : ℕ+ → ℕ)
+  (h₀ : ∀ x, f x = 12 * x + 7)
+  (h₁ : ∀ x, g x = 5 * x + 2)
+  (h₂ : ∀ x, h x = Nat.gcd (f x) (g x))
+  (h₃ : Fintype (Set.range h)) :
+  ∑ k in (Set.range h).toFinset, k = 12
+
+=== 023caee6bee6  aime_1984_p1  [ALG]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem aime_1984_p1
+  (u : ℕ → ℚ)
+  (h₀ : ∀ n, u (n + 1) = u n + 1)
+  (h₁ : ∑ k in Finset.range 98, u k.succ = 137) :
+  ∑ k in Finset.range 49, u (2 * k.succ) = 93
+
+=== 2239a8ab59cf  aime_1983_p3  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem aime_1983_p3
+  (f : ℝ → ℝ)
+  (h₀ : ∀ x, f x = (x^2 + (18 * x +  30) - 2 * Real.sqrt (x^2 + (18 * x + 45))))
+  (h₁ : Fintype (f⁻¹' {0})) :
+  ∏ x in (f⁻¹' {0}).toFinset, x = 20
+
+=== cae2af30b6ad  aime_1999_p11  [RAN]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem aime_1999_p11
+  (m : ℚ)
+  (h₀ : 0 < m)
+  (h₁ : ∑ k in Finset.Icc (1 : ℕ) 35, Real.sin (5 * k * π / 180) = Real.tan (m * π / 180))
+  (h₂ : (m.num:ℝ) / m.den < 90) :
+  ↑m.den + m.num = 177
+
+=== 485e19c49723  imo_1974_p3  [CMB]
+reason: no sorry/proof state; unexpected token 'in'; expected ','
+theorem imo_1974_p3
+  (n : ℕ) :
+  ¬ 5∣∑ k in Finset.range (n + 1), (Nat.choose (2 * n + 1) (2 * k + 1)) * (2^(3 * k))
+
