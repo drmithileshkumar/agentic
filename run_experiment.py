@@ -15,7 +15,7 @@ Usage
 -----
     .\\harness-venv\\Scripts\\Activate.ps1
     python run_experiment.py --phase 1 --difficulty Easy --limit 20
-    python run_experiment.py --phase 2 --phase1-logs C:\\lean\\logs\\phase1_20261018_120000
+    python run_experiment.py --phase 2 --phase1-logs logs/phase1_20261018_120000
     python run_experiment.py --phase 6 --limit 10 --model meta-llama/llama-4-scout-17b-16e-instruct
 
 Output
@@ -41,10 +41,14 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-ENV_FILE     = r"C:\lean\.env"
-PROJECT_DIR  = r"C:\lean\MyMathlibProject"
-CANDIDATES   = r"C:\lean\MyMathlibProject\problems\candidates.jsonl"
-DEFAULT_OUTPUT_DIR = r"C:\lean\logs"
+# Every path derives from this file's location, so the same checkout runs
+# unchanged on the Windows workstation and on the HPC (~/agentic).
+ROOT         = Path(__file__).resolve().parent
+LOG_DIR      = ROOT / "logs"
+ENV_FILE     = ROOT / ".env"
+PROJECT_DIR  = ROOT / "MyMathlibProject"
+CANDIDATES   = ROOT / "MyMathlibProject" / "problems" / "candidates.jsonl"
+DEFAULT_OUTPUT_DIR = str(LOG_DIR)      # argparse default; LOG_DIR is the Path
 DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
 DEFAULT_MAX_STEPS = 15
 
@@ -197,11 +201,34 @@ def final_line(proved: int, failed: int, sycophantic: int, rate: float) -> str:
     return f"=== DONE: {proved} proved, {failed} failed, {sycophantic} sycophantic ({rate * 100:.1f}%) ==="
 
 
+def pin_lean_toolchain() -> None:
+    """Make every `lake`/`lean` call in this process use the project's toolchain.
+
+    lean_interact checks `lake --version` without a working directory, so
+    elan resolves its *default* toolchain rather than the project's pinned
+    one. The default is "stable", which moves with each Lean release: once it
+    pointed at a version not installed here, elan tried to download it on
+    every run and the harness died before its first LLM call. ELAN_TOOLCHAIN
+    overrides that resolution process-wide. An explicit value in the
+    environment is left alone.
+    """
+    if os.environ.get("ELAN_TOOLCHAIN"):
+        return
+    pin_file = Path(PROJECT_DIR) / "lean-toolchain"
+    try:
+        pin = pin_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        return
+    if pin:
+        os.environ["ELAN_TOOLCHAIN"] = pin
+        print(f"[lean] toolchain pinned to {pin}")
+
+
 def build_lean_server():
     from lean_interact import LeanREPLConfig, LeanServer, LocalProject
     print("Starting Lean server (first `import Mathlib` takes several minutes)...")
     t0 = time.perf_counter()
-    server = LeanServer(LeanREPLConfig(project=LocalProject(directory=PROJECT_DIR), verbose=False))
+    server = LeanServer(LeanREPLConfig(project=LocalProject(directory=str(PROJECT_DIR)), verbose=False))
     print(f"Lean server ready in {time.perf_counter() - t0:.1f}s\n")
     return server
 
@@ -237,7 +264,7 @@ def run_phase0(args, run_dir: Path) -> dict:
     print(f"Loaded {len(candidates)} theorems")
 
     runner = BatchRunner(
-        project_dir=PROJECT_DIR, log_dir=str(run_dir), model=args.model,
+        project_dir=str(PROJECT_DIR), log_dir=str(run_dir), model=args.model,
         max_steps=args.max_steps, echo=not args.no_echo,
     )
     results = runner.run([c["theorem"] for c in candidates])
@@ -548,6 +575,7 @@ def main(argv=None) -> int:
 
     load_dotenv(ENV_FILE, override=False)
     os.environ["PYTHONIOENCODING"] = "utf-8"
+    pin_lean_toolchain()
     # The env var only affects interpreters started after this one; this
     # process's stdout has to be reconfigured directly.
     for stream in (sys.stdout, sys.stderr):
@@ -557,7 +585,9 @@ def main(argv=None) -> int:
             pass
 
     run_ts  = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_dir = Path(args.output_dir) / f"phase{args.phase}_{run_ts}"
+    out_root = Path(args.output_dir)
+    out_root.mkdir(parents=True, exist_ok=True)      # LOG_DIR unless --output-dir given
+    run_dir = out_root / f"phase{args.phase}_{run_ts}"
     run_dir.mkdir(parents=True, exist_ok=True)
     print(f"Phase {args.phase}  output: {run_dir}")
 
