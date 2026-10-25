@@ -19,7 +19,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, r"C:\lean")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from harness import batch_runner
 from harness.batch_runner import MAX_CONSECUTIVE_PROOF_LLM_FAILURES, BatchRunner

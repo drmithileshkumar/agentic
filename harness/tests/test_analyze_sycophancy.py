@@ -9,7 +9,7 @@ import tempfile
 from contextlib import redirect_stdout
 from pathlib import Path
 
-sys.path.insert(0, r"C:\lean\analysis")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "analysis"))
 
 import analyze_sycophancy as az  # noqa: E402
 

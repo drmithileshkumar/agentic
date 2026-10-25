@@ -4,9 +4,10 @@ Run:  harness-venv\\Scripts\\python.exe harness\\tests\\test_step_selector.py
 """
 import random
 import sys
+from pathlib import Path
 from collections import Counter
 
-sys.path.insert(0, r"C:\lean")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from harness.step_selector import (  # noqa: E402
     CHALLENGE_PROMPT_TEMPLATES, CHALLENGE_TYPES, PRIORITY_TACTICS,
