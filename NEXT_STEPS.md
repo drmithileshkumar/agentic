@@ -373,3 +373,77 @@ Recommended fix: retitle the reference section "Event Types" and add rows for
 E1–E6 and the new problem set (waiting on Phase 0 results). `candidates.jsonl`
 and the problem set were not modified. Nothing was pushed to GitHub; the path
 fix is committed locally on `master` only.
+
+---
+
+## 7. 2026-10-25 (cont.) — test-path portability fix PUSHED; Phase 0 HPC launch BLOCKED
+
+Working this time **on the HPC login node itself** (`agentic@master.krea.edu.in`,
+repo at `/home/agentic/agentic`), not the Windows workstation. This is the box
+NEXT_STEPS called `agentic@10.10.3.235`.
+
+### 7a. DONE — test-file path portability fix (committed + pushed)
+
+- Pulled origin/master: fast-forwarded `2a63e0e → 2ccda6e` (brought in `fce5d09`
+  run_experiment path fix + `2ccda6e` harness scoring fixes). A local uncommitted
+  `ENV_FILE = r".env"` stopgap was stashed then dropped (superseded by `fce5d09`).
+- Fixed the 16 `harness/tests/test_*.py` scripts: each hardcoded
+  `sys.path.insert(0, r"C:\lean")` (and `test_analyze_sycophancy` used
+  `r"C:\lean\analysis"`), so on Linux every file died with `ModuleNotFoundError`.
+  Replaced with `str(Path(__file__).resolve().parents[2])` (repo root is two
+  levels above `harness/tests/`), `+ / "analysis"` for the analysis case; added
+  `from pathlib import Path` to the four files that lacked it.
+- **Suite now passes from the repo root with no PYTHONPATH on this Linux box:
+  16/16 files, 0 FAIL.** (Run with `hpc-venv/bin/python harness/tests/<f>.py`.)
+- Committed `cd7f1b0` and **pushed to origin/master** (`2ccda6e..cd7f1b0`).
+  Local git identity set to `Mayank Goel <mayankgoel214@gmail.com>` (repo-local
+  only; amend if wrong attribution).
+
+### 7b. BLOCKED — Phase 0 cannot be launched on a compute node. Four independent blockers.
+
+Stopped here per instruction (don't start hours-long builds / can't invent
+secrets). None of these is safe for me to resolve unilaterally.
+
+1. **The `agentic` account cannot execute on the compute nodes.**
+   - This is a PBS Pro cluster (`qsub`/`pbsnodes`; nodes `node1`–`node5`), not SLURM.
+   - Direct `ssh node3/4/5` → `Permission denied (publickey)`.
+   - A bare `qsub` job (`hostname; id`, no repo/paths involved) was dispatched to
+     node3, failed to start, and PBS system-held it: `comment = job held, too many
+     failed attempts to run`. Reproduced twice. Produced zero output.
+   - Reads as the `agentic` user/home not being provisioned on the compute nodes
+     (node-side MoM can't set up the job's user environment). **Admin/provisioning
+     issue — outside what I can fix from the login node.**
+
+2. **The repo is not visible to the compute nodes.** `/home/agentic` is on
+   `/dev/mapper/rl-root`, **local to master**. The NFS exports to the node network
+   (192.168.0.0/16) are `/apps`, `/data_home`, `/data_scratch` — none contain the
+   repo (no `run_experiment.py`, no `agentic/` dir on any shared mount). A node job
+   could not even find the code. The repo would need to live on a shared mount
+   (e.g. `/data_home/agentic` or `/data_scratch/...`) — your call where.
+
+3. **No Lean project build anywhere.** `MyMathlibProject/` contains only
+   `problems/` — **no `lakefile`, no `lean-toolchain`, no `.lake`**. No Mathlib
+   build cache exists on master-local or shared storage. `~/.elan/toolchains` is
+   empty (elan binaries present, but **no toolchain installed** —
+   `leanprover/lean4:v4.33.0-rc1` per the pin is not there). First `import Mathlib`
+   would trigger a multi-hour Mathlib build — and can't even start without the
+   lakefile/toolchain. **Not started; flagging per step 5 as you asked.**
+
+4. **API keys are empty.** `/home/agentic/agentic/.env` has `NVIDIA_API_KEY=` and
+   `GROQ_API_KEY=` both blank. Phase 0's default model is `nvidia/nemotron-...`,
+   so with no key every LLM call fails. I don't have keys to supply.
+
+### 7c. What I need from you to proceed
+
+- Confirm how the `agentic` account is meant to run on compute nodes (is PBS job
+  execution expected to work? is there a different account / a node-side home /
+  an SSH key to install?). Right now neither `ssh node` nor `qsub` can run.
+- Decide the shared-mount path for the repo + Lean build (`/data_home` vs
+  `/data_scratch`, mind quota — a built Mathlib `.lake` is multi-GB).
+- Confirm I may run the (multi-hour) Mathlib build, or point me at a prebuilt
+  `.lake` / toolchain to stage.
+- Provide the real `NVIDIA_API_KEY` (and/or `GROQ_API_KEY`).
+
+Monitoring loop (step 7 of the request) **not started — there is no run to
+monitor.** `candidates.jsonl` / the problem set were not touched; the
+`mymathlib-blueprint` branch and its stash were not touched.
