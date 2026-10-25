@@ -190,6 +190,85 @@ def run():
     check("no messages -> advanced", outcome == "advanced", outcome)
     check("state adopted", nps == PS_NEW, nps)
 
+    # -------------------------------------------------------------- case 10
+    print("Case 10: a tactic containing sorry/admit never reaches Lean")
+    # Regression for proofs 0008 and 0012 of 20261024_223733: `have h : P :=
+    # by sorry` was scored "advanced", then `exact h` closed the goal with the
+    # sorry inside and the rest of the budget went to "No goals to be solved".
+    for tac in ("have h₁ : Continuous f := by sorry",
+                "have h : 2 ∣ Fintype.card G := by sorry",
+                "sorry",
+                "exact sorry",
+                "admit",
+                "refine ⟨?_, by admit⟩",
+                "have h : P := by\n  simp\n  sorry"):
+        rec = Recorder(result=FakeResult(proof_state=PS_NEW, goals=["g"]))
+        a = make_agent(rec)
+        outcome, msgs, nps, goal, n = a._apply_tactic(tac, PS)
+        short = tac.replace("\n", " ")[:40]
+        check("rejected: %s" % short, outcome == "rejected", outcome)
+        check("REPL not invoked: %s" % short, rec.count == 0 and n == 0, (rec.count, n))
+        check("no state adopted: %s" % short, nps is None and goal is None)
+        check("explains why: %s" % short, msgs and "sorry" in msgs[0], msgs)
+
+    print("Case 10b: identifiers that merely contain the letters are fine")
+    for tac in ("exact h_sorry", "exact sorrynot", "apply admittance_le"):
+        rec = Recorder(result=FakeResult(proof_state=PS_NEW, goals=["g"]))
+        a = make_agent(rec)
+        outcome, _, _, _, n = a._apply_tactic(tac, PS)
+        check("not rejected: %r" % tac, outcome == "advanced" and n == 1, (outcome, n))
+
+    # -------------------------------------------------------------- case 11
+    print("Case 11: Lean reports a sorry or an error in proof_status")
+    for status in ("Incomplete: contains sorry", "Error: unknown identifier 'h'"):
+        for goals in ([], ["g"]):
+            rec = Recorder(result=FakeResult(proof_status=status, proof_state=PS_NEW, goals=goals))
+            a = make_agent(rec)
+            outcome, msgs, nps, goal, n = a._apply_tactic("exact foo", PS)
+            label = "%s / goals=%s" % (status[:28], goals)
+            check("error: %s" % label, outcome == "error", outcome)
+            check("no state adopted: %s" % label, nps is None and goal is None, (nps, goal))
+            check("status surfaced in messages: %s" % label,
+                  any(status in m for m in msgs), msgs)
+            check("counted as a Lean call: %s" % label, n == 1, n)
+
+    print("Case 11b: a response carrying sorries is an error even with a bland status")
+
+    class WithSorries(FakeResult):
+        def __init__(self, **kw):
+            super().__init__(**kw)
+            self.sorries = [object()]
+
+    rec = Recorder(result=WithSorries(proof_status="Incomplete", proof_state=PS_NEW, goals=["g"]))
+    outcome, msgs, nps, _, _ = make_agent(rec)._apply_tactic("exact foo", PS)
+    check("sorries list -> error", outcome == "error" and nps is None, outcome)
+
+    # -------------------------------------------------------------- case 12
+    print("Case 12: no goals left but not Completed is never 'advanced'")
+    # The exact shape of proof_0012 step 8: `exact exists_prime_orderOf_dvd_card 2 h`
+    # closed the goal through a sorry'd `h`, messages empty, goals empty.
+    for status in (None, "Incomplete", "Incomplete: open goals remain"):
+        rec = Recorder(result=FakeResult(proof_status=status, proof_state=PS_NEW, goals=[], messages=[]))
+        a = make_agent(rec)
+        outcome, msgs, nps, goal, n = a._apply_tactic("exact exists_prime_orderOf_dvd_card 2 h", PS)
+        check("error, not advanced: status=%r" % status, outcome == "error", outcome)
+        check("no state adopted: status=%r" % status, nps is None and goal is None, (nps, goal))
+        check("explains the closed goal: status=%r" % status,
+              any("closed" in m for m in msgs), msgs)
+        check("one Lean call: status=%r" % status, n == 1, n)
+
+    print("Case 12b: the legitimate neighbours are unchanged")
+    rec = Recorder(result=FakeResult(proof_status="Completed", proof_state=PS_NEW, goals=[]))
+    check("Completed with no goals is proved",
+          make_agent(rec)._apply_tactic("exact h", PS)[0] == "proved")
+    rec = Recorder(result=FakeResult(proof_status="Incomplete: open goals remain",
+                                     proof_state=PS_NEW, goals=["g1", "g2"]))
+    outcome, _, nps, goal, _ = make_agent(rec)._apply_tactic("constructor", PS)
+    check("open goals remain is advanced", outcome == "advanced" and goal == "g1", (outcome, goal))
+    rec = Recorder(result=FakeResult(proof_status="Incomplete: open goals remain", proof_state=PS, goals=["g"]))
+    check("unchanged state is still no_progress",
+          make_agent(rec)._apply_tactic("skip", PS)[0] == "no_progress")
+
     print("")
     if failures:
         print("FAILED: %d check(s): %s" % (len(failures), ", ".join(failures)))

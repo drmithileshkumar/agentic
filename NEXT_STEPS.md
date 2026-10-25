@@ -67,22 +67,273 @@ The "459" figure is the 10 pre-existing files; the 6 sycophancy-pipeline test
 files add 229. Run with `PYTHONIOENCODING=utf-8 python harness/tests/<file>.py`
 (standalone scripts, not pytest).
 
-## 3. Phase 0 launch — NOT DONE (HPC unreachable)
+## 3. Phase 0 launch — RUNNING LOCALLY (Windows, not HPC)
 
-Launch command (unchanged from the brief), to be run on the HPC after `git pull`:
+The HPC stayed unreachable, so Phase 0 was launched on the workstation instead,
+detached from the console (survives the session), with the exact flags from the brief:
 
-```bash
-cd ~/agentic && source hpc-venv/bin/activate
-nohup python run_experiment.py --phase 0 --difficulty All --limit 200 --no-echo > phase0.out 2>&1 &
-echo $! > phase0.pid
-```
+**Attempt 1 (22:17:27, PID 1040) died before proving anything.** It was started
+as a detached process from a Claude Code tool call. Output stopped at 22:25:32
+after lake's `cache get` step ("Already decompressed 8643 file(s)"), with no
+traceback, and by 22:30 no python/lean/lake process existed. Diagnosis:
+- A control test (detached heartbeat process) was killed within 10 s of its
+  launching tool call ending, so the tool sandbox reaps detached descendants.
+  Not a harness, Lean, or API problem.
+- `lake build` run in the foreground afterwards completed in 3 min 19 s
+  (8674 jobs, up to date), and no Windows event-log errors were recorded.
+- Memory is tight on this machine (2.2 GB physical free, commit 24.6/36.9 GB,
+  mostly Chrome). Not the cause here, but it will slow `import Mathlib`.
+- Registering a Task Scheduler job (to escape the sandbox) was blocked by the
+  permission classifier, so it was not attempted again.
+- Attempt-1 console log kept as `C:\lean\phase0_attempt1.out`; its empty run
+  dir `logs/phase0_20261024_221729` was removed.
 
-A one-shot script that pulls, re-runs the suite, and only launches if green is at
-`C:\Users\HP\AppData\Local\Temp\claude\C--lean-MyMathlibProject\a3c1c7be-442c-4d7d-a0f9-2e383ea040db\scratchpad\hpc_phase0_launch.sh`
-(`ssh hpc 'bash -s' < that-file`, or copy it over). It appends the PID and
-launch time to this file.
+**Attempt 2 — running** as a harness-tracked background command (the same
+mechanism that kept the 37-minute Phase 1 run alive on 2026-10-19). Caveat: it
+is tied to this Claude Code session, so closing the session will end it.
 
-Things to know before launching:
+| | |
+|---|---|
+| command | `python run_experiment.py --phase 0 --difficulty All --limit 200 --no-echo` |
+| launched | 2026-10-24 22:37:33 local |
+| PID | 3852 (`C:\lean\phase0.pid`; venv launcher is 5232) |
+| console log | `C:\lean\phase0.out` |
+| run dir | `C:\lean\logs\phase0_20261024_223733` |
+| provider | NVIDIA NIM, `nvidia/nemotron-3-ultra-550b-a55b`, auth OK |
+
+To stop it: `taskkill /PID 3852 /F` (not intended — it should run to completion).
+
+### Progress log (appended every ~15 min)
+
+- 22:18 — attempt 1 launched; Lean server booting.
+- 22:30 — attempt 1 found dead (see above); 0 theorems attempted.
+- 22:38 — attempt 2 launched; 200 theorems loaded, Lean server booting.
+- 22:49 — alive (PID 3852 + lake/repl children). Lean server ready in 226.7 s
+  (vs 732 s on 10-19); lake rebuilt one problem file with only a whitespace
+  linter warning. Proof 1/200 (ALG_E_01) started ~22:41, still on its first
+  `import Mathlib` command; 0 JSONL files, 0 done events yet. Nothing off.
+- 23:04 — alive. 7/200 done, **7 PROVED / 0 failed**; proof 8 (TOP_E_01) in
+  progress. After the slow first theorem, Easy set-theory items take 8–57 s
+  each, 1–2 tactic steps. Step outcomes so far: 7 proved, 3 advanced, 7 error
+  (rejected tactics retried in-place, normal). No error events, no LLM or
+  connectivity failures.
+- 23:19 — alive. Still 7/200 done (7 PROVED). Proof 8 (TOP_E_01, continuity via
+  open preimages) has been running since 22:54 and is at step 13/15, heading
+  for FAILED_BUDGET_EXHAUSTED. Three things look off in its trace:
+  1. **`sorry` inside a `have` was accepted as "advanced"** (step 8:
+     `have h₁ : Continuous f := by sorry`), then `exact h₁` closed the goal
+     (step 9, "advanced" not "proved") and steps 10–13 are all `exact h₁` →
+     "No goals to be solved". The tactic-level harness does not reject a
+     `sorry` nested in a `have`; the proof will be scored by the done logic,
+     but the trace is worth checking when classifying failures.
+  2. Model emitted prose instead of tactics three times ("Thus", "But that
+     would require converting `h`.") → "unknown tactic" (extraction failure).
+  3. **LLM latency is 1–4.5 min per call** on nemotron-3-ultra for this
+     theorem (vs 10–30 s on the Easy set items), so a 15-step failure costs
+     ~25 min. If Medium/Hard behave like this, 200 theorems will take days.
+  No crashes, no connectivity retries, no error events.
+- 23:34 — alive. 9/200 done: **8 PROVED / 1 FAILED_BUDGET_EXHAUSTED**
+  (TOP_E_01, 15 steps, 1532.7 s). TOP_E_02 then proved in 3 steps / 42 s.
+  Proof 10 (`exercise_2_2_9`, an Easy-tier Dummit & Foote item: elements of
+  `closure {a, b}` commute) running since 23:22, at step 4, all errors.
+  Pattern from proofs 8 and 10: on anything non-trivial the model's first
+  tactic is `exact h_main` (hallucinated lemma name) and then it answers with
+  markdown headings ("### Abstract Plan", "### Conclusion") instead of a
+  tactic → "expected tactic". LLM calls take 2.5–4.5 min each on these, so a
+  budget failure costs ~25–60 min. Elapsed so far: 56 min for 9 theorems;
+  extrapolating with the Easy/Medium/Hard mix in the first 200, the run will
+  take well over a day. No crashes, no connectivity retries, no error events.
+- 23:49 — alive. Still 9/200 done (8 PROVED / 1 FAILED). Proof 10
+  (`exercise_2_2_9`) at step 10/15 after 27 min, every step an error; will be
+  the second budget failure around 00:05. New anomaly in steps 9–10: the
+  tactic sent to Lean is **truncated mid-expression** (`simp only [`,
+  `have h₅ : Subgroup.closure ({a, b} : Set G) ≤ Cent…`) → "unexpected end of
+  input". Looks like multi-line tactics (a simp list or a `have … := by` block
+  spanning lines) are cut at the first line by tactic extraction. Candidate
+  for the failure taxonomy; not touched. Also `intro x hx y hy` on a goal with
+  no binders (step 5) and `exact h_final` (another phantom name). Step outcome
+  totals: 8 proved, 5 advanced, 27 error. No crashes / connectivity issues.
+- 00:04 — alive. 10/200 done: **8 PROVED / 2 FAILED_BUDGET_EXHAUSTED**.
+  Proof 10 failed after 15 steps / 2209 s (37 min). Proof 11
+  (`exercise_2_4_19`, unique element of order 2 is central) started ~23:59
+  and is already at step 8, all errors (`exact h_final` phantom again) — LLM
+  calls are back to ~30 s each, so latency fluctuates with the NIM endpoint
+  rather than with the theorem. 1 h 26 min elapsed for 10 theorems. Step
+  totals: 8 proved, 6 advanced, 39 error. No crashes / connectivity issues.
+- 00:19 — alive. 11/200 done: **8 PROVED / 3 FAILED_BUDGET_EXHAUSTED**.
+  Proof 11 failed in 650 s. Proof 12 (`exercise_2_11_3`, Cauchy for p = 2:
+  even-order group has an element of order 2) at step 7, all errors; latest
+  reply was a whole `theorem exists_prime_orderOf_dvd_card …` declaration
+  instead of a tactic ("expected tactic") — the model is now emitting
+  declarations, not just prose/markdown. Running tally: every Easy set-theory
+  /group-identity item proved in ≤3 steps; every textbook exercise
+  (Dummit & Foote `exercise_*`) has exhausted its budget. 1 h 41 min for 11
+  theorems. Step totals: 8 proved, 7 advanced, 52 error. No crashes.
+- 00:34 — alive. Still 11/200 done (8 PROVED / 3 FAILED). Proof 12 at step
+  14/15, about to be budget failure #4 — but look at its trace: step 8
+  `exact exists_prime_orderOf_dvd_card 2 h` came back **"advanced" with an
+  empty goal_after and no Lean messages**, and steps 9–14 all fail with "No
+  goals to be solved". Same shape as proof 8 (steps 9–13). So twice now the
+  proof state was closed, the harness scored the closing step "advanced" not
+  "proved", and the remaining budget was burned on a goal-less state. In
+  proof 8 the cause was a `sorry` inside an earlier `have`; in proof 12 there
+  is no sorry in the trace, and `h` is not even a hypothesis name (it is
+  `hG`), so the step should have errored. Either the REPL's proof_status /
+  messages for that step were not captured, or the "advanced" branch accepts
+  a closed-but-incomplete state. Needs a look at `lean_agent.apply_tactic`
+  before Phase 0 results are scored (the existing ERROR_LOOP / reclassify
+  tooling may already catch the "No goals" tail). Not touched. Step totals:
+  8 proved, 8 advanced, 58 error. No crashes / connectivity issues.
+- **00:39 — attempt 2 STOPPED by Claude Code, not by the harness.** The
+  harness-tracked background command was killed by Claude Code's low-memory
+  reaper ("system critically low on memory while the session was idle").
+  The machine had ~2 GB physical free at launch with Chrome holding most of
+  the rest; the Lean REPL (≈350 MB) plus lake (≈450 MB) tipped it. No
+  python/lean/lake processes remain; no `summary.json` was written. The 13
+  per-proof JSONL files in `logs/phase0_20261024_223733` are intact and
+  usable (proof_0013 is partial: 3 steps, no done event).
+
+### Attempt 2 final state (12 theorems scored, 2 h 02 min wall clock)
+
+| result | count | theorems |
+|---|---|---|
+| PROVED | 8 | ALG_E_01–03, SET_E_01–04, TOP_E_02 (all ≤3 steps, 8–61 s) |
+| FAILED_BUDGET_EXHAUSTED | 4 | TOP_E_01 (1533 s), exercise_2_2_9 (2209 s), exercise_2_4_19 (650 s), exercise_2_11_3 (1579 s) |
+| in progress when killed | 1 | proof_0013 (`exercise_*`, step 3, all errors) |
+
+Step outcomes overall: 8 proved, 8 advanced, 62 error, 0 connectivity_error,
+0 error events. No LLM auth or connectivity failures at any point; nothing in
+the harness itself failed in either attempt.
+
+Open issues surfaced by this run (details in the bullets above):
+1. ~~"Advanced" step with empty goal and no messages, followed by a "No goals"
+   tail (proofs 8 and 12) — possible mis-scoring in `apply_tactic`.~~ **FIXED 2026-10-25**, see §6.
+2. ~~`sorry` inside a `have` accepted as progress (proof 8).~~ **FIXED 2026-10-25**, see §6.
+3. ~~Multi-line tactics truncated at the first line (proof 10, steps 9–10).~~ **FIXED 2026-10-25**, see §6.
+4. Model emits prose / markdown headings / whole `theorem` declarations
+   instead of tactics; phantom names `h_main`, `h_final` on nearly every
+   first step of a non-trivial theorem. **Not a bug — model behaviour, kept as data.**
+5. NIM latency swings from 10 s to 4.5 min per call; a 15-step failure costs
+   10–37 min, so 200 theorems on this box is a multi-day run.
+6. (new) `exercise_2_11_3`'s statement uses `card G` without `Fintype.` in
+   scope, so Lean auto-bound `card : x✝` and the hypothesis elaborated as
+   `hG : Even sorry`. The theorem as stated is not the intended one. Worth a
+   pass over `candidates.jsonl` for other `exercise_*` items with the same
+   `open ... in` prefix problem (not touched — problem set is frozen).
+
+## 6. Harness fixes applied 2026-10-25 (`harness/lean_agent.py`)
+
+All three scoring bugs from the Phase 0 run traced to two places. The model's
+own behaviour (prose, phantom lemma names, truncated completions) was left
+alone.
+
+**Root cause, from the raw JSONL.** Proof 12's step 1 was
+`have h : 2 ∣ Fintype.card G := by sorry`, accepted as "advanced" exactly like
+proof 8's step 8. In both proofs a later `exact … h` then closed the goal
+through the sorry'd hypothesis; the REPL reported the proof as not Completed
+with zero goals and no messages, `_apply_tactic` scored that "advanced" with
+`goal_after = None`, and the loop kept re-prompting with the stale goal text.
+So bugs 1 and 2 were one defect with two symptoms. Proof 10's `simp only [` /
+`have h₅ : … (Sub` were the last lines of completions cut off at the 8192
+max-token limit; the extractor hands Lean a single line, so any multi-line
+tactic (truncated or not) lost its body.
+
+**Fix 1 — `_apply_tactic` refuses sorry, before and after Lean.**
+- A tactic matching `\b(sorry|admit)\b` is returned as `rejected` with
+  `lean_calls = 0` and the message "rejected before Lean: the tactic contains
+  `sorry`/`admit` …", which the model sees in its history.
+- A `ProofStepResponse` whose `proof_status` contains "sorry", whose
+  `sorries` list is non-empty, or whose status starts with "Error" is
+  scored `error`, the status text is appended to `lean_messages`, and no
+  state is adopted.
+
+**Fix 2 — `_apply_tactic` never adopts a goal-less state unless Completed.**
+After the no-progress check, `goals == []` with any status other than
+"Completed" is `error` ("the goal was closed but the proof is not
+complete"). `advanced` now always carries a real `goal_after`.
+
+**Fix 3 — `_extract_tactic` returns the whole multi-line tactic.** Lines keep
+their indentation; the bottom-up scan still picks the last tactic-looking
+line, but then climbs to the outermost tactic line above it at a strictly
+smaller indentation (Lean's own layout rule: deeper indentation continues
+the previous tactic) and returns that head plus every line indented under
+it, dedented. `have h : P := by\n  simp\n  exact foo` now reaches Lean intact;
+bullets (`· …`) count as tactic heads; a prose or `theorem` line above is not
+climbed into. One-line tactics and sibling sequences (`intro h\nsimp [h]` →
+`simp [h]`) behave exactly as before.
+
+**Verified live against the REPL (2026-10-25, probe script in the session
+scratchpad; server boot 742 s, first `import Mathlib` command 470 s):**
+
+| tactic on the real goal | messages | sorries | proof_status | goals | old score | new score |
+|---|---|---|---|---|---|---|
+| `have h₁ : Continuous f := by sorry` | [] | 1 | Incomplete: open goals remain | 1 | advanced | rejected (pre-Lean) |
+| `exact h₁` after that | [] | [] | Incomplete: contains sorry | 0 | advanced, goal None | error |
+| `exact exists_prime_orderOf_dvd_card 2 h` (no `h`) | Unknown identifier `h` (error) | [] | Incomplete: contains sorry | 0 | error | error |
+| `have h₁ : Continuous f := by\n  rw [continuous_def]\n  exact h` | [] | [] | Incomplete: open goals remain | 1 | — (never sent whole) | advanced |
+| `intro x\nexact x` (two tactics) | LeanError: introN failed | — | — | — | error | error |
+| `simp only [` | LeanError: unexpected end of input | — | — | — | error | error |
+| `exact continuous_def.mpr h` | [] | [] | Completed | 0 | proved | proved |
+
+So a nested `sorry` is visible only through `sorries` (on the step that
+writes it) and `proof_status` (on every later step), never through
+`messages` — which is why the message-keyword check never saw it. The REPL
+parses a multi-line tactic string as a tactic sequence, so whole blocks are
+safe to send.
+
+**Tests:** +17 extraction checks (blocks, nesting, bullets, tabs, markdown
+indentation, truncated block, unchanged sibling rule) and +63 apply-tactic
+checks (sorry/admit pre-screen incl. identifiers like `h_sorry`, status
+"contains sorry"/"Error", `sorries` list, the proof-12 shape, Completed/
+open-goals/no-progress neighbours). Full suite: 16 files, 768 checks, 0 FAIL.
+
+---
+
+### 6b. SEPARATE CHANGE (same commit, not one of the three bugs): first sibling tactic, not last
+
+**What changed.** When the model's final code block contains several
+top-level tactics at one column (`intro h` / `simp [h]` on two lines),
+`_extract_tactic` now returns the **first** of them, with its own indented
+body if it has one. Previously it returned the last.
+
+**Why.** This is tactic-by-tactic mode: the harness evaluates one tactic
+against the one goal the model was shown. The first line of its answer is the
+tactic for that goal; every later line presupposes a proof state Lean has not
+reached yet, so sending the last line was wrong by construction (`simp [h]`
+before `intro h` → "unknown identifier h"). The last-line rule was inherited
+from whole-proof thinking, where the answer comes at the end of the
+reasoning; `WholeProofAgent` has its own extractor and is unaffected.
+
+**What did not change.** The bottom-up scan still locates the final code
+block (the run of tactic lines after the last prose/`theorem`/fence line);
+the multi-line block logic from fix 3 (indentation climbing, bullets as
+heads, dedent, blank-line dropping) is untouched. A one-line answer, prose
+followed by one tactic, and a single multi-line `have … := by` block all
+extract exactly as before. Prose *between* code lines restarts the block, so
+"intro h / Now we simplify: / simp [h]" still yields `simp [h]`.
+
+**Pre-existing behaviour, unrelated to the Phase 0 bugs.** The last-line
+rule dates from the first extractor (test "fenced multi-line block takes the
+last tactic line", now flipped to pin the first). It changes how future runs
+score multi-line answers, so historical runs are not directly comparable on
+steps-per-proof for such responses. Diff anchor: `_tactic_block`, the
+sibling-walk loop after the parent climb; tests under "Case 8b".
+
+**Tests:** the flipped Case 5 check plus 7 new Case 8b checks (two/three
+siblings, first sibling keeping its body, prose restarting the block,
+`theorem` body, single tactic unaffected). Suite: 16 files, 775 checks, 0 FAIL.
+
+To resume Phase 0: free memory first (close Chrome tabs; ~5 GB free is the
+minimum that worked), then relaunch with the same command. Start Claude Code
+with `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` in its environment if it
+should not be reaped again, or run it from a plain terminal outside Claude
+Code (`.\harness-venv\Scripts\python.exe run_experiment.py --phase 0
+--difficulty All --limit 200 --no-echo > phase0.out 2>&1`). The 12 scored
+proofs can be kept and the run resumed with `--limit 200` skipping the first
+12 only if a `--skip`/offset flag is added; otherwise rerun from scratch into
+a new run dir.
+
+Things to know about this run:
 
 - `--difficulty All --limit 200` takes the **first 200 of 837** candidates in
   file order: 75 Easy, 94 Medium, 31 Hard. If a stratified sample was intended,

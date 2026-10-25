@@ -219,6 +219,13 @@ _SENTENCE_ENDINGS = (".", ",", ";", ":", "!", "?")
 # character, so `rw [h]` -> "rw" and `norm_num` -> "norm_num".
 _HEAD_RE = re.compile(r"^[A-Za-z_]+")
 
+# A tactic that admits a goal instead of proving it. `\b` keeps `h_sorry`
+# (an identifier) from matching; `sorry` inside a string literal would, and
+# a tactic has no business containing one.
+_SORRY_RE = re.compile(r"\b(sorry|admit)\b")
+SORRY_TACTIC_MESSAGE = ("rejected before Lean: the tactic contains `sorry`/`admit`, "
+                        "which admits the goal instead of proving it and cannot count as progress")
+
 
 def _line_head(line: str) -> str:
     match = _HEAD_RE.match(line)
@@ -298,20 +305,81 @@ def _is_tactic_line(line: str) -> bool:
     head = _line_head(line)
     if head in TACTIC_KEYWORDS:
         return _is_tactic_call(line, head)
+    # A focusing bullet heads a tactic whatever follows it -- `· simp`, or
+    # `· -- base case` with the real work on the indented lines below.
+    if line.startswith(("·", "• ")):
+        return True
     if _looks_like_prose(line):
         return False
     # Anything left that is short and unpunctuated -- `rfl`, `h.symm`, `⟨a, b⟩`.
     return len(line) <= 60
 
 
+def _indent(line: str) -> int:
+    return len(line) - len(line.lstrip())
+
+
+def _tactic_block(entries: list[tuple[int, str]], index: int) -> str:
+    """The whole tactic that the line at *index* belongs to.
+
+    Lean lays tactics out by column: sibling tactics share a column, and a
+    line indented deeper than the one before it continues that tactic --
+    the body of a `have ... := by`, the tail of a wrapped `simp [a,\\n b]`,
+    the branches of a `cases ... with`. So the tactic that owns line *index*
+    starts at the outermost line above it that (a) sits at a strictly
+    smaller indentation and (b) reads as a tactic itself, and runs down to
+    the last line still indented deeper than that head. Sending only one
+    line of such a block is what put `simp only [` in front of Lean on
+    proof_0010 of the 20261024_223733 run.
+
+    When that block is one of several sibling tactics written at the same
+    column -- `intro h` / `simp [h]` as two lines -- the *first* sibling of
+    the run is returned, because the harness evaluates one tactic against one
+    goal per step and only the first line applies to the goal the model was
+    shown. (Until 2026-10-25 the last sibling was returned, a rule inherited
+    from whole-proof generation where the answer comes last.) The run of
+    siblings stops at a line that is not a tactic -- prose, a `theorem`
+    header, a fence -- so the answer is still the final code block of the
+    completion, just read top-down.
+
+    The block is returned dedented to its head, blank lines dropped, so a
+    one-line tactic comes back exactly as before.
+    """
+    head = index
+    while True:
+        parent = next((j for j in range(head - 1, -1, -1)
+                       if entries[j][0] < entries[head][0]), None)
+        if parent is None or not _is_tactic_line(entries[parent][1]):
+            break
+        head = parent
+
+    base = entries[head][0]
+    for j in range(head - 1, -1, -1):
+        ind, text = entries[j]
+        if ind > base:
+            continue                      # body of an earlier sibling
+        if ind < base or not _is_tactic_line(text):
+            break                         # left the code block
+        head = j                          # an earlier sibling tactic
+
+    block = [entries[head][1]]
+    for ind, text in entries[head + 1:]:
+        if ind <= base:
+            break
+        block.append(" " * (ind - base) + text)
+    return "\n".join(block)
+
+
 def _extract_tactic(raw: str) -> str:
     """Pull the intended tactic out of a raw LLM completion.
 
     Scans the non-empty lines from the bottom up and returns the last one that
-    reads as a tactic, because a reasoning model states its answer last. If no
-    line qualifies -- a completion truncated mid-thought, say -- the last
-    non-empty line is returned so the caller still gets the model's own words
-    and Lean's error names the real problem.
+    reads as a tactic, because a reasoning model states its answer last. When
+    that line is part of a multi-line tactic -- indented under a `have ... :=
+    by`, say -- the whole block is returned, not the one line (see
+    _tactic_block). If no line qualifies -- a completion truncated mid-thought,
+    say -- the last non-empty line is returned so the caller still gets the
+    model's own words and Lean's error names the real problem.
 
     Returns "" only for input that is entirely whitespace, fence markers or
     backticks; the caller's retry loop treats that as an empty completion.
@@ -319,22 +387,24 @@ def _extract_tactic(raw: str) -> str:
     if not raw or not raw.strip():
         return ""
 
-    lines: list[str] = []
-    for line in raw.strip().splitlines():
-        line = line.strip()
-        if line.startswith("```"):      # ```lean / ``` fence markers
+    # (indentation, text) per content line. Indentation is measured on the
+    # original line because it is what carries the block structure.
+    entries: list[tuple[int, str]] = []
+    for line in raw.strip("\n").splitlines():
+        text = line.strip()
+        if text.startswith("```"):      # ```lean / ``` fence markers
             continue
-        line = line.strip("`").strip()  # inline backticks wrapping a tactic
-        if line:
-            lines.append(line)
+        text = text.strip("`").strip()  # inline backticks wrapping a tactic
+        if text:
+            entries.append((_indent(line.expandtabs(4)), text))
 
-    if not lines:
+    if not entries:
         return ""
 
-    for line in reversed(lines):
-        if _is_tactic_line(line):
-            return line
-    return lines[-1]
+    for index in range(len(entries) - 1, -1, -1):
+        if _is_tactic_line(entries[index][1]):
+            return _tactic_block(entries, index)
+    return entries[-1][1]
 
 
 def _jsonable(obj: object) -> object:
@@ -1131,16 +1201,30 @@ class LeanAgentHarness:
 
         Outcome classification:
             proved      proof_status == "Completed"
-            advanced    proof_state changed
+            advanced    proof_state changed and goals remain
             no_progress proof_state unchanged but no errors
-            error       Lean returned error/warning messages
-            rejected    ProofStep validation failed, or the REPL raised
+            error       Lean returned error/warning messages, or reported a
+                        proof status other than Completed with no goals left
+                        (a sorry or an elaboration error closed the goal)
+            rejected    ProofStep validation failed, the tactic contains
+                        `sorry`/`admit`, or the REPL raised
 
         lean_call_count is 0 only when the tactic never left this process --
         i.e. ProofStep validation rejected it, which is what an empty tactic
-        does. Counting those as Lean calls inflates lean_calls_per_step, a
-        primary benchmark metric, so the two rejection causes are split.
+        does, or it carried a sorry. Counting those as Lean calls inflates
+        lean_calls_per_step, a primary benchmark metric, so the rejection
+        causes are split.
         """
+        # A tactic that writes `sorry` into the proof can only ever look like
+        # progress: `have h : P := by sorry` is accepted by Lean, the goal it
+        # fakes is then closed with `exact h`, and Lean reports the finished
+        # proof as "Incomplete: contains sorry" -- which the old code scored
+        # "advanced" with no goal left, so every remaining step was spent on
+        # "No goals to be solved" (proofs 0008 and 0012 of 20261024_223733).
+        # Refuse it here, before it costs a Lean call, and tell the model why.
+        if _SORRY_RE.search(tactic):
+            return "rejected", [SORRY_TACTIC_MESSAGE], None, None, 0
+
         # Build the request first: a validation failure here (e.g. an empty
         # tactic) never reaches the REPL, so it must not count as a Lean call.
         try:
@@ -1167,18 +1251,34 @@ class LeanAgentHarness:
 
         messages = [m.data for m in result.messages] if result.messages else []
         has_errors = _messages_report_failure(messages)
+        status = str(result.proof_status or "")
 
-        if result.proof_status == "Completed":
+        if status == "Completed":
             return "proved", messages, result.proof_state, None, 1
 
         if has_errors:
             return "error", messages, None, None, 1
 
+        # The REPL's proof_status is the only place a sorry or a recovered
+        # elaboration error shows up when `messages` is empty: "Incomplete:
+        # contains sorry", "Error: ...". Neither is a state worth adopting.
+        if "sorry" in status.lower() or getattr(result, "sorries", None):
+            return "error", messages + [f"Lean proof status: {status or 'contains sorry'}"
+                                        " -- a step that leaves a sorry in the proof is not accepted"], None, None, 1
+        if status.startswith("Error"):
+            return "error", messages + [f"Lean proof status: {status}"], None, None, 1
+
         if result.proof_state == proof_state:
             return "no_progress", messages, None, None, 1
 
-        new_goal = result.goals[0] if result.goals else None
-        return "advanced", messages, result.proof_state, new_goal, 1
+        if not result.goals:
+            # Nothing left to prove, yet Lean did not say Completed: the goal
+            # was closed by something that does not count. Adopting this
+            # state would leave the model staring at a stale goal text.
+            return "error", messages + ["Lean proof status: %s -- the goal was closed but "
+                                        "the proof is not complete" % (status or "unknown")], None, None, 1
+
+        return "advanced", messages, result.proof_state, result.goals[0], 1
 
     def _make_result(self, proof_id: str, theorem: str, outcome: str, total_steps: int) -> ProofResult:
         return ProofResult(

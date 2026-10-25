@@ -110,9 +110,9 @@ def run():
     eq("fence with language tag and trailing prose",
        "```lean\nomega\n```\nThat should do it.",
        "omega")
-    eq("fenced multi-line block takes the last tactic line",
+    eq("fenced multi-line block takes the FIRST tactic line (tactic-by-tactic)",
        "```lean\nintro h\nsimp [h]\n```",
-       "simp [h]")
+       "intro h")
 
     # --------------------------------------------------------------- case 6
     print("Case 6: invariants that must hold for any input")
@@ -187,6 +187,87 @@ def run():
         got = _extract_tactic("Reasoning that runs on and on about the goal.\n%s foo bar baz" % kw)
         check("keyword %s survives a wordy tail" % kw,
               got == "%s foo bar baz" % kw, got)
+
+    # --------------------------------------------------------------- case 8
+    print("Case 8: a multi-line tactic is returned whole, not as its last line")
+    # Regression for proof_0010 of 20261024_223733: the model answered with a
+    # `have ... := by` block and only one of its lines reached Lean.
+    HAVE_BLOCK = ("have h₁ : Continuous f := by\n"
+                  "  rw [continuous_def]\n"
+                  "  exact h")
+    eq("bare have-block", HAVE_BLOCK, HAVE_BLOCK)
+    eq("have-block after prose",
+       "We first establish continuity.\n\n" + HAVE_BLOCK, HAVE_BLOCK)
+    eq("have-block inside a fence",
+       "Here is the step:\n```lean\n" + HAVE_BLOCK + "\n```", HAVE_BLOCK)
+    eq("have-block followed by prose at column 0",
+       HAVE_BLOCK + "\nThat establishes the claim.", HAVE_BLOCK)
+    eq("fence indented as a markdown block is dedented to its head",
+       "The tactic:\n\n    " + HAVE_BLOCK.replace("\n", "\n    "), HAVE_BLOCK)
+    eq("tabs count as indentation",
+       "have h : P := by\n\tsimp\n\texact foo",
+       "have h : P := by\n    simp\n    exact foo")
+    eq("wrapped simp list stays together",
+       "simp only [Set.mem_inter_iff,\n  Set.mem_union] at hx",
+       "simp only [Set.mem_inter_iff,\n  Set.mem_union] at hx")
+    eq("nested blocks climb to the outermost tactic head",
+       "have h₂ : Q := by\n"
+       "  have h₃ : R := by\n"
+       "    simp\n"
+       "  exact foo h₃",
+       "have h₂ : Q := by\n  have h₃ : R := by\n    simp\n  exact foo h₃")
+    eq("bullet with its indented body",
+       "· intro x\n  exact x",
+       "· intro x\n  exact x")
+    eq("bullet after constructor -> constructor is the next step",
+       "constructor\n· intro x\n  exact x",
+       "constructor")
+    eq("blank lines inside a block are dropped, structure kept",
+       "have h : P := by\n  simp\n\n  exact foo",
+       "have h : P := by\n  simp\n  exact foo")
+    eq("prose parent does not become a tactic head",
+       "- First, we rewrite:\n    rw [Nat.add_comm]",
+       "rw [Nat.add_comm]")
+    eq("a theorem header is not a tactic head",
+       "theorem foo (a b : ℕ) : a + b = b + a := by\n  rw [Nat.add_comm]",
+       "rw [Nat.add_comm]")
+
+    print("Case 8b: sibling tactics at one column -> the FIRST one")
+    # Changed 2026-10-25 (separate from the three Phase 0 scoring fixes): in
+    # tactic-by-tactic mode the first line of the model's final code block
+    # is the tactic that applies to the goal it was shown; the later lines
+    # presuppose a state Lean has not reached yet. The last-line rule came
+    # from whole-proof generation, where the answer comes last.
+    eq("two top-level tactics -> the first one",
+       "intro h\nsimp [h]", "intro h")
+    eq("uniformly indented lines are siblings -> the first one",
+       "  intro h\n  simp [h]", "intro h")
+    eq("three siblings after prose -> the first",
+       "The plan is simple.\nintro x\nrw [Nat.add_comm]\nrfl", "intro x")
+    eq("first sibling keeps its own body",
+       "have h : P := by\n  simp\nexact foo h",
+       "have h : P := by\n  simp")
+    eq("prose between code lines restarts the block",
+       "intro h\nNow we simplify:\nsimp [h]", "simp [h]")
+    eq("body of a theorem header -> its first tactic",
+       "theorem foo (a b : ℕ) : a + b = b + a := by\n  intro x\n  exact x",
+       "intro x")
+    eq("a single tactic is unaffected",
+       "Reasoning.\n```lean\nomega\n```", "omega")
+    eq("the last code block is still the one read (prose after it ignored)",
+       "ring\nThat closes it.", "ring")
+
+    print("Case 8c: a completion cut off inside a block returns that block")
+    truncated = ("The proof proceeds by closure induction.\n"
+                 "have h_final : ∀ x y, x * y = y * x := by\n"
+                 "  intro x y\n"
+                 "  apply Subgroup.closure_induction hx\n"
+                 "  · intro z hz\n"
+                 "    simp only [")
+    got = _extract_tactic(truncated)
+    check("block head is the have", got.startswith("have h_final"), got[:40])
+    check("block ends at the truncated line", got.endswith("    simp only ["), got[-30:])
+    check("block has all five lines", got.count("\n") == 4, got.count("\n"))
 
     print("")
     if failures:
